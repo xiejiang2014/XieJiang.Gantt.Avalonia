@@ -1,7 +1,7 @@
 ﻿using System;
 using Avalonia;
 
-namespace XieJiang.Gannt.Avalonia
+namespace XieJiang.Gantt.Avalonia
 {
     internal class Program
     {

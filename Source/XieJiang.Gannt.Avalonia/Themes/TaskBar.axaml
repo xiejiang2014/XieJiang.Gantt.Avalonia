@@ -1,0 +1,172 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia"
+    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+
+    <!--
+        Additional resources
+        Using Control Themes:
+        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+        Using Theme Variants:
+        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+    -->
+
+    <Design.PreviewWith>
+        <StackPanel Width="400">
+            <StackPanel Background="{DynamicResource SystemRegionBrush}">
+                <avalonia:TaskBar Background="#8E466A" />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme
+        x:Key="{x:Type avalonia:TaskBar}"
+        TargetType="avalonia:TaskBar">
+        <Setter
+            Property="Maximum"
+            Value="1" />
+        <Setter
+            Property="CornerRadius"
+            Value="4" />
+        <Setter
+            Property="Background"
+            Value="#8E466A" />
+        <Setter
+            Property="Foreground"
+            Value="#66334C" />
+        <Setter
+            Property="ClipToBounds"
+            Value="False" />
+        <Setter Property="Template">
+
+            <ControlTemplate>
+                <Grid
+                    Background="Transparent"
+                    ClipToBounds="False"
+                    RowDefinitions="24,Auto"
+                    ShowGridLines="False">
+
+                    <!--<TextBlock
+                        x:Name="PART_TextBlockProgress"
+                        Classes="ProgressTextBlock"
+                        IsVisible="False"
+                        Text="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                       Path=Value,
+                                       StringFormat={}{0:p2}}">
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform X="-12" Y="-16" />
+                        </TextBlock.RenderTransform>
+                    </TextBlock>-->
+
+                    <Border
+                        x:Name="PART_BackgroundBorder"
+                        Grid.Row="0"
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        ClipToBounds="True"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+
+                        <Panel ClipToBounds="False">
+                            <Border
+                                x:Name="PART_ForegroundBorder"
+                                Width="30"
+                                Height="{TemplateBinding Height}"
+                                HorizontalAlignment="Left"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{TemplateBinding CornerRadius}" />
+
+
+                            <Rectangle
+                                x:Name="PART_ProgressRectangle"
+                                Width="1"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Stretch"
+                                Classes="ProgressRectangle"
+                                Fill="White"
+                                IsEnabled="False"
+                                IsHitTestVisible="False"
+                                StrokeThickness="0"
+                                ToolTip.IsOpen="False"
+                                ToolTip.Placement="Top"
+                                ToolTip.VerticalOffset="0">
+                                <ToolTip.Tip>
+                                    <TextBlock
+                                        Classes="ProgressTextBlock"
+                                        Text="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                                       Path=Value,
+                                                       StringFormat={}{0:p2}}" />
+                                </ToolTip.Tip>
+                            </Rectangle>
+
+                            <Thumb
+                                x:Name="PART_LThumb"
+                                Width="4"
+                                HorizontalAlignment="Left"
+                                Classes="LRThumb"
+                                Cursor="SizeWestEast"
+                                IsVisible="False" />
+
+                            <Thumb
+                                x:Name="PART_RThumb"
+                                Width="4"
+                                HorizontalAlignment="Right"
+                                Classes="LRThumb"
+                                Cursor="SizeWestEast"
+                                IsVisible="False" />
+                        </Panel>
+                    </Border>
+
+
+                    <Canvas
+                        Grid.Row="1"
+                        Width="{TemplateBinding Width}"
+                        Height="8">
+                        <Thumb
+                            x:Name="PART_ProgressThumb"
+                            Canvas.Left="0"
+                            HorizontalAlignment="Left"
+                            Background="Gray"
+                            Classes="ProgressThumb"
+                            Cursor="SizeWestEast"
+                            IsVisible="False">
+                            <Thumb.RenderTransform>
+                                <TranslateTransform X="-6" />
+                            </Thumb.RenderTransform>
+                        </Thumb>
+                    </Canvas>
+
+                </Grid>
+
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover">
+
+            <Style Selector="^ /template/ Thumb.LRThumb">
+                <Setter
+                    Property="IsVisible"
+                    Value="True" />
+            </Style>
+
+            <Style Selector="^ /template/ Thumb.ProgressThumb">
+                <Setter
+                    Property="IsVisible"
+                    Value="True" />
+            </Style>
+
+            <!--<Style Selector="^ /template/ TextBlock.ProgressTextBlock">
+                <Setter
+                    Property="IsVisible"
+                    Value="True" />
+            </Style>-->
+
+            <Style Selector="^ /template/ Rectangle.ProgressRectangle">
+                <Setter
+                    Property="ToolTip.IsOpen"
+                    Value="True" />
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

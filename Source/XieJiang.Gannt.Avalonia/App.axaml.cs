@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace XieJiang.Gannt.Avalonia
+namespace XieJiang.Gantt.Avalonia
 {
     public partial class App : Application
     {

@@ -1,10 +1,91 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="XieJiang.Gannt.Avalonia.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+<Application
+    x:Class="XieJiang.Gantt.Avalonia.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    RequestedThemeVariant="Default">
+    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
     <Application.Styles>
         <FluentTheme />
+
+        <Style Selector="TextBlock.ProgressTextBlock">
+            <Setter
+                Property="FontSize"
+                Value="12" />
+        </Style>
+
+        <Style Selector="Thumb.LRThumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Border
+                                Width="5"
+                                Background="#66000000"
+                                CornerRadius="2" />
+                            <Rectangle
+                                Width="1"
+                                Margin="0,3"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                Fill="White"
+                                StrokeThickness="0" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="Thumb.ProgressThumb">
+
+            <!--<Setter Property="RenderTransform">
+                <Setter.Value>
+                    <TranslateTransform X="-6" />
+                </Setter.Value>
+            </Setter>-->
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <!--<Grid Background="BlueViolet">-->
+
+                        <Path
+                            Height="8"
+                            Data="M6,0 L12,8 L0,8z"
+                            Fill="{TemplateBinding Background}" />
+
+                        <!--<Border
+                                Background="LawnGreen"
+                                CornerRadius="2">
+                            </Border>-->
+
+                        <!--    <Rectangle
+                                Width="1"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                Fill="White"
+                                StrokeThickness="0" />-->
+                        <!--</Grid>-->
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--<Style Selector="Rectangle.ProgressRectangle">
+            <Setter
+                Property="FontSize"
+                Value="12" />
+        </Style>-->
+
+
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/TaskBar.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
 </Application>

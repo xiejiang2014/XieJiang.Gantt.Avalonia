@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace XieJiang.Gannt.Avalonia
+namespace XieJiang.Gantt.Avalonia
 {
     public partial class MainWindow : Window
     {
