@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XieJiang.Gantt.Avalonia", "XieJiang.Gannt.Avalonia\XieJiang.Gantt.Avalonia.csproj", "{1A1CBFD5-F398-42EA-A0F3-4C9446523077}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XieJiang.Gantt.Avalonia", "XieJiang.Gantt.Avalonia\XieJiang.Gantt.Avalonia.csproj", "{1A1CBFD5-F398-42EA-A0F3-4C9446523077}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
