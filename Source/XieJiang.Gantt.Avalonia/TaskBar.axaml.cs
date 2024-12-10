@@ -13,15 +13,19 @@ namespace XieJiang.Gantt.Avalonia;
 [TemplatePart("PART_RThumb",            typeof(Thumb))]
 [TemplatePart("PART_ProgressThumb",     typeof(Thumb))]
 [TemplatePart("PART_ProgressRectangle", typeof(Rectangle))]
-[TemplatePart("PART_TextBlockProgress", typeof(TextBlock))]
-public class TaskBar : RangeBase
+public class TaskBar : ContentControl
 {
     private Border?    _foregroundBorder;
     private Thumb?     _lThumb;
     private Thumb?     _rThumb;
     private Thumb?     _progressThumb;
     private Rectangle? _progressRectangle;
-    private TextBlock? _textBlockProgress;
+
+    static TaskBar()
+    {
+        ValueProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ValueChanged(e));
+    }
+
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -30,7 +34,6 @@ public class TaskBar : RangeBase
         _rThumb            = e.NameScope.Find<Thumb>("PART_RThumb");
         _progressThumb     = e.NameScope.Find<Thumb>("PART_ProgressThumb");
         _progressRectangle = e.NameScope.Find<Rectangle>("PART_ProgressRectangle");
-        _textBlockProgress = e.NameScope.Find<TextBlock>("PART_TextBlockProgress");
 
         if (_rThumb is not null)
         {
@@ -49,22 +52,35 @@ public class TaskBar : RangeBase
             _progressThumb.DragStarted += ProgressThumb_DragStarted;
             _progressThumb.DragDelta   += ProgressThumb_DragDelta;
         }
+
+        Update();
     }
 
+    #region Value
 
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    public static readonly StyledProperty<double> ValueProperty =
+        AvaloniaProperty.Register<TaskBar, double>(nameof(Value));
+
+    public double Value
     {
-        if (change.Property == ValueProperty)
-        {
-            Update();
-        }
-
-        base.OnPropertyChanged(change);
+        get => GetValue(ValueProperty);
+        set => SetValue(ValueProperty, value);
     }
+
+    //放在静态构造行数
+    //ValueProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ValueChanged(e));
+
+    private void ValueChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        Update();
+    }
+
+    #endregion
+
 
     private void Update()
     {
-        var p = Width * Value / Maximum;
+        var p = Width * Value;
 
         if (_foregroundBorder is not null)
         {
@@ -74,11 +90,6 @@ public class TaskBar : RangeBase
         if (_progressRectangle is not null)
         {
             _progressRectangle.Margin = new Thickness(p, 0, 0, 0);
-        }
-
-        if (_textBlockProgress is not null)
-        {
-            _textBlockProgress.Margin = new Thickness(p, 0, 0, 0);
         }
 
         if (_progressThumb is not null)
@@ -126,13 +137,13 @@ public class TaskBar : RangeBase
         {
             newWidth = 50;
 
-            Width             = newWidth;
-            _widthDragStarted = Width;
+            //Width             = newWidth;
+            _widthDragStarted = newWidth;
         }
         else
         {
             Width             = newWidth;
-            _widthDragStarted = Width;
+            _widthDragStarted = newWidth;
 
             var newLeft = _leftDragStarted + e.Vector.X;
             Canvas.SetLeft(this, newLeft);
@@ -167,11 +178,7 @@ public class TaskBar : RangeBase
             Canvas.SetLeft(_progressThumb, newLeft);
             _leftDragStarted = newLeft;
 
-
-            Value = Minimum + newLeft / Width * (Maximum - Minimum);
-
-
-            //Debug.Print(newLeft.ToString("F2"));
+            Value = newLeft / Width;
         }
     }
 

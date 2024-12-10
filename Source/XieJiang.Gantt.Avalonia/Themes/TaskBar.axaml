@@ -23,9 +23,16 @@
     <ControlTheme
         x:Key="{x:Type avalonia:TaskBar}"
         TargetType="avalonia:TaskBar">
+
+
         <Setter
-            Property="Maximum"
-            Value="1" />
+            Property="VerticalContentAlignment"
+            Value="Center" />
+
+        <Setter
+            Property="Padding"
+            Value="4,0,4,0" />
+
         <Setter
             Property="CornerRadius"
             Value="4" />
@@ -47,17 +54,6 @@
                     RowDefinitions="24,Auto"
                     ShowGridLines="False">
 
-                    <!--<TextBlock
-                        x:Name="PART_TextBlockProgress"
-                        Classes="ProgressTextBlock"
-                        IsVisible="False"
-                        Text="{Binding RelativeSource={RelativeSource TemplatedParent},
-                                       Path=Value,
-                                       StringFormat={}{0:p2}}">
-                        <TextBlock.RenderTransform>
-                            <TranslateTransform X="-12" Y="-16" />
-                        </TextBlock.RenderTransform>
-                    </TextBlock>-->
 
                     <Border
                         x:Name="PART_BackgroundBorder"
@@ -77,6 +73,19 @@
                                 Background="{TemplateBinding Foreground}"
                                 CornerRadius="{TemplateBinding CornerRadius}" />
 
+
+                            <ContentPresenter
+                                Name="PART_ContentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontStyle="{TemplateBinding FontStyle}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                RecognizesAccessKey="True" />
 
                             <Rectangle
                                 x:Name="PART_ProgressRectangle"
@@ -121,6 +130,7 @@
 
                     <Canvas
                         Grid.Row="1"
+                        Grid.Column="0"
                         Width="{TemplateBinding Width}"
                         Height="8">
                         <Thumb
@@ -136,6 +146,7 @@
                             </Thumb.RenderTransform>
                         </Thumb>
                     </Canvas>
+
 
                 </Grid>
 
@@ -155,12 +166,6 @@
                     Property="IsVisible"
                     Value="True" />
             </Style>
-
-            <!--<Style Selector="^ /template/ TextBlock.ProgressTextBlock">
-                <Setter
-                    Property="IsVisible"
-                    Value="True" />
-            </Style>-->
 
             <Style Selector="^ /template/ Rectangle.ProgressRectangle">
                 <Setter

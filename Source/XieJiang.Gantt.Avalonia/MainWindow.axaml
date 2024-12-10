@@ -17,6 +17,8 @@
 
         <avalonia1:TaskBar
             Canvas.Left="50"
-            Width="200" />
+            Width="200">
+            <TextBlock Foreground="White">asdfasd</TextBlock>
+        </avalonia1:TaskBar>
     </Canvas>
 </Window>
