@@ -1,0 +1,52 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+
+    <!--
+        Additional resources
+        Using Control Themes:
+        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+        Using Theme Variants:
+        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+    -->
+
+    <Design.PreviewWith>
+        <StackPanel
+            Width="400"
+            Height="400"
+            Spacing="10">
+            <StackPanel Background="{DynamicResource SystemRegionBrush}">
+                <controls:GanttControl />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme
+        x:Key="{x:Type controls:GanttControl}"
+        TargetType="controls:GanttControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto,*">
+                    <controls:GanttHeader
+                        x:Name="PART_GanttHeader"
+                        Height="57"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+
+                    <controls:GanttBodyBackground
+                        x:Name="PART_GanttBodyBackground"
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+
+                    <Canvas
+                        x:Name="PART_CanvasBody"
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

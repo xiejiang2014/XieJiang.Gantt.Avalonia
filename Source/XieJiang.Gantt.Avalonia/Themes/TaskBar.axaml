@@ -106,7 +106,7 @@
                                     <TextBlock
                                         Classes="ProgressTextBlock"
                                         Text="{Binding RelativeSource={RelativeSource TemplatedParent},
-                                                       Path=Value,
+                                                       Path=Progress,
                                                        StringFormat={}{0:p2}}" />
                                 </ToolTip.Tip>
                             </Rectangle>

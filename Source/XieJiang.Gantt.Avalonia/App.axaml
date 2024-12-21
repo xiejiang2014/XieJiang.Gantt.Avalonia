@@ -84,6 +84,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/TaskBar.axaml" />
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttControl.axaml" />
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttBodyBackground.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

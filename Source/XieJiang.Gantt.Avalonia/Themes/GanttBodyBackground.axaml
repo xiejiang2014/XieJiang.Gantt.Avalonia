@@ -1,0 +1,68 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+
+    <Design.PreviewWith>
+        <Panel
+            Width="800"
+            Height="500"
+            Background="CornflowerBlue">
+            <controls:GanttBodyBackground
+                Margin="10"
+                VerticalAlignment="Stretch" />
+        </Panel>
+    </Design.PreviewWith>
+
+
+    <SolidColorBrush
+        x:Key="LightGridBrush"
+        Color="#EBEBEB" />
+
+    <SolidColorBrush
+        x:Key="DarkGridBrush"
+        Color="#D6D6D6" />
+
+    <controls:BoolToBrushConverter
+        x:Key="RestDayBgConverter"
+        FalseBrush="White"
+        TrueBrush="#FAFAFA" />
+
+    <controls:BoolToBrushConverter
+        x:Key="DarkGridConverter"
+        FalseBrush="#EBEBEB"
+        TrueBrush="#D6D6D6" />
+
+    <ControlTheme
+        x:Key="{x:Type controls:GanttBodyBackground}"
+        TargetType="controls:GanttBodyBackground">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ItemsControl ItemsSource="{TemplateBinding DateItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.DataTemplates>
+                        <DataTemplate DataType="controls:DayItem">
+                            <Panel>
+                                <Rectangle
+                                    Width="{Binding Width}"
+                                    Fill="{Binding IsRestDay,
+                                                   Converter={StaticResource RestDayBgConverter}}" />
+
+                                <Rectangle
+                                    Width="1"
+                                    HorizontalAlignment="Left"
+                                    Fill="{Binding IsFirstDayOfWeek,
+                                                   Converter={StaticResource DarkGridConverter}}" />
+                            </Panel>
+                        </DataTemplate>
+                    </ItemsControl.DataTemplates>
+                </ItemsControl>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

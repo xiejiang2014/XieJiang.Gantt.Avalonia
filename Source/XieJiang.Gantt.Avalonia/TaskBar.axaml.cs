@@ -1,10 +1,11 @@
-using System.Diagnostics;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -24,7 +25,9 @@ public class TaskBar : ContentControl
 
     static TaskBar()
     {
-        ValueProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ValueChanged(e));
+        ProgressProperty.Changed.AddClassHandler<TaskBar>((sender,  e) => sender.OnProgressChanged(e));
+        StartDateProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.OnStartDateChanged(e));
+        EndDateProperty.Changed.AddClassHandler<TaskBar>((sender,   e) => sender.OnEndDateChanged(e));
     }
 
 
@@ -57,21 +60,21 @@ public class TaskBar : ContentControl
         Update();
     }
 
-    #region Value
+    #region Progress
 
-    public static readonly StyledProperty<double> ValueProperty =
-        AvaloniaProperty.Register<TaskBar, double>(nameof(Value));
+    public static readonly StyledProperty<double> ProgressProperty =
+        AvaloniaProperty.Register<TaskBar, double>(nameof(Progress));
 
-    public double Value
+    /// <summary>
+    /// 0~1
+    /// </summary>
+    public double Progress
     {
-        get => GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
+        get => GetValue(ProgressProperty);
+        set => SetValue(ProgressProperty, value);
     }
 
-    //放在静态构造行数
-    //ValueProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ValueChanged(e));
-
-    private void ValueChanged(AvaloniaPropertyChangedEventArgs e)
+    private void OnProgressChanged(AvaloniaPropertyChangedEventArgs e)
     {
         Update();
     }
@@ -79,9 +82,77 @@ public class TaskBar : ContentControl
     #endregion
 
 
+    #region StartDate
+
+    public static readonly StyledProperty<DateTime> StartDateProperty =
+        AvaloniaProperty.Register<TaskBar, DateTime>(nameof(StartDate));
+
+    public DateTime StartDate
+    {
+        get => GetValue(StartDateProperty);
+        set => SetValue(StartDateProperty, value);
+    }
+
+    private void OnStartDateChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        OnStartDateChanged();
+    }
+
+    public static readonly RoutedEvent<RoutedEventArgs> StartDateChangedEvent =
+        RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(StartDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
+
+    public event EventHandler<RoutedEventArgs> StartDateChanged
+    {
+        add => AddHandler(StartDateChangedEvent, value);
+        remove => RemoveHandler(StartDateChangedEvent, value);
+    }
+
+    protected virtual void OnStartDateChanged()
+    {
+        RoutedEventArgs args = new RoutedEventArgs(StartDateChangedEvent);
+        RaiseEvent(args);
+    }
+
+    #endregion
+
+
+    #region EndDate
+
+    public static readonly StyledProperty<DateTime> EndDateProperty =
+        AvaloniaProperty.Register<TaskBar, DateTime>(nameof(EndDate));
+
+    public DateTime EndDate
+    {
+        get => GetValue(EndDateProperty);
+        set => SetValue(EndDateProperty, value);
+    }
+
+    private void OnEndDateChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        OnEndDateChanged();
+    }
+
+
+    public static readonly RoutedEvent<RoutedEventArgs> EndDateChangedEvent =
+        RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(EndDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
+
+    public event EventHandler<RoutedEventArgs> EndDateChanged
+    {
+        add => AddHandler(EndDateChangedEvent, value);
+        remove => RemoveHandler(EndDateChangedEvent, value);
+    }
+
+    protected virtual void OnEndDateChanged()
+    {
+        RoutedEventArgs args = new RoutedEventArgs(EndDateChangedEvent);
+        RaiseEvent(args);
+    }
+
+    #endregion
+
     private void Update()
     {
-        var p = Width * Value;
+        var p = Width * Progress;
 
         if (_foregroundBorder is not null)
         {
@@ -183,7 +254,7 @@ public class TaskBar : ContentControl
             Canvas.SetLeft(_progressThumb, newLeft);
             _leftDragStarted = newLeft;
 
-            Value = newLeft / Width;
+            Progress = newLeft / Width;
         }
     }
 
