@@ -14,37 +14,30 @@
     <Design.PreviewWith>
         <StackPanel
             Width="400"
-            Height="400"
             Spacing="10">
             <StackPanel Background="{DynamicResource SystemRegionBrush}">
-                <controls:GanttControl />
+                <controls:TemplatedControl1 />
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
 
     <ControlTheme
-        x:Key="{x:Type controls:GanttControl}"
-        TargetType="controls:GanttControl">
+        x:Key="{x:Type controls:TemplatedControl1}"
+        TargetType="controls:TemplatedControl1">
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="Auto,*">
-                    <controls:GanttHeader
-                        x:Name="PART_GanttHeader"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+                <Grid ShowGridLines="True" RowDefinitions="Auto,Auto">
 
-                    <controls:GanttBodyBackground
-                        x:Name="PART_GanttBodyBackground"
-                        Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+                    <!-- <Grid.RowDefinitions> -->
+                    <!--     <RowDefinition Height="{TemplateBinding Row1}" /> -->
+                    <!--     <RowDefinition Height="{TemplateBinding Row2}" /> -->
+                    <!-- </Grid.RowDefinitions> -->
 
-                    <ScrollViewer
+                    <TextBlock Text="Templated Control" Height="{TemplateBinding Row1}" />
+                    <TextBlock
+                        Height="{TemplateBinding Row2}"
                         Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                        <Canvas x:Name="PART_CanvasBody" />
-                    </ScrollViewer>
+                        Text="Templated Control" />
                 </Grid>
             </ControlTemplate>
         </Setter>

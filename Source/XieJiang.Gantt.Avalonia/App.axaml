@@ -2,6 +2,7 @@
     x:Class="XieJiang.Gantt.Avalonia.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia"
     RequestedThemeVariant="Default">
     <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
@@ -84,10 +85,36 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/TaskBar.axaml" />
-                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttControl.axaml" />
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttHeader.axaml" />
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttBodyBackground.axaml" />
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttControl.axaml" />
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/TemplatedControl1.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+
+
+
+        <SolidColorBrush
+            x:Key="LightGridBrush"
+            Color="#EBEBEB" />
+
+        <SolidColorBrush
+            x:Key="DarkGridBrush"
+            Color="#D6D6D6" />
+
+        <!--<avalonia:BoolToBrushConverter
+            x:Key="RestDayBgConverter"
+            FalseBrush="White"
+            TrueBrush="Red" />-->
+        <avalonia:BoolToBrushConverter
+            x:Key="RestDayBgConverter"
+            FalseBrush="White"
+            TrueBrush="#FAFAFA" />
+
+        <avalonia:BoolToBrushConverter
+            x:Key="DarkGridConverter"
+            FalseBrush="#EBEBEB"
+            TrueBrush="#D6D6D6" />
     </Application.Resources>
 
 </Application>

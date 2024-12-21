@@ -15,24 +15,6 @@
     </Design.PreviewWith>
 
 
-    <SolidColorBrush
-        x:Key="LightGridBrush"
-        Color="#EBEBEB" />
-
-    <SolidColorBrush
-        x:Key="DarkGridBrush"
-        Color="#D6D6D6" />
-
-    <controls:BoolToBrushConverter
-        x:Key="RestDayBgConverter"
-        FalseBrush="White"
-        TrueBrush="#FAFAFA" />
-
-    <controls:BoolToBrushConverter
-        x:Key="DarkGridConverter"
-        FalseBrush="#EBEBEB"
-        TrueBrush="#D6D6D6" />
-
     <ControlTheme
         x:Key="{x:Type controls:GanttBodyBackground}"
         TargetType="controls:GanttBodyBackground">

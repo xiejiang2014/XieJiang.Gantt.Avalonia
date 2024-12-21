@@ -15,53 +15,19 @@ public class GanttBodyBackground : TemplatedControl
 
     public GanttBodyBackground()
     {
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 21),
-                          IsRestDay = true
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date             = new DateOnly(2024, 12, 22),
-                          IsRestDay        = true,
-                          IsFirstDayOfWeek = true
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 23),
-                          IsRestDay = false
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 24),
-                          IsRestDay = false
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 25),
-                          IsRestDay = false
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 26),
-                          IsRestDay = false
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 27),
-                          IsRestDay = false
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 28),
-                          IsRestDay = true
-                      });
-        DateItems.Add(new DayItem()
-                      {
-                          Date      = new DateOnly(2024, 12, 29),
-                          IsRestDay = true,
-                          IsFirstDayOfWeek = true
-                      });
+        var start = new DateOnly(2024, 12, 1);
+        for (var i = 0; i < 90; i++)
+        {
+            var day = start.AddDays(i);
+
+
+            DateItems.Add(new DayItem()
+                          {
+                              Date             = day,
+                              IsFirstDayOfWeek = day.DayOfWeek == 0,
+                              IsRestDay        = day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday
+                          });
+        }
     }
 
     #region DateItems

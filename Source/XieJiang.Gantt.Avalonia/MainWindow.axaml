@@ -23,5 +23,5 @@
             <Button Click="Button_OnClick">XXX</Button>
         </StackPanel>
     </Grid>
-
+    <!--<avalonia:TemplatedControl1 />-->
 </Window>
