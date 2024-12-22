@@ -31,7 +31,7 @@
 
                                 <Rectangle
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                    AncestorType=controls:GanttHeader},
+                                                                                    AncestorType=controls:GanttControl},
                                                      Path=Row1Height}"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
@@ -62,7 +62,7 @@
                                                 <Rectangle
                                                     Width="{Binding Width}"
                                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                                    AncestorType=controls:GanttHeader},
+                                                                                                    AncestorType=controls:GanttControl},
                                                                      Path=Row2Height}"
                                                     HorizontalAlignment="Stretch"
                                                     VerticalAlignment="Stretch"
@@ -73,7 +73,7 @@
                                                 <Rectangle
                                                     Width="1"
                                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                                    AncestorType=controls:GanttHeader},
+                                                                                                    AncestorType=controls:GanttControl},
                                                                      Path=Row2Height}"
                                                     HorizontalAlignment="Left"
                                                     VerticalAlignment="Stretch"
@@ -116,7 +116,7 @@
                                     Grid.Row="0"
                                     Width="1"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                    AncestorType=controls:GanttHeader},
+                                                                                    AncestorType=controls:GanttControl},
                                                      Path=Row1Height}"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"

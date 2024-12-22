@@ -9,18 +9,27 @@ public class MonthItem : DateItem
     {
     }
 
-    public MonthItem(DateOnly firstDay)
+    public MonthItem(DateOnly startDay, DateOnly? endDay = null)
     {
-        Date = firstDay;
+        //如果没有指定 endDay,那么 endDay 默认为 startDay 同月的最后一天
+        endDay ??= new DateOnly(startDay.Year, startDay.Month, 1).AddMonths(1).AddDays(-1);
+
+        if (startDay.Year != endDay.Value.Year || startDay.Year != endDay.Value.Year)
+        {
+            throw new ArgumentException("The year or month of startDay and endDay do not match.");
+        }
+
+        if (startDay > endDay)
+        {
+            throw new ArgumentException("startDay cannot be greater than endDay.");
+        }
+
+        Date = startDay;
 
         for (var i = 0; i < 35; i++)
         {
-            var day = firstDay.AddDays(i);
+            var day = startDay.AddDays(i);
 
-            if (day.Month != firstDay.Month)
-            {
-                break;
-            }
 
             DayItems.Add(new DayItem()
                          {
@@ -30,7 +39,10 @@ public class MonthItem : DateItem
                          }
                         );
 
-
+            if (day == startDay)
+            {
+                break;
+            }
         }
     }
 

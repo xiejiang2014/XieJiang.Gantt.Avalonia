@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.Primitives;
@@ -9,19 +8,17 @@ public class GanttHeader : TemplatedControl
 {
     static GanttHeader()
     {
-        DateItemsProperty.Changed.AddClassHandler<GanttHeader>((sender,  e) => sender.DateItemsChanged(e));
-        Row1HeightProperty.Changed.AddClassHandler<GanttHeader>((sender, e) => sender.Row1HeightChanged(e));
-        Row2HeightProperty.Changed.AddClassHandler<GanttHeader>((sender, e) => sender.Row2HeightChanged(e));
+        DateItemsProperty.Changed.AddClassHandler<GanttHeader>((sender, e) => sender.DateItemsChanged(e));
     }
 
 
     public GanttHeader()
     {
-        DateItems.Add(new MonthItem(new DateOnly(2024, 12, 1)));
-        DateItems.Add(new MonthItem(new DateOnly(2025, 1, 1)));
-        DateItems.Add(new MonthItem(new DateOnly(2025, 2, 1)));
-        DateItems.Add(new MonthItem(new DateOnly(2025, 3, 1)));
-        DateItems.Add(new MonthItem(new DateOnly(2025, 4, 1)));
+        //DateItems.Add(new MonthItem(new DateOnly(2024, 12, 1)));
+        //DateItems.Add(new MonthItem(new DateOnly(2025, 1, 1)));
+        //DateItems.Add(new MonthItem(new DateOnly(2025, 2, 1)));
+        //DateItems.Add(new MonthItem(new DateOnly(2025, 3, 1)));
+        //DateItems.Add(new MonthItem(new DateOnly(2025, 4, 1)));
     }
 
     #region DateItems
@@ -43,37 +40,19 @@ public class GanttHeader : TemplatedControl
     #endregion
 
 
-    #region Row1Height
-
-    public static readonly StyledProperty<double> Row1HeightProperty =
-        AvaloniaProperty.Register<GanttHeader, double>(nameof(Row1Height), 33);
-
-    public double Row1Height
+    public void Reload()
     {
-        get => GetValue(Row1HeightProperty);
-        set => SetValue(Row1HeightProperty, value);
+        var dateMode  = GetValue(GanttControl.DateModeProperty);
+        var startDate = GetValue(GanttControl.StartDateProperty);
+        var endDate   = GetValue(GanttControl.EndDateProperty);
+
+        if (dateMode == DateModes.Weekly)
+        {
+            DateItems.Clear();
+            if (startDate.Year == endDate.Year && startDate.Month == endDate.Month)
+            {
+                DateItems.Add(new MonthItem(startDate, endDate));
+            }
+        }
     }
-
-    private void Row1HeightChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
-
-    #endregion
-
-    #region Row2Height
-
-    public static readonly StyledProperty<double> Row2HeightProperty =
-        AvaloniaProperty.Register<GanttHeader, double>(nameof(Row2Height), 25);
-
-    public double Row2Height
-    {
-        get => GetValue(Row2HeightProperty);
-        set => SetValue(Row2HeightProperty, value);
-    }
-
-    private void Row2HeightChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
-
-    #endregion
 }
