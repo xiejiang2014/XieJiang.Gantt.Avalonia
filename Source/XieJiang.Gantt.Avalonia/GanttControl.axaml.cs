@@ -70,7 +70,7 @@ public class GanttControl : TemplatedControl
     #region TaskBarHeight
 
     public static readonly StyledProperty<double> TaskBarHeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight));
+        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight),24);
 
     public double TaskBarHeight
     {
@@ -232,6 +232,8 @@ public class GanttControl : TemplatedControl
                 _canvasBody.Children.Add(taskBar);
             }
 
+
+//taskBar.Width= taskBar.DateLength.TotalDays*
             Canvas.SetLeft(taskBar, 0);
             Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
         }

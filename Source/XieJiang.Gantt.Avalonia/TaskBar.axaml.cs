@@ -82,6 +82,8 @@ public class TaskBar : ContentControl
     #endregion
 
 
+    public TimeSpan DateLength => EndDate - StartDate;
+
     #region StartDate
 
     public static readonly StyledProperty<DateTime> StartDateProperty =

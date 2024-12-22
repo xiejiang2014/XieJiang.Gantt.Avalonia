@@ -15,18 +15,25 @@ namespace XieJiang.Gantt.Avalonia
                                         {
                                             new TaskBar()
                                             {
-                                                Width = 200,
-                                                Progress = 0.5d,
+                                                Width     = 200,
+                                                Progress  = 0.5d,
+                                                StartDate = new DateTime(2024, 12, 21),
+                                                EndDate = new DateTime(2024, 12, 23),
+
                                             },
                                             new TaskBar()
                                             {
-                                                Width = 200,
-                                                Progress = 0.2d,
+                                                Width     = 200,
+                                                Progress  = 0.2d,
+                                                StartDate = new DateTime(2024, 12, 23),
+                                                EndDate   = new DateTime(2024, 12, 24),
                                             },
                                             new TaskBar()
                                             {
-                                                Width    = 200,
-                                                Progress = 0.7d,
+                                                Width     = 200,
+                                                Progress  = 0.7d,
+                                                StartDate = new DateTime(2024, 12, 24),
+                                                EndDate   = new DateTime(2024, 12, 26),
                                             },
                                         };
         }
