@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.Primitives;
@@ -40,8 +42,10 @@ public class GanttHeader : TemplatedControl
     #endregion
 
 
-    public void Reload()
+    public List<DateItem> Reload()
     {
+        var result = new List<DateItem>();
+
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
         var endDate   = GetValue(GanttControl.EndDateProperty);
@@ -49,10 +53,36 @@ public class GanttHeader : TemplatedControl
         if (dateMode == DateModes.Weekly)
         {
             DateItems.Clear();
-            if (startDate.Year == endDate.Year && startDate.Month == endDate.Month)
+            if (startDate.Year  == endDate.Year &&
+                startDate.Month == endDate.Month)
             {
                 DateItems.Add(new MonthItem(startDate, endDate));
             }
+            else
+            {
+                while (true)
+                {
+                    var lastDayOfMonth = new DateOnly(startDate.Year, startDate.Month, 1).AddMonths(1).AddDays(-1);
+
+                    if (lastDayOfMonth >= endDate)
+                    {
+                        var monthItem = new MonthItem(startDate, endDate);
+                        DateItems.Add(monthItem);
+                        result.AddRange(monthItem.DayItems);
+                        break;
+                    }
+                    else
+                    {
+                        var monthItem = new MonthItem(startDate, lastDayOfMonth);
+                        DateItems.Add(monthItem);
+                        result.AddRange(monthItem.DayItems);
+
+                        startDate = new DateOnly(startDate.Year, startDate.Month, 1).AddMonths(1);
+                    }
+                }
+            }
         }
+
+        return result;
     }
 }

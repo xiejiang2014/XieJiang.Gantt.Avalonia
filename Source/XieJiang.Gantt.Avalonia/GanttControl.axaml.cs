@@ -4,7 +4,6 @@ using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Data;
 using Avalonia.Interactivity;
 
 namespace XieJiang.Gantt.Avalonia;
@@ -155,7 +154,7 @@ public class GanttControl : TemplatedControl
 
     private void StartDateChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        _ganttHeader?.Reload();
+        Reload();
     }
 
     #endregion
@@ -174,6 +173,7 @@ public class GanttControl : TemplatedControl
 
     private void EndDateChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        Reload();
     }
 
     #endregion
@@ -190,6 +190,13 @@ public class GanttControl : TemplatedControl
     }
 
     #endregion
+
+
+    private void Reload()
+    {
+        var dateItems = _ganttHeader?.Reload();
+        _ganttBodyBackground?.Reload(dateItems);
+    }
 
 
     private void Reorder()

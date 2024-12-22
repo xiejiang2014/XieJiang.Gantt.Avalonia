@@ -39,7 +39,7 @@ public class MonthItem : DateItem
                          }
                         );
 
-            if (day == startDay)
+            if (day == endDay)
             {
                 break;
             }

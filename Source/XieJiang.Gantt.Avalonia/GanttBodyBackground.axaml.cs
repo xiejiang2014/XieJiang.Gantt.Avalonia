@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.Primitives;
@@ -15,19 +15,7 @@ public class GanttBodyBackground : TemplatedControl
 
     public GanttBodyBackground()
     {
-        var start = new DateOnly(2024, 12, 1);
-        for (var i = 0; i < 90; i++)
-        {
-            var day = start.AddDays(i);
-
-
-            DateItems.Add(new DayItem()
-                          {
-                              Date             = day,
-                              IsFirstDayOfWeek = day.DayOfWeek == 0,
-                              IsRestDay        = day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday
-                          });
-        }
+    
     }
 
     #region DateItems
@@ -48,4 +36,13 @@ public class GanttBodyBackground : TemplatedControl
     }
 
     #endregion
+
+    public void Reload(List<DateItem> dateItems)
+    {
+        DateItems.Clear();
+        foreach (var t in dateItems)
+        {
+            DateItems.Add(t);
+        }
+    }
 }
