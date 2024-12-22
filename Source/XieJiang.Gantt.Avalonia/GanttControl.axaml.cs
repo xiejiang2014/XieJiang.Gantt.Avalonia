@@ -20,7 +20,9 @@ public class GanttControl : TemplatedControl
 
     static GanttControl()
     {
-        TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBarsChanged(e));
+        TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBarsChanged(e));
+        TaskBarHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskBarHeightChanged(e));
+
         RowHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.RowHeightChanged(e));
 
         HeaderRow1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow1HeightChanged(e));
@@ -56,13 +58,33 @@ public class GanttControl : TemplatedControl
         get => GetValue(TaskBarsProperty);
         set => SetValue(TaskBarsProperty, value);
     }
-    
+
     private void TaskBarsChanged(AvaloniaPropertyChangedEventArgs e)
     {
         Reorder();
     }
 
     #endregion
+
+
+    #region TaskBarHeight
+
+    public static readonly StyledProperty<double> TaskBarHeightProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight));
+
+    public double TaskBarHeight
+    {
+        get => GetValue(TaskBarHeightProperty);
+        set => SetValue(TaskBarHeightProperty, value);
+    }
+
+    private void TaskBarHeightChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        Reload();
+    }
+
+    #endregion
+
 
     #region RowHeight
 
@@ -74,7 +96,7 @@ public class GanttControl : TemplatedControl
         get => GetValue(RowHeightProperty);
         set => SetValue(RowHeightProperty, value);
     }
-    
+
     private void RowHeightChanged(AvaloniaPropertyChangedEventArgs e)
     {
         Reorder();
@@ -190,10 +212,11 @@ public class GanttControl : TemplatedControl
     {
         var dateItems = _ganttHeader?.Reload();
         _ganttBodyBackground?.Reload(dateItems);
+        Reorder();
     }
 
 
-    private void Reorder()
+    public void Reorder()
     {
         if (_canvasBody is null)
         {
@@ -210,7 +233,7 @@ public class GanttControl : TemplatedControl
             }
 
             Canvas.SetLeft(taskBar, 0);
-            Canvas.SetTop(taskBar, i * RowHeight);
+            Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
         }
 
         _ganttHeader?.InvalidateVisual();
