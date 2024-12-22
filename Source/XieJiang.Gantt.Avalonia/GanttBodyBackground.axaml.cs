@@ -15,7 +15,6 @@ public class GanttBodyBackground : TemplatedControl
 
     public GanttBodyBackground()
     {
-    
     }
 
     #region DateItems
@@ -37,12 +36,16 @@ public class GanttBodyBackground : TemplatedControl
 
     #endregion
 
-    public void Reload(List<DateItem> dateItems)
+    public void Reload(List<DateItem>? dateItems)
     {
         DateItems.Clear();
-        foreach (var t in dateItems)
+
+        if (dateItems is not null)
         {
-            DateItems.Add(t);
+            foreach (var t in dateItems)
+            {
+                DateItems.Add(t);
+            }
         }
     }
 }

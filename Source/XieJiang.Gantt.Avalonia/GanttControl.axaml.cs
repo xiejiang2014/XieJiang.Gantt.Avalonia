@@ -23,8 +23,8 @@ public class GanttControl : TemplatedControl
         TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBarsChanged(e));
         RowHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.RowHeightChanged(e));
 
-        Row1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.Row1HeightChanged(e));
-        Row2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.Row2HeightChanged(e));
+        HeaderRow1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow1HeightChanged(e));
+        HeaderRow2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow2HeightChanged(e));
 
         DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.DateModeChanged(e));
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
@@ -56,10 +56,7 @@ public class GanttControl : TemplatedControl
         get => GetValue(TaskBarsProperty);
         set => SetValue(TaskBarsProperty, value);
     }
-
-    //放在静态构造行数
-    //TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskBarsChanged(e));
-
+    
     private void TaskBarsChanged(AvaloniaPropertyChangedEventArgs e)
     {
         Reorder();
@@ -77,10 +74,7 @@ public class GanttControl : TemplatedControl
         get => GetValue(RowHeightProperty);
         set => SetValue(RowHeightProperty, value);
     }
-
-    //放在静态构造行数
-    //RowHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.RowHeightChanged(e));
-
+    
     private void RowHeightChanged(AvaloniaPropertyChangedEventArgs e)
     {
         Reorder();
@@ -89,35 +83,35 @@ public class GanttControl : TemplatedControl
     #endregion
 
 
-    #region Row1Height
+    #region HeaderRow1Height
 
-    public static readonly StyledProperty<double> Row1HeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(Row1Height), 33, true);
+    public static readonly StyledProperty<double> HeaderRow1HeightProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow1Height), 33, true);
 
-    public double Row1Height
+    public double HeaderRow1Height
     {
-        get => GetValue(Row1HeightProperty);
-        set => SetValue(Row1HeightProperty, value);
+        get => GetValue(HeaderRow1HeightProperty);
+        set => SetValue(HeaderRow1HeightProperty, value);
     }
 
-    private void Row1HeightChanged(AvaloniaPropertyChangedEventArgs e)
+    private void HeaderRow1HeightChanged(AvaloniaPropertyChangedEventArgs e)
     {
     }
 
     #endregion
 
-    #region Row2Height
+    #region HeaderRow2Height
 
-    public static readonly StyledProperty<double> Row2HeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(Row2Height), 25, true);
+    public static readonly StyledProperty<double> HeaderRow2HeightProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow2Height), 25, true);
 
-    public double Row2Height
+    public double HeaderRow2Height
     {
-        get => GetValue(Row2HeightProperty);
-        set => SetValue(Row2HeightProperty, value);
+        get => GetValue(HeaderRow2HeightProperty);
+        set => SetValue(HeaderRow2HeightProperty, value);
     }
 
-    private void Row2HeightChanged(AvaloniaPropertyChangedEventArgs e)
+    private void HeaderRow2HeightChanged(AvaloniaPropertyChangedEventArgs e)
     {
     }
 
@@ -213,9 +207,9 @@ public class GanttControl : TemplatedControl
             if (!_canvasBody.Children.Contains(taskBar))
             {
                 _canvasBody.Children.Add(taskBar);
-                Canvas.SetLeft(taskBar, 0);
             }
 
+            Canvas.SetLeft(taskBar, 0);
             Canvas.SetTop(taskBar, i * RowHeight);
         }
 

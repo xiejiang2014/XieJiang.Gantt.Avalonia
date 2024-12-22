@@ -32,7 +32,7 @@
                                 <Rectangle
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
                                                                                     AncestorType=controls:GanttControl},
-                                                     Path=Row1Height}"
+                                                     Path=HeaderRow1Height}"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Fill="White" />
@@ -63,7 +63,7 @@
                                                     Width="{Binding Width}"
                                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
                                                                                                     AncestorType=controls:GanttControl},
-                                                                     Path=Row2Height}"
+                                                                     Path=HeaderRow2Height}"
                                                     HorizontalAlignment="Stretch"
                                                     VerticalAlignment="Stretch"
                                                     Fill="{Binding IsRestDay,
@@ -74,7 +74,7 @@
                                                     Width="1"
                                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
                                                                                                     AncestorType=controls:GanttControl},
-                                                                     Path=Row2Height}"
+                                                                     Path=HeaderRow2Height}"
                                                     HorizontalAlignment="Left"
                                                     VerticalAlignment="Stretch"
                                                     Fill="{Binding IsFirstDayOfWeek,
@@ -117,7 +117,7 @@
                                     Width="1"
                                     Height="{Binding RelativeSource={RelativeSource FindAncestor,
                                                                                     AncestorType=controls:GanttControl},
-                                                     Path=Row1Height}"
+                                                     Path=HeaderRow1Height}"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
                                     Fill="{StaticResource DarkGridBrush}" />
