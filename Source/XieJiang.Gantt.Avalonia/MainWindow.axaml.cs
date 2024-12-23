@@ -48,7 +48,7 @@ namespace XieJiang.Gantt.Avalonia
             GanttControl.TaskBars[0].EndDate = DateTime.Now;
             GanttControl.StartDate = new DateOnly(2024, 6, 1);
             GanttControl.EndDate = new DateOnly(2025, 6, 1);
-            GanttControl.Reorder();
+            GanttControl.Reload();
         }
     }
 }

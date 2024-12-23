@@ -30,9 +30,8 @@
 
 
                                 <Rectangle
-                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                    AncestorType=controls:GanttControl},
-                                                     Path=HeaderRow1Height}"
+                                    Height="{Binding RelativeSource={RelativeSource Self},
+                                                     Path=(controls:GanttControl.HeaderRow1Height)}"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     Fill="White" />
@@ -43,7 +42,6 @@
                                     VerticalAlignment="Center"
                                     Text="{Binding Path=DayItems[0].Date,
                                                    StringFormat=y}" />
-
 
 
                                 <ItemsControl
@@ -61,9 +59,8 @@
                                             <Panel Width="{Binding Width}">
                                                 <Rectangle
                                                     Width="{Binding Width}"
-                                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                                    AncestorType=controls:GanttControl},
-                                                                     Path=HeaderRow2Height}"
+                                                    Height="{Binding RelativeSource={RelativeSource Self},
+                                                                     Path=(controls:GanttControl.HeaderRow2Height)}"
                                                     HorizontalAlignment="Stretch"
                                                     VerticalAlignment="Stretch"
                                                     Fill="{Binding IsRestDay,
@@ -72,9 +69,8 @@
                                                 <!--  左边线  -->
                                                 <Rectangle
                                                     Width="1"
-                                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                                    AncestorType=controls:GanttControl},
-                                                                     Path=HeaderRow2Height}"
+                                                    Height="{Binding RelativeSource={RelativeSource Self},
+                                                                     Path=(controls:GanttControl.HeaderRow2Height)}"
                                                     HorizontalAlignment="Left"
                                                     VerticalAlignment="Stretch"
                                                     Fill="{Binding IsFirstDayOfWeek,
@@ -115,9 +111,8 @@
                                 <Rectangle
                                     Grid.Row="0"
                                     Width="1"
-                                    Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                                    AncestorType=controls:GanttControl},
-                                                     Path=HeaderRow1Height}"
+                                    Height="{Binding RelativeSource={RelativeSource Self},
+                                                     Path=(controls:GanttControl.HeaderRow1Height)}"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
                                     Fill="{StaticResource DarkGridBrush}" />

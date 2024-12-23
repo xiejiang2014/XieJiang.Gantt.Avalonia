@@ -70,7 +70,7 @@ public class GanttControl : TemplatedControl
     #region TaskBarHeight
 
     public static readonly StyledProperty<double> TaskBarHeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight),24);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight),24d);
 
     public double TaskBarHeight
     {
@@ -89,7 +89,7 @@ public class GanttControl : TemplatedControl
     #region RowHeight
 
     public static readonly StyledProperty<double> RowHeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(RowHeight), 41, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(RowHeight), 41d, true);
 
     public double RowHeight
     {
@@ -108,7 +108,7 @@ public class GanttControl : TemplatedControl
     #region HeaderRow1Height
 
     public static readonly StyledProperty<double> HeaderRow1HeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow1Height), 33, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow1Height), 33d, true);
 
     public double HeaderRow1Height
     {
@@ -125,7 +125,7 @@ public class GanttControl : TemplatedControl
     #region HeaderRow2Height
 
     public static readonly StyledProperty<double> HeaderRow2HeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow2Height), 25, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow2Height), 25d, true);
 
     public double HeaderRow2Height
     {
@@ -208,7 +208,7 @@ public class GanttControl : TemplatedControl
     #endregion
 
 
-    private void Reload()
+    public void Reload()
     {
         var dateItems = _ganttHeader?.Reload();
         _ganttBodyBackground?.Reload(dateItems);
