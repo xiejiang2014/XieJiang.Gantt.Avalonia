@@ -57,6 +57,6 @@ public class DayItem : DateItem
 
 public class DateItem
 {
-    public double   Width { get; set; } = 36;
+    public double   Width { get; set; }
     public DateOnly Date  { get; set; }
 }

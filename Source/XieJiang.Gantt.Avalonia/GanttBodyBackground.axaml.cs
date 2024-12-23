@@ -47,5 +47,15 @@ public class GanttBodyBackground : TemplatedControl
                 DateItems.Add(t);
             }
         }
+
+
+
+        var mode = GetValue(GanttControl.DateModeProperty);
+
+        if (mode == DateModes.Weekly)
+        {
+            var dayWidth = GetValue(GanttControl.DayWidthProperty);
+            Width = dateItems.Count * dayWidth;
+        }
     }
 }

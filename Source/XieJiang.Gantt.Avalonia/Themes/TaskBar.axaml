@@ -61,9 +61,8 @@
                         x:Name="PART_BackgroundBorder"
                         Grid.Row="0"
                         Width="{TemplateBinding Width}"
-                        Height="{Binding RelativeSource={RelativeSource FindAncestor,
-                                                                        AncestorType=avalonia:GanttControl},
-                                         Path=TaskBarHeight}"
+                        Height="{Binding RelativeSource={RelativeSource Self},
+                                         Path=(avalonia:GanttControl.TaskBarHeight)}"
                         Background="{TemplateBinding Background}"
                         ClipToBounds="True"
                         CornerRadius="{TemplateBinding CornerRadius}">

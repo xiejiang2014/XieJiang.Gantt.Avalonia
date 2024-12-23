@@ -28,7 +28,11 @@ public class GanttControl : TemplatedControl
         HeaderRow1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow1HeightChanged(e));
         HeaderRow2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow2HeightChanged(e));
 
-        DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.DateModeChanged(e));
+        DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,             e) => sender.DateModeChanged(e));
+        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInWeeklyModeChanged(e));
+        DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInMonthlyModeChanged(e));
+        DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,             e) => sender.DayWidthChanged(e));
+
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
     }
@@ -70,7 +74,7 @@ public class GanttControl : TemplatedControl
     #region TaskBarHeight
 
     public static readonly StyledProperty<double> TaskBarHeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight),24d);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight), 24d, true);
 
     public double TaskBarHeight
     {
@@ -152,6 +156,83 @@ public class GanttControl : TemplatedControl
 
     private void DateModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        if (DateMode == DateModes.Weekly)
+        {
+            DayWidth = e.GetNewValue<double>();
+        }
+    }
+
+    #endregion
+
+
+    #region DayWidthInWeeklyMode
+
+    public static readonly StyledProperty<double> DayWidthInWeeklyModeProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInWeeklyMode), 36d, true);
+
+    public double DayWidthInWeeklyMode
+    {
+        get => GetValue(DayWidthInWeeklyModeProperty);
+        set => SetValue(DayWidthInWeeklyModeProperty, value);
+    }
+
+    private void DayWidthInWeeklyModeChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (DateMode == DateModes.Weekly)
+        {
+            DayWidth = e.GetNewValue<double>();
+        }
+    }
+
+    #endregion
+
+
+
+    #region DayWidthInMonthlyMode
+
+    public static readonly StyledProperty<double> DayWidthInMonthlyModeProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInMonthlyMode), 72d, true);
+
+    public double DayWidthInMonthlyMode
+    {
+        get => GetValue(DayWidthInMonthlyModeProperty);
+        set => SetValue(DayWidthInMonthlyModeProperty, value);
+    }
+
+    //放在静态构造行数
+    //
+
+    private void DayWidthInMonthlyModeChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (DateMode == DateModes.Monthly)
+        {
+            DayWidth = e.GetNewValue<double>();
+        }
+
+    }
+
+    #endregion
+
+
+
+
+    #region DayWidth
+
+    public static readonly StyledProperty<double> DayWidthProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidth), 36d, true);
+
+    public double DayWidth
+    {
+        get => GetValue(DayWidthProperty);
+        private set => SetValue(DayWidthProperty, value);
+    }
+
+    //放在静态构造行数
+    //
+
+    private void DayWidthChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        Reorder();
     }
 
     #endregion
@@ -233,8 +314,8 @@ public class GanttControl : TemplatedControl
             }
 
 
-//taskBar.Width= taskBar.DateLength.TotalDays*
-            Canvas.SetLeft(taskBar, 0);
+            taskBar.Width = taskBar.DateLength.TotalDays * DayWidth;
+            Canvas.SetLeft(taskBar, (taskBar.StartDate        -StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
             Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
         }
 

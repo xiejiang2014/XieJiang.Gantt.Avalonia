@@ -31,7 +31,8 @@
                         <DataTemplate DataType="controls:DayItem">
                             <Panel>
                                 <Rectangle
-                                    Width="{Binding Width}"
+                                    Width="{Binding RelativeSource={RelativeSource Self},
+                                                                    Path=(controls:GanttControl.DayWidth)}"
                                     Fill="{Binding IsRestDay,
                                                    Converter={StaticResource RestDayBgConverter}}" />
 

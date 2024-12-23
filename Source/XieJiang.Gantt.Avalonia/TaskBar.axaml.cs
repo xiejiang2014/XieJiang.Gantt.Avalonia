@@ -6,6 +6,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Reactive;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -55,6 +56,13 @@ public class TaskBar : ContentControl
         {
             _progressThumb.DragStarted += ProgressThumb_DragStarted;
             _progressThumb.DragDelta   += ProgressThumb_DragDelta;
+
+            _progressThumb.GetObservable(IsVisibleProperty)
+                          .Subscribe(new AnonymousObserver<bool>(b =>
+                                                                 {
+
+                                                                     Update();
+                                                                 }));
         }
 
         Update();

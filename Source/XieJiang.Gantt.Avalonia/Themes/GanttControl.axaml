@@ -3,21 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:XieJiang.Gantt.Avalonia">
 
-    <!--
-        Additional resources
-        Using Control Themes:
-        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
-        Using Theme Variants:
-        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
-    -->
-
     <Design.PreviewWith>
-        <StackPanel
-            Width="400"
-            Height="400"
-            Spacing="10">
+        <StackPanel Spacing="10">
             <StackPanel Background="{DynamicResource SystemRegionBrush}">
-                <controls:GanttControl />
+                <controls:GanttControl
+                    Width="400"
+                    Height="400"
+                    RowHeight="100"
+                    StartDate="2024-1-1"
+                    TaskBarHeight="80" />
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
@@ -27,24 +21,35 @@
         TargetType="controls:GanttControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="Auto,*">
+                <Grid RowDefinitions="Auto,*,Auto">
                     <controls:GanttHeader
                         x:Name="PART_GanttHeader"
-                        HorizontalAlignment="Stretch"
+                        HorizontalAlignment="Left"
                         VerticalAlignment="Stretch" />
 
                     <controls:GanttBodyBackground
                         x:Name="PART_GanttBodyBackground"
                         Grid.Row="1"
-                        HorizontalAlignment="Stretch"
+                        Grid.RowSpan="2"
+                        HorizontalAlignment="Left"
                         VerticalAlignment="Stretch" />
 
-                    <ScrollViewer
+                    <Canvas
+                        x:Name="PART_CanvasBody"
                         Grid.Row="1"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
-                        <Canvas x:Name="PART_CanvasBody" />
-                    </ScrollViewer>
+                        Grid.RowSpan="2"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Stretch" />
+
+                    <ScrollBar
+                        Grid.Row="2"
+                        VerticalAlignment="Bottom"
+                        Orientation="Horizontal" />
+
+                    <ScrollBar
+                        Grid.Row="1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Stretch" />
                 </Grid>
             </ControlTemplate>
         </Setter>
