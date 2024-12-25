@@ -15,7 +15,7 @@
     <Grid RowDefinitions="*,Auto">
         <avalonia:GanttControl
             x:Name="GanttControl"
-            EndDate="2025-2-1"
+            EndDate="2027-2-1"
             HeaderRow1Height="60"
             HeaderRow2Height="70"
             RowHeight="100"

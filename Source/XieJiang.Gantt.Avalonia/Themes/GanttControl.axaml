@@ -24,26 +24,41 @@
                 <Grid RowDefinitions="Auto,*,Auto">
                     <controls:GanttHeader
                         x:Name="PART_GanttHeader"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch" />
+                        HorizontalAlignment="Left">
+
+
+                        <controls:GanttHeader.RenderTransform>
+                            <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static controls:DoubleNegationConverter.Default}}" />
+                        </controls:GanttHeader.RenderTransform>
+                    </controls:GanttHeader>
 
                     <controls:GanttBodyBackground
                         x:Name="PART_GanttBodyBackground"
                         Grid.Row="1"
                         Grid.RowSpan="2"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch" />
+                        VerticalAlignment="Stretch">
+                        <controls:GanttBodyBackground.RenderTransform>
+                            <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static controls:DoubleNegationConverter.Default}}" />
+                        </controls:GanttBodyBackground.RenderTransform>
+                    </controls:GanttBodyBackground>
 
                     <Canvas
                         x:Name="PART_CanvasBody"
                         Grid.Row="1"
                         Grid.RowSpan="2"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch" />
+                        VerticalAlignment="Stretch">
+                        <Canvas.RenderTransform>
+                            <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static controls:DoubleNegationConverter.Default}}" />
+                        </Canvas.RenderTransform>
+                    </Canvas>
 
                     <ScrollBar
+                        x:Name="HScrollBar"
                         Grid.Row="2"
                         VerticalAlignment="Bottom"
+                        Maximum="10000"
                         Orientation="Horizontal" />
 
                     <ScrollBar

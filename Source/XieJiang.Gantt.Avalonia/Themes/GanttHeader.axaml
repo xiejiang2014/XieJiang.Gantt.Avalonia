@@ -14,7 +14,9 @@
         TargetType="controls:GanttHeader">
         <Setter Property="Template">
             <ControlTemplate>
-                <ItemsControl ItemsSource="{TemplateBinding DateItems}">
+                <ItemsControl
+                    x:Name="ItemsControlL1"
+                    ItemsSource="{TemplateBinding DateItems}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal" />
@@ -27,7 +29,6 @@
                             <Grid
                                 x:Name="Week"
                                 RowDefinitions="Auto,Auto">
-
 
                                 <Rectangle
                                     Height="{Binding RelativeSource={RelativeSource Self},
@@ -50,7 +51,7 @@
                                     ItemsSource="{Binding DayItems}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <VirtualizingStackPanel Orientation="Horizontal" />
+                                            <StackPanel Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
 

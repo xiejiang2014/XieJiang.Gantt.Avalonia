@@ -46,6 +46,7 @@ public class GanttHeader : TemplatedControl
     {
         var result = new List<DateItem>();
 
+        var dayWidth  = GetValue(GanttControl.DayWidthProperty);
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
         var endDate   = GetValue(GanttControl.EndDateProperty);
@@ -56,7 +57,9 @@ public class GanttHeader : TemplatedControl
             if (startDate.Year  == endDate.Year &&
                 startDate.Month == endDate.Month)
             {
-                DateItems.Add(new MonthItem(startDate, endDate));
+                        var monthItem = new MonthItem(startDate, endDate);
+                DateItems.Add(monthItem);
+                result.AddRange(monthItem.DayItems);
             }
             else
             {
@@ -81,6 +84,8 @@ public class GanttHeader : TemplatedControl
                     }
                 }
             }
+
+            Width = result.Count * dayWidth;
         }
 
         return result;

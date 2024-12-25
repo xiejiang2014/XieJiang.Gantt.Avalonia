@@ -32,10 +32,11 @@
                             <Panel>
                                 <Rectangle
                                     Width="{Binding RelativeSource={RelativeSource Self},
-                                                                    Path=(controls:GanttControl.DayWidth)}"
+                                                    Path=(controls:GanttControl.DayWidth)}"
                                     Fill="{Binding IsRestDay,
                                                    Converter={StaticResource RestDayBgConverter}}" />
 
+                                <!--  左边线  -->
                                 <Rectangle
                                     Width="1"
                                     HorizontalAlignment="Left"
