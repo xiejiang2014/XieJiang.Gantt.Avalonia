@@ -19,7 +19,8 @@
                     ItemsSource="{TemplateBinding DateItems}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Horizontal" />
+                            <!--<VirtualizingStackPanel Orientation="Horizontal" />-->
+                            <StackPanel Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
@@ -51,6 +52,7 @@
                                     ItemsSource="{Binding DayItems}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
+                                            <!--<VirtualizingStackPanel Orientation="Horizontal" />-->
                                             <StackPanel Orientation="Horizontal" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
