@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
     xmlns:controls="using:XieJiang.Gantt.Avalonia">
 
     <Design.PreviewWith>
@@ -20,11 +21,13 @@
         TargetType="controls:GanttBodyBackground">
         <Setter Property="Template">
             <ControlTemplate>
-                <ItemsControl ItemsSource="{TemplateBinding DateItems}">
+                <ItemsControl
+                    x:Name="PART_ItemsControl"
+                    ItemsSource="{TemplateBinding DateItems}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <!--<VirtualizingStackPanel Orientation="Horizontal" />-->
-                            <StackPanel Orientation="Horizontal" />
+                            <ava:PreciselyVirtualizingStackPanel Orientation="Horizontal" />
+                            <!--<StackPanel Orientation="Horizontal" />-->
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 

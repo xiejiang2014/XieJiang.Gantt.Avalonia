@@ -9,7 +9,7 @@ public class MonthItem : DateItem
     {
     }
 
-    public MonthItem(DateOnly startDay, DateOnly? endDay = null)
+    public MonthItem(DateOnly startDay, double dayWidth, DateOnly? endDay = null)
     {
         //如果没有指定 endDay,那么 endDay 默认为 startDay 同月的最后一天
         endDay ??= new DateOnly(startDay.Year, startDay.Month, 1).AddMonths(1).AddDays(-1);
@@ -30,12 +30,12 @@ public class MonthItem : DateItem
         {
             var day = startDay.AddDays(i);
 
-
             DayItems.Add(new DayItem()
                          {
                              Date             = day,
                              IsFirstDayOfWeek = day.DayOfWeek == 0,
-                             IsRestDay        = day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday
+                             IsRestDay        = day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
+                             Width            = dayWidth
                          }
                         );
 

@@ -35,6 +35,7 @@ public class GanttControl : TemplatedControl
 
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
+
     }
 
     public GanttControl()
@@ -46,11 +47,15 @@ public class GanttControl : TemplatedControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        base.OnApplyTemplate(e);
+
         _ganttHeader         = e.NameScope.Find<GanttHeader>("PART_GanttHeader");
         _ganttBodyBackground = e.NameScope.Find<GanttBodyBackground>("PART_GanttBodyBackground");
         _canvasBody          = e.NameScope.Find<Canvas>("PART_CanvasBody");
         Reorder();
+
     }
+
 
     #region TaskBars
 
