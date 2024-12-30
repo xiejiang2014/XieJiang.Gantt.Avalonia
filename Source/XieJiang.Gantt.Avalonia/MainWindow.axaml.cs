@@ -48,5 +48,7 @@ namespace XieJiang.Gantt.Avalonia
         {
             GanttControl.Reload();
         }
+
+
     }
 }

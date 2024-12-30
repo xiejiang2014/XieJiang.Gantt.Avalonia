@@ -6,6 +6,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -18,7 +19,6 @@ public class GanttControl : TemplatedControl
     private GanttBodyBackground? _ganttBodyBackground;
     private Canvas?              _canvasBody;
 
-    private readonly Pinout _pinout = new Pinout();
 
     static GanttControl()
     {
@@ -35,6 +35,8 @@ public class GanttControl : TemplatedControl
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInMonthlyModeChanged(e));
         DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DayWidthChanged(e));
 
+        DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
+
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
     }
@@ -42,7 +44,18 @@ public class GanttControl : TemplatedControl
     public GanttControl()
     {
         DataContextChanged += GanttControl_DataContextChanged;
+
+        TaskBar.MainDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_MainDragDelta);
+        TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_MainDragCompleted);
+        TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragDelta);
+        TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragCompleted);
     }
+
+
+    //private void TaskBar_WidthDragCompleted(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     #region DataContext
 
@@ -150,6 +163,25 @@ public class GanttControl : TemplatedControl
     }
 
     #endregion
+
+
+    #region DragUnit
+
+    public static readonly StyledProperty<DragUnits> DragUnitProperty =
+        AvaloniaProperty.Register<GanttControl, DragUnits>(nameof(DragUnit));
+
+    public DragUnits DragUnit
+    {
+        get => GetValue(DragUnitProperty);
+        set => SetValue(DragUnitProperty, value);
+    }
+
+    private void DragUnitChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+    }
+
+    #endregion
+
 
     #region DateMode
 
@@ -329,6 +361,10 @@ public class GanttControl : TemplatedControl
     {
     }
 
+    #region link
+
+    private readonly Pinout _pinout = new Pinout();
+
     private void CanvasBody_PointerMoved(object? sender, PointerEventArgs e)
     {
         if (ReferenceEquals(e.Source, _canvasBody))
@@ -338,20 +374,6 @@ public class GanttControl : TemplatedControl
                 _canvasBody.Children.Remove(_pinout);
             }
         }
-
-        //Debug.Print($"CanvasBody_PointerMoved sender:{sender} Source:{e.Source}");
-    }
-
-    //protected override void OnPointerMoved(PointerEventArgs e)
-    //{
-    //    Debug.Print($"OnPointerMoved  Source:{e.Source}");
-    //    base.OnPointerMoved(e);
-    //}
-
-    protected override void OnPointerEntered(PointerEventArgs e)
-    {
-        Debug.Print("OnPointerEntered");
-        base.OnPointerEntered(e);
     }
 
     private void TaskBar_PointerEntered(object? sender, global::Avalonia.Input.PointerEventArgs e)
@@ -365,6 +387,123 @@ public class GanttControl : TemplatedControl
 
             Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
             Canvas.SetTop(_pinout, Canvas.GetTop(taskBar));
+        }
+    }
+
+    #endregion
+
+
+    private void TaskBar_MainDragDelta(GanttControl arg1, RoutedEventArgs e)
+    {
+        if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
+        {
+            if (DateMode == DateModes.Weekly)
+            {
+                var l = taskBar.GetValue(Canvas.LeftProperty);
+                var w = taskBar.Width;
+
+                ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
+                ganttTask.EndDate   = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+
+
+                Canvas.SetLeft(_pinout, l + taskBar.Width);
+            }
+        }
+    }
+
+    private void TaskBar_MainDragCompleted(GanttControl arg1, RoutedEventArgs e)
+    {
+        if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
+        {
+            if (DateMode == DateModes.Weekly)
+            {
+                if (DragUnit == DragUnits.Daily)
+                {
+                    var l = taskBar.GetValue(Canvas.LeftProperty);
+                    var w = taskBar.Width;
+
+                    var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
+                    var time      = TimeOnly.FromDateTime(startDate);
+                    startDate = time.Hour > 12
+                        ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
+                        : new DateTime(startDate.Year, startDate.Month, startDate.Day);
+
+                    var endDate = startDate.Add(ganttTask.DateLength);
+
+                    ganttTask.StartDate = startDate;
+                    ganttTask.EndDate   = endDate;
+                    Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
+
+                    l = taskBar.GetValue(Canvas.LeftProperty);
+                    Canvas.SetLeft(_pinout, l + taskBar.Width);
+                }
+            }
+        }
+    }
+
+    private void TaskBar_WidthDragDelta(GanttControl arg1, WidthDragEventArgs e)
+    {
+        if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
+        {
+            if (e.Edge == Edges.Right)
+            {
+                Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
+            }
+        }
+    }
+
+    private void TaskBar_WidthDragCompleted<TTarget>(TTarget arg1, WidthDragEventArgs e) where TTarget : Interactive
+    {
+        if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
+        {
+            //重新计算task的起止日期
+            var l = taskBar.GetValue(Canvas.LeftProperty);
+            var w = taskBar.Width;
+
+            if (DateMode == DateModes.Weekly)
+            {
+                if (e.Edge == Edges.Left)
+                {
+                    if (DragUnit == DragUnits.Free)
+                    {
+                        ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
+                    }
+                    else if (DragUnit == DragUnits.Daily)
+                    {
+                        var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
+                        var time      = TimeOnly.FromDateTime(startDate);
+
+                        ganttTask.StartDate = time.Hour > 12
+                            ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
+                            : new DateTime(startDate.Year, startDate.Month, startDate.Day);
+
+                        taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
+
+                        Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
+                    }
+                }
+                else if (e.Edge == Edges.Right)
+                {
+                    if (DragUnit == DragUnits.Free)
+                    {
+                        ganttTask.EndDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+                    }
+                    else if (DragUnit == DragUnits.Daily)
+                    {
+                        var endDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+                        var time    = TimeOnly.FromDateTime(endDate);
+
+                        ganttTask.EndDate = time.Hour > 12
+                            ? new DateTime(endDate.Year, endDate.Month, endDate.Day).AddDays(1)
+                            : new DateTime(endDate.Year, endDate.Month, endDate.Day);
+
+
+                        taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
+                    }
+
+                    Canvas.SetLeft(_pinout, l + taskBar.Width);
+                }
+            }
         }
     }
 }

@@ -68,6 +68,11 @@
                                 Background="{TemplateBinding Foreground}"
                                 CornerRadius="{TemplateBinding CornerRadius}" />
 
+                            <Thumb
+                                x:Name="PART_MainThumb"
+                                HorizontalAlignment="Stretch"
+                                Classes="MainThumb" />
+
 
                             <ContentPresenter
                                 Name="PART_ContentPresenter"

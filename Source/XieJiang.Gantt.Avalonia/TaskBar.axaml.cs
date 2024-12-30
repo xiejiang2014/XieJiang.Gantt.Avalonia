@@ -19,7 +19,9 @@ namespace XieJiang.Gantt.Avalonia;
 [TemplatePart("PART_ProgressRectangle", typeof(Rectangle))]
 public class TaskBar : ContentControl
 {
+    private Border?    _backgroundBorder;
     private Border?    _foregroundBorder;
+    private Thumb?     _mainThumb;
     private Thumb?     _lThumb;
     private Thumb?     _rThumb;
     private Thumb?     _progressThumb;
@@ -54,22 +56,34 @@ public class TaskBar : ContentControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
+        _backgroundBorder  = e.NameScope.Find<Border>("PART_BackgroundBorder");
         _foregroundBorder  = e.NameScope.Find<Border>("PART_ForegroundBorder");
+        _mainThumb         = e.NameScope.Find<Thumb>("PART_MainThumb");
         _lThumb            = e.NameScope.Find<Thumb>("PART_LThumb");
         _rThumb            = e.NameScope.Find<Thumb>("PART_RThumb");
         _progressThumb     = e.NameScope.Find<Thumb>("PART_ProgressThumb");
         _progressRectangle = e.NameScope.Find<Rectangle>("PART_ProgressRectangle");
 
+        if (_mainThumb is not null)
+        {
+            _mainThumb.DragStarted   += Main_ThumbOnDragStarted;
+            _mainThumb.DragDelta     += Main_ThumbOnDragDelta;
+            _mainThumb.DragCompleted += Main_ThumbOnDragCompleted;
+        }
+
+
         if (_rThumb is not null)
         {
-            _rThumb.DragStarted += RThumb_DragStarted;
-            _rThumb.DragDelta   += RThumb_DragDelta;
+            _rThumb.DragStarted   += RThumb_DragStarted;
+            _rThumb.DragDelta     += RThumb_DragDelta;
+            _rThumb.DragCompleted += RThumb_DragCompleted;
         }
 
         if (_lThumb is not null)
         {
-            _lThumb.DragStarted += LThumb_DragStarted;
-            _lThumb.DragDelta   += LThumb_DragDelta;
+            _lThumb.DragStarted   += LThumb_DragStarted;
+            _lThumb.DragDelta     += LThumb_DragDelta;
+            _lThumb.DragCompleted += LThumb_DragCompleted;
         }
 
         if (_progressThumb is not null)
@@ -84,97 +98,6 @@ public class TaskBar : ContentControl
         Update();
     }
 
-    #region Progress
-
-    //public static readonly StyledProperty<double> ProgressProperty =
-    //    AvaloniaProperty.Register<TaskBar, double>(nameof(Progress));
-
-    ///// <summary>
-    ///// 0~1
-    ///// </summary>
-    //public double Progress
-    //{
-    //    get => GetValue(ProgressProperty);
-    //    set => SetValue(ProgressProperty, value);
-    //}
-
-    //private void OnProgressChanged(AvaloniaPropertyChangedEventArgs e)
-    //{
-    //    Update();
-    //}
-
-    #endregion
-
-
-    //public TimeSpan DateLength => EndDate - StartDate;
-
-    #region StartDate
-
-    //public static readonly StyledProperty<DateTime> StartDateProperty =
-    //    AvaloniaProperty.Register<TaskBar, DateTime>(nameof(StartDate));
-
-    //public DateTime StartDate
-    //{
-    //    get => GetValue(StartDateProperty);
-    //    set => SetValue(StartDateProperty, value);
-    //}
-
-    //private void OnStartDateChanged(AvaloniaPropertyChangedEventArgs e)
-    //{
-    //    OnStartDateChanged();
-    //}
-
-    //public static readonly RoutedEvent<RoutedEventArgs> StartDateChangedEvent =
-    //    RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(StartDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
-
-    //public event EventHandler<RoutedEventArgs> StartDateChanged
-    //{
-    //    add => AddHandler(StartDateChangedEvent, value);
-    //    remove => RemoveHandler(StartDateChangedEvent, value);
-    //}
-
-    //protected virtual void OnStartDateChanged()
-    //{
-    //    RoutedEventArgs args = new RoutedEventArgs(StartDateChangedEvent);
-    //    RaiseEvent(args);
-    //}
-
-    #endregion
-
-
-    #region EndDate
-
-    //public static readonly StyledProperty<DateTime> EndDateProperty =
-    //    AvaloniaProperty.Register<TaskBar, DateTime>(nameof(EndDate));
-
-    //public DateTime EndDate
-    //{
-    //    get => GetValue(EndDateProperty);
-    //    set => SetValue(EndDateProperty, value);
-    //}
-
-    //private void OnEndDateChanged(AvaloniaPropertyChangedEventArgs e)
-    //{
-    //    OnEndDateChanged();
-    //}
-
-
-    //public static readonly RoutedEvent<RoutedEventArgs> EndDateChangedEvent =
-    //    RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(EndDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
-
-    //public event EventHandler<RoutedEventArgs> EndDateChanged
-    //{
-    //    add => AddHandler(EndDateChangedEvent, value);
-    //    remove => RemoveHandler(EndDateChangedEvent, value);
-    //}
-
-    //protected virtual void OnEndDateChanged()
-    //{
-    //    RoutedEventArgs args = new RoutedEventArgs(EndDateChangedEvent);
-    //    RaiseEvent(args);
-    //}
-
-    #endregion
 
     private void Update()
     {
@@ -197,18 +120,131 @@ public class TaskBar : ContentControl
                 Canvas.SetLeft(_progressThumb, p);
             }
 
-            Debug.Print("Update");
+            //Debug.Print("Update");
         }
     }
 
-    #region 拖动
+    #region Drag
+
+    #region MainDragDelta
+
+    public static readonly RoutedEvent<RoutedEventArgs> MainDragDeltaEvent =
+        RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(MainDragDelta), RoutingStrategies.Bubble);
+
+    public event EventHandler<RoutedEventArgs> MainDragDelta
+    {
+        add => AddHandler(MainDragDeltaEvent, value);
+        remove => RemoveHandler(MainDragDeltaEvent, value);
+    }
+
+    protected virtual void OnMainDragDelta()
+    {
+        RoutedEventArgs args = new RoutedEventArgs(MainDragDeltaEvent);
+        RaiseEvent(args);
+    }
+
+    #endregion
+
+    #region MainDragCompleted
+
+    public static readonly RoutedEvent<RoutedEventArgs> MainDragCompletedEvent =
+        RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(MainDragCompleted), RoutingStrategies.Bubble);
+
+    public event EventHandler<RoutedEventArgs> MainDragCompleted
+    {
+        add => AddHandler(MainDragCompletedEvent, value);
+        remove => RemoveHandler(MainDragCompletedEvent, value);
+    }
+
+    protected virtual void OnMainDragCompleted()
+    {
+        RoutedEventArgs args = new RoutedEventArgs(MainDragCompletedEvent);
+        RaiseEvent(args);
+    }
+
+    #endregion
+
+
+
+
+    #region WidthDragging
+
+    public static readonly RoutedEvent<WidthDragEventArgs> WidthDragDeltaEvent =
+        RoutedEvent.Register<TaskBar, WidthDragEventArgs>(nameof(WidthDragDelta), RoutingStrategies.Bubble);
+
+    public event EventHandler<WidthDragEventArgs> WidthDragDelta
+    {
+        add => AddHandler(WidthDragDeltaEvent, value);
+        remove => RemoveHandler(WidthDragDeltaEvent, value);
+    }
+
+    protected virtual void OnWidthDragging(Edges edge)
+    {
+        var args = new WidthDragEventArgs(WidthDragDeltaEvent)
+                   {
+                       Edge = edge
+                   };
+        RaiseEvent(args);
+    }
+
+    #endregion
+
+
+    #region WidthDragCompleted
+
+    public static readonly RoutedEvent<WidthDragEventArgs> WidthDragCompletedEvent =
+        RoutedEvent.Register<TaskBar, WidthDragEventArgs>(nameof(WidthDragCompleted), RoutingStrategies.Bubble);
+
+    public event EventHandler<WidthDragEventArgs> WidthDragCompleted
+    {
+        add => AddHandler(WidthDragCompletedEvent, value);
+        remove => RemoveHandler(WidthDragCompletedEvent, value);
+    }
+
+    protected virtual void OnWidthDragCompleted(Edges edge)
+    {
+        var args = new WidthDragEventArgs(WidthDragCompletedEvent)
+                   {
+                       Edge = edge
+                   };
+        RaiseEvent(args);
+    }
+
+    #endregion
+
 
     private double _widthDragStarted;
     private double _leftDragStarted;
 
+    private void Main_ThumbOnDragStarted(object? sender, VectorEventArgs e)
+    {
+        _leftDragStarted = Canvas.GetLeft(this);
+
+        e.Handled = true;
+    }
+
+    private void Main_ThumbOnDragDelta(object? sender, VectorEventArgs e)
+    {
+        var newLeft = _leftDragStarted + e.Vector.X;
+        Canvas.SetLeft(this, newLeft);
+        _leftDragStarted = newLeft;
+
+        OnMainDragDelta();
+
+        e.Handled = true;
+    }
+
+    private void Main_ThumbOnDragCompleted(object? sender, VectorEventArgs e)
+    {
+        OnMainDragCompleted();
+        e.Handled = true;
+    }
+
+
     private void RThumb_DragStarted(object? sender, VectorEventArgs e)
     {
         _widthDragStarted = Width;
+        e.Handled         = true;
     }
 
     private void RThumb_DragDelta(object? sender, VectorEventArgs e)
@@ -220,16 +256,26 @@ public class TaskBar : ContentControl
             newWidth = 50;
         }
 
-
         Width             = newWidth;
         _widthDragStarted = Width;
         Update();
+
+
+        OnWidthDragging(Edges.Right);
+        e.Handled = true;
+    }
+
+    private void RThumb_DragCompleted(object? sender, VectorEventArgs e)
+    {
+        OnWidthDragCompleted(Edges.Right);
+        e.Handled = true;
     }
 
     private void LThumb_DragStarted(object? sender, VectorEventArgs e)
     {
         _widthDragStarted = Width;
         _leftDragStarted  = Canvas.GetLeft(this);
+        e.Handled         = true;
     }
 
     private void LThumb_DragDelta(object? sender, VectorEventArgs e)
@@ -256,8 +302,16 @@ public class TaskBar : ContentControl
             _leftDragStarted = newLeft;
         }
 
-
         Update();
+
+        OnWidthDragging(Edges.Left);
+        e.Handled = true;
+    }
+
+    private void LThumb_DragCompleted(object? sender, VectorEventArgs e)
+    {
+        OnWidthDragCompleted(Edges.Left);
+        e.Handled = true;
     }
 
     private void ProgressThumb_DragStarted(object? sender, VectorEventArgs e)
@@ -266,6 +320,8 @@ public class TaskBar : ContentControl
         {
             _leftDragStarted = Canvas.GetLeft(_progressThumb);
         }
+
+        e.Handled = true;
     }
 
     private void ProgressThumb_DragDelta(object? sender, VectorEventArgs e)
@@ -293,6 +349,8 @@ public class TaskBar : ContentControl
 
             Update();
         }
+
+        e.Handled = true;
     }
 
     #endregion
