@@ -1,15 +1,8 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
-
-    <!--
-        Additional resources
-        Using Control Themes:
-        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
-        Using Theme Variants:
-        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
-    -->
+    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia"
+    x:DataType="avalonia:GanttTask">
 
     <Design.PreviewWith>
         <StackPanel Width="400">
@@ -22,7 +15,6 @@
     <ControlTheme
         x:Key="{x:Type avalonia:TaskBar}"
         TargetType="avalonia:TaskBar">
-
 
         <Setter
             Property="MinWidth"
@@ -106,8 +98,7 @@
                                 <ToolTip.Tip>
                                     <TextBlock
                                         Classes="ProgressTextBlock"
-                                        Text="{Binding RelativeSource={RelativeSource TemplatedParent},
-                                                       Path=Progress,
+                                        Text="{Binding Path=Progress,
                                                        StringFormat={}{0:p2}}" />
                                 </ToolTip.Tip>
                             </Rectangle>

@@ -1,10 +1,11 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Interactivity;
+using Avalonia.Input;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -17,10 +18,11 @@ public class GanttControl : TemplatedControl
     private GanttBodyBackground? _ganttBodyBackground;
     private Canvas?              _canvasBody;
 
+    private readonly Pinout _pinout = new Pinout();
 
     static GanttControl()
     {
-        TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBarsChanged(e));
+        //TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBarsChanged(e));
         TaskBarHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskBarHeightChanged(e));
 
         RowHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.RowHeightChanged(e));
@@ -28,21 +30,38 @@ public class GanttControl : TemplatedControl
         HeaderRow1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow1HeightChanged(e));
         HeaderRow2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow2HeightChanged(e));
 
-        DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,             e) => sender.DateModeChanged(e));
-        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInWeeklyModeChanged(e));
+        DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateModeChanged(e));
+        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.DayWidthInWeeklyModeChanged(e));
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInMonthlyModeChanged(e));
-        DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,             e) => sender.DayWidthChanged(e));
+        DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DayWidthChanged(e));
 
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
-
     }
 
     public GanttControl()
     {
-        TaskBar.StartDateChangedEvent.AddClassHandler(typeof(GanttControl), TaskBars_StartDateChanged, RoutingStrategies.Bubble);
-        TaskBar.EndDateChangedEvent.AddClassHandler(typeof(GanttControl), TaskBars_EndDateChanged, RoutingStrategies.Bubble);
+        DataContextChanged += GanttControl_DataContextChanged;
     }
+
+    #region DataContext
+
+    private GanttModel? _ganttModel;
+
+    private void GanttControl_DataContextChanged(object? sender, EventArgs e)
+    {
+        if (DataContext is GanttModel ganttModel)
+        {
+            _ganttModel = ganttModel;
+            Reload();
+        }
+        else
+        {
+            _ganttModel = null;
+        }
+    }
+
+    #endregion
 
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -52,28 +71,14 @@ public class GanttControl : TemplatedControl
         _ganttHeader         = e.NameScope.Find<GanttHeader>("PART_GanttHeader");
         _ganttBodyBackground = e.NameScope.Find<GanttBodyBackground>("PART_GanttBodyBackground");
         _canvasBody          = e.NameScope.Find<Canvas>("PART_CanvasBody");
-        Reorder();
 
-    }
+        if (_canvasBody is not null)
+        {
+            _canvasBody.PointerMoved += CanvasBody_PointerMoved;
+        }
 
-
-    #region TaskBars
-
-    public static readonly StyledProperty<ObservableCollection<TaskBar>> TaskBarsProperty =
-        AvaloniaProperty.Register<GanttControl, ObservableCollection<TaskBar>>(nameof(TaskBars), new());
-
-    public ObservableCollection<TaskBar> TaskBars
-    {
-        get => GetValue(TaskBarsProperty);
-        set => SetValue(TaskBarsProperty, value);
-    }
-
-    private void TaskBarsChanged(AvaloniaPropertyChangedEventArgs e)
-    {
         Reorder();
     }
-
-    #endregion
 
 
     #region TaskBarHeight
@@ -94,7 +99,6 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
-
     #region RowHeight
 
     public static readonly StyledProperty<double> RowHeightProperty =
@@ -112,7 +116,6 @@ public class GanttControl : TemplatedControl
     }
 
     #endregion
-
 
     #region HeaderRow1Height
 
@@ -169,7 +172,6 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
-
     #region DayWidthInWeeklyMode
 
     public static readonly StyledProperty<double> DayWidthInWeeklyModeProperty =
@@ -191,8 +193,6 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
-
-
     #region DayWidthInMonthlyMode
 
     public static readonly StyledProperty<double> DayWidthInMonthlyModeProperty =
@@ -213,13 +213,9 @@ public class GanttControl : TemplatedControl
         {
             DayWidth = e.GetNewValue<double>();
         }
-
     }
 
     #endregion
-
-
-
 
     #region DayWidth
 
@@ -241,7 +237,6 @@ public class GanttControl : TemplatedControl
     }
 
     #endregion
-
 
     #region StartDate
 
@@ -281,19 +276,6 @@ public class GanttControl : TemplatedControl
     #endregion
 
 
-    #region TaskBars_Events
-
-    private void TaskBars_StartDateChanged(object? sender, RoutedEventArgs e)
-    {
-    }
-
-    private void TaskBars_EndDateChanged(object? sender, RoutedEventArgs e)
-    {
-    }
-
-    #endregion
-
-
     public void Reload()
     {
         var dateItems = _ganttHeader?.Reload();
@@ -301,6 +283,7 @@ public class GanttControl : TemplatedControl
         Reorder();
     }
 
+    private readonly List<TaskBar> _taskBarsList = new(1000);
 
     public void Reorder()
     {
@@ -309,21 +292,79 @@ public class GanttControl : TemplatedControl
             return;
         }
 
-        for (var i = 0; i < TaskBars.Count; i++)
+        _canvasBody.Children.Clear();
+        foreach (var taskBar in _taskBarsList)
         {
-            var taskBar = TaskBars[i];
+            taskBar.PointerEntered -= TaskBar_PointerEntered;
+            taskBar.PointerExited  -= TaskBar_PointerExited;
+        }
 
-            if (!_canvasBody.Children.Contains(taskBar))
-            {
-                _canvasBody.Children.Add(taskBar);
-            }
+        if (_ganttModel is null)
+        {
+            return;
+        }
 
+        for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
+        {
+            var ganttTask = _ganttModel.GanttTasks[i];
 
-            taskBar.Width = taskBar.DateLength.TotalDays * DayWidth;
-            Canvas.SetLeft(taskBar, (taskBar.StartDate        -StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
+            var taskBar = new TaskBar
+                          {
+                              DataContext = ganttTask,
+                              Width       = ganttTask.DateLength.TotalDays * DayWidth
+                          };
+            taskBar.PointerEntered += TaskBar_PointerEntered;
+            taskBar.PointerExited  += TaskBar_PointerExited;
+
+            Canvas.SetLeft(taskBar, (ganttTask.StartDate      - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
             Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
+            _canvasBody.Children.Add(taskBar);
+            _taskBarsList.Add(taskBar);
         }
 
         _ganttHeader?.InvalidateVisual();
+    }
+
+    private void TaskBar_PointerExited(object? sender, global::Avalonia.Input.PointerEventArgs e)
+    {
+    }
+
+    private void CanvasBody_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (ReferenceEquals(e.Source, _canvasBody))
+        {
+            if (_canvasBody is not null)
+            {
+                _canvasBody.Children.Remove(_pinout);
+            }
+        }
+
+        //Debug.Print($"CanvasBody_PointerMoved sender:{sender} Source:{e.Source}");
+    }
+
+    //protected override void OnPointerMoved(PointerEventArgs e)
+    //{
+    //    Debug.Print($"OnPointerMoved  Source:{e.Source}");
+    //    base.OnPointerMoved(e);
+    //}
+
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        Debug.Print("OnPointerEntered");
+        base.OnPointerEntered(e);
+    }
+
+    private void TaskBar_PointerEntered(object? sender, global::Avalonia.Input.PointerEventArgs e)
+    {
+        if (_canvasBody is not null && sender is TaskBar taskBar)
+        {
+            if (!_canvasBody.Children.Contains(_pinout))
+            {
+                _canvasBody.Children.Add(_pinout);
+            }
+
+            Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
+            Canvas.SetTop(_pinout, Canvas.GetTop(taskBar));
+        }
     }
 }

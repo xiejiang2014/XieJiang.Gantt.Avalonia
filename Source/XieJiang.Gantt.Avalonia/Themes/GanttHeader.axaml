@@ -5,9 +5,7 @@
     xmlns:controls="using:XieJiang.Gantt.Avalonia">
 
     <Design.PreviewWith>
-
         <controls:GanttHeader Width="800" />
-
     </Design.PreviewWith>
 
     <ControlTheme

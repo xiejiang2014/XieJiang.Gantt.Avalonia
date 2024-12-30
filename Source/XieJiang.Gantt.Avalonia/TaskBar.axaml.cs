@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -24,13 +25,32 @@ public class TaskBar : ContentControl
     private Thumb?     _progressThumb;
     private Rectangle? _progressRectangle;
 
+    private GanttTask? _ganttTask;
+
     static TaskBar()
     {
-        ProgressProperty.Changed.AddClassHandler<TaskBar>((sender,  e) => sender.OnProgressChanged(e));
-        StartDateProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.OnStartDateChanged(e));
-        EndDateProperty.Changed.AddClassHandler<TaskBar>((sender,   e) => sender.OnEndDateChanged(e));
+        //ProgressProperty.Changed.AddClassHandler<TaskBar>((sender,  e) => sender.OnProgressChanged(e));
+        //StartDateProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.OnStartDateChanged(e));
+        //EndDateProperty.Changed.AddClassHandler<TaskBar>((sender,   e) => sender.OnEndDateChanged(e));
     }
 
+
+    public TaskBar()
+    {
+        DataContextChanged += TaskBar_DataContextChanged;
+    }
+
+    private void TaskBar_DataContextChanged(object? sender, EventArgs e)
+    {
+        if (DataContext is GanttTask ganttTask)
+        {
+            _ganttTask = ganttTask;
+        }
+        else
+        {
+            _ganttTask = null;
+        }
+    }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -58,11 +78,7 @@ public class TaskBar : ContentControl
             _progressThumb.DragDelta   += ProgressThumb_DragDelta;
 
             _progressThumb.GetObservable(IsVisibleProperty)
-                          .Subscribe(new AnonymousObserver<bool>(b =>
-                                                                 {
-
-                                                                     Update();
-                                                                 }));
+                          .Subscribe(new AnonymousObserver<bool>(b => { Update(); }));
         }
 
         Update();
@@ -70,113 +86,118 @@ public class TaskBar : ContentControl
 
     #region Progress
 
-    public static readonly StyledProperty<double> ProgressProperty =
-        AvaloniaProperty.Register<TaskBar, double>(nameof(Progress));
+    //public static readonly StyledProperty<double> ProgressProperty =
+    //    AvaloniaProperty.Register<TaskBar, double>(nameof(Progress));
 
-    /// <summary>
-    /// 0~1
-    /// </summary>
-    public double Progress
-    {
-        get => GetValue(ProgressProperty);
-        set => SetValue(ProgressProperty, value);
-    }
+    ///// <summary>
+    ///// 0~1
+    ///// </summary>
+    //public double Progress
+    //{
+    //    get => GetValue(ProgressProperty);
+    //    set => SetValue(ProgressProperty, value);
+    //}
 
-    private void OnProgressChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        Update();
-    }
+    //private void OnProgressChanged(AvaloniaPropertyChangedEventArgs e)
+    //{
+    //    Update();
+    //}
 
     #endregion
 
 
-    public TimeSpan DateLength => EndDate - StartDate;
+    //public TimeSpan DateLength => EndDate - StartDate;
 
     #region StartDate
 
-    public static readonly StyledProperty<DateTime> StartDateProperty =
-        AvaloniaProperty.Register<TaskBar, DateTime>(nameof(StartDate));
+    //public static readonly StyledProperty<DateTime> StartDateProperty =
+    //    AvaloniaProperty.Register<TaskBar, DateTime>(nameof(StartDate));
 
-    public DateTime StartDate
-    {
-        get => GetValue(StartDateProperty);
-        set => SetValue(StartDateProperty, value);
-    }
+    //public DateTime StartDate
+    //{
+    //    get => GetValue(StartDateProperty);
+    //    set => SetValue(StartDateProperty, value);
+    //}
 
-    private void OnStartDateChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        OnStartDateChanged();
-    }
+    //private void OnStartDateChanged(AvaloniaPropertyChangedEventArgs e)
+    //{
+    //    OnStartDateChanged();
+    //}
 
-    public static readonly RoutedEvent<RoutedEventArgs> StartDateChangedEvent =
-        RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(StartDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
+    //public static readonly RoutedEvent<RoutedEventArgs> StartDateChangedEvent =
+    //    RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(StartDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
 
-    public event EventHandler<RoutedEventArgs> StartDateChanged
-    {
-        add => AddHandler(StartDateChangedEvent, value);
-        remove => RemoveHandler(StartDateChangedEvent, value);
-    }
+    //public event EventHandler<RoutedEventArgs> StartDateChanged
+    //{
+    //    add => AddHandler(StartDateChangedEvent, value);
+    //    remove => RemoveHandler(StartDateChangedEvent, value);
+    //}
 
-    protected virtual void OnStartDateChanged()
-    {
-        RoutedEventArgs args = new RoutedEventArgs(StartDateChangedEvent);
-        RaiseEvent(args);
-    }
+    //protected virtual void OnStartDateChanged()
+    //{
+    //    RoutedEventArgs args = new RoutedEventArgs(StartDateChangedEvent);
+    //    RaiseEvent(args);
+    //}
 
     #endregion
 
 
     #region EndDate
 
-    public static readonly StyledProperty<DateTime> EndDateProperty =
-        AvaloniaProperty.Register<TaskBar, DateTime>(nameof(EndDate));
+    //public static readonly StyledProperty<DateTime> EndDateProperty =
+    //    AvaloniaProperty.Register<TaskBar, DateTime>(nameof(EndDate));
 
-    public DateTime EndDate
-    {
-        get => GetValue(EndDateProperty);
-        set => SetValue(EndDateProperty, value);
-    }
+    //public DateTime EndDate
+    //{
+    //    get => GetValue(EndDateProperty);
+    //    set => SetValue(EndDateProperty, value);
+    //}
 
-    private void OnEndDateChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        OnEndDateChanged();
-    }
+    //private void OnEndDateChanged(AvaloniaPropertyChangedEventArgs e)
+    //{
+    //    OnEndDateChanged();
+    //}
 
 
-    public static readonly RoutedEvent<RoutedEventArgs> EndDateChangedEvent =
-        RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(EndDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
+    //public static readonly RoutedEvent<RoutedEventArgs> EndDateChangedEvent =
+    //    RoutedEvent.Register<TaskBar, RoutedEventArgs>(nameof(EndDateChanged), RoutingStrategies.Direct | RoutingStrategies.Bubble);
 
-    public event EventHandler<RoutedEventArgs> EndDateChanged
-    {
-        add => AddHandler(EndDateChangedEvent, value);
-        remove => RemoveHandler(EndDateChangedEvent, value);
-    }
+    //public event EventHandler<RoutedEventArgs> EndDateChanged
+    //{
+    //    add => AddHandler(EndDateChangedEvent, value);
+    //    remove => RemoveHandler(EndDateChangedEvent, value);
+    //}
 
-    protected virtual void OnEndDateChanged()
-    {
-        RoutedEventArgs args = new RoutedEventArgs(EndDateChangedEvent);
-        RaiseEvent(args);
-    }
+    //protected virtual void OnEndDateChanged()
+    //{
+    //    RoutedEventArgs args = new RoutedEventArgs(EndDateChangedEvent);
+    //    RaiseEvent(args);
+    //}
 
     #endregion
 
     private void Update()
     {
-        var p = Width * Progress;
-
-        if (_foregroundBorder is not null)
+        if (_ganttTask is not null)
         {
-            _foregroundBorder.Width = p;
-        }
+            var p = Width * _ganttTask.Progress;
 
-        if (_progressRectangle is not null)
-        {
-            _progressRectangle.Margin = new Thickness(p, 0, 0, 0);
-        }
+            if (_foregroundBorder is not null)
+            {
+                _foregroundBorder.Width = p;
+            }
 
-        if (_progressThumb is not null)
-        {
-            Canvas.SetLeft(_progressThumb, p);
+            if (_progressRectangle is not null)
+            {
+                _progressRectangle.Margin = new Thickness(p, 0, 0, 0);
+            }
+
+            if (_progressThumb is not null)
+            {
+                Canvas.SetLeft(_progressThumb, p);
+            }
+
+            Debug.Print("Update");
         }
     }
 
@@ -264,7 +285,13 @@ public class TaskBar : ContentControl
             Canvas.SetLeft(_progressThumb, newLeft);
             _leftDragStarted = newLeft;
 
-            Progress = newLeft / Width;
+
+            if (_ganttTask is not null)
+            {
+                _ganttTask.Progress = newLeft / Width;
+            }
+
+            Update();
         }
     }
 

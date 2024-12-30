@@ -1,0 +1,37 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+
+    <Design.PreviewWith>
+        <StackPanel
+            Width="400"
+            Spacing="10">
+            <controls:Pinout />
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme
+        x:Key="{x:Type controls:Pinout}"
+        TargetType="controls:Pinout">
+        <!--<Setter
+            Property="Margin"
+            Value="2,0,0,0" />-->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Height="{Binding RelativeSource={RelativeSource Self},
+                                     Path=(controls:GanttControl.TaskBarHeight)}"
+                    Padding="2,0,2,0"
+                    Background="Transparent">
+                    <Ellipse
+                        Width="14"
+                        Height="14"
+                        VerticalAlignment="Center"
+                        Stroke="LightGray"
+                        StrokeThickness="3" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

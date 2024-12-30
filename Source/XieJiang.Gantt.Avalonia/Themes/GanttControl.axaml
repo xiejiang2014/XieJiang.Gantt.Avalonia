@@ -2,7 +2,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
-    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+    xmlns:controls="using:XieJiang.Gantt.Avalonia"
+    x:DataType="controls:GanttModel">
 
     <Design.PreviewWith>
         <StackPanel Spacing="10">
@@ -47,11 +48,15 @@
                         x:Name="PART_CanvasBody"
                         Grid.Row="1"
                         Grid.RowSpan="2"
+                        Width="{Binding #PART_GanttHeader.Width}"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch">
+                        VerticalAlignment="Stretch"
+                        Background="Transparent">
                         <Canvas.RenderTransform>
                             <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static controls:DoubleNegationConverter.Default}}" />
                         </Canvas.RenderTransform>
+
+
                     </Canvas>
 
                     <ScrollBar

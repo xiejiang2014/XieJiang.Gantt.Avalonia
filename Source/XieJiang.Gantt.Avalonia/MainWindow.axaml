@@ -3,7 +3,6 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia"
-    xmlns:avalonia1="clr-namespace:XieJiang.Gantt.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="XieJiang.Gantt.Avalonia"
@@ -16,12 +15,12 @@
         <avalonia:GanttControl
             x:Name="GanttControl"
             EndDate="2028-2-28"
-            HeaderRow1Height="60"
-            HeaderRow2Height="70"
-            RowHeight="100"
-            StartDate="2024-12-1"
-            TaskBarHeight="70" />
+            StartDate="2024-12-1"/>
 
+            <!--HeaderRow1Height="60"-->
+            <!--HeaderRow2Height="70"-->
+            <!--RowHeight="100"-->
+            <!--TaskBarHeight="70"--> 
         <StackPanel
             Grid.Row="1"
             Orientation="Horizontal">

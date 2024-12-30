@@ -84,11 +84,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/Pinout.axaml" />
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/TaskBar.axaml" />
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttHeader.axaml" />
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttBodyBackground.axaml" />
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttControl.axaml" />
-                <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/TemplatedControl1.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
