@@ -124,6 +124,46 @@ public class TaskBar : ContentControl
         }
     }
 
+    #region ParentTask
+
+    public static readonly StyledProperty<TaskBar> ParentTaskProperty =
+        AvaloniaProperty.Register<TaskBar, TaskBar>(nameof(ParentTask));
+
+    public TaskBar ParentTask
+    {
+        get => GetValue(ParentTaskProperty);
+        set => SetValue(ParentTaskProperty, value);
+    }
+
+    //放在静态构造行数
+    //ParentTaskProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ParentTaskChanged(e));
+    private void ParentTaskChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+    }
+
+    #endregion
+
+    #region ChildTask
+
+    public static readonly StyledProperty<TaskBar> ChildTaskProperty =
+        AvaloniaProperty.Register<TaskBar, TaskBar>(nameof(ChildTask));
+
+    public TaskBar ChildTask
+    {
+        get => GetValue(ChildTaskProperty);
+        set => SetValue(ChildTaskProperty, value);
+    }
+
+    //放在静态构造行数
+    //ChildTaskProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ChildTaskChanged(e));
+
+    private void ChildTaskChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+    }
+
+    #endregion
+
+
     #region Drag
 
     #region MainDragDelta
@@ -163,8 +203,6 @@ public class TaskBar : ContentControl
     }
 
     #endregion
-
-
 
 
     #region WidthDragging

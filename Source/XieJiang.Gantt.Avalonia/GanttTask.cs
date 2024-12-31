@@ -7,6 +7,10 @@ namespace XieJiang.Gantt.Avalonia;
 
 public class GanttTask : INotifyPropertyChanged
 {
+    public GanttTask? Parent { get; set; }
+    public GanttTask? Child     { get; set; }
+
+
     #region Progress
 
     private double _progress;
@@ -27,9 +31,11 @@ public class GanttTask : INotifyPropertyChanged
 
     #endregion
 
+    #region DateLength
 
     public TimeSpan DateLength => EndDate - StartDate;
 
+    #endregion
 
     #region StartDate
 

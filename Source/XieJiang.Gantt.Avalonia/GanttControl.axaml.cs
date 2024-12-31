@@ -90,7 +90,7 @@ public class GanttControl : TemplatedControl
             _canvasBody.PointerMoved += CanvasBody_PointerMoved;
         }
 
-        Reorder();
+        ReloadTasks();
     }
 
 
@@ -125,7 +125,7 @@ public class GanttControl : TemplatedControl
 
     private void RowHeightChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        Reorder();
+        ReloadTasks();
     }
 
     #endregion
@@ -265,7 +265,7 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        Reorder();
+        ReloadTasks();
     }
 
     #endregion
@@ -312,12 +312,12 @@ public class GanttControl : TemplatedControl
     {
         var dateItems = _ganttHeader?.Reload();
         _ganttBodyBackground?.Reload(dateItems);
-        Reorder();
+        ReloadTasks();
     }
 
-    private readonly List<TaskBar> _taskBarsList = new(1000);
+    private readonly Dictionary<GanttTask, TaskBar> _taskBarsDic = new(1000);
 
-    public void Reorder()
+    public void ReloadTasks()
     {
         if (_canvasBody is null)
         {
@@ -325,11 +325,13 @@ public class GanttControl : TemplatedControl
         }
 
         _canvasBody.Children.Clear();
-        foreach (var taskBar in _taskBarsList)
+
+        foreach (var taskBar in _taskBarsDic.Values)
         {
             taskBar.PointerEntered -= TaskBar_PointerEntered;
             taskBar.PointerExited  -= TaskBar_PointerExited;
         }
+        _taskBarsDic.Clear();
 
         if (_ganttModel is null)
         {
@@ -351,10 +353,27 @@ public class GanttControl : TemplatedControl
             Canvas.SetLeft(taskBar, (ganttTask.StartDate      - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
             Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
             _canvasBody.Children.Add(taskBar);
-            _taskBarsList.Add(taskBar);
+            _taskBarsDic.Add(ganttTask, taskBar);
         }
 
-        _ganttHeader?.InvalidateVisual();
+
+        for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
+        {
+            var ganttTask = _ganttModel.GanttTasks[i];
+            var taskBar   = _taskBarsDic[ganttTask];
+
+            if (ganttTask.Parent is { } parentTask)
+            {
+                var parentTaskBar = _taskBarsDic[parentTask];
+                taskBar.ParentTask = parentTaskBar;
+            }
+
+            if (ganttTask.Child is { } childTask)
+            {
+                var childTaskBar = _taskBarsDic[childTask];
+                taskBar.ChildTask = childTaskBar;
+            }
+        }
     }
 
     private void TaskBar_PointerExited(object? sender, global::Avalonia.Input.PointerEventArgs e)
