@@ -1,0 +1,33 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+
+    <!--
+        Additional resources
+        Using Control Themes:
+        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+        Using Theme Variants:
+        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+    -->
+
+    <Design.PreviewWith>
+        <StackPanel
+            Width="400"
+            Spacing="10">
+            <StackPanel Background="{DynamicResource SystemRegionBrush}">
+                <controls:MissionLink />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme
+        x:Key="{x:Type controls:MissionLink}"
+        TargetType="controls:MissionLink">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <TextBlock Text="Templated Control" />
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

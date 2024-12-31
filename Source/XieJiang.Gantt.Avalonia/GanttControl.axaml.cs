@@ -5,8 +5,12 @@ using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
+using Avalonia.Media;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -34,6 +38,8 @@ public class GanttControl : TemplatedControl
         DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.DayWidthInWeeklyModeChanged(e));
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInMonthlyModeChanged(e));
         DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DayWidthChanged(e));
+
+        LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
 
         DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
 
@@ -331,6 +337,7 @@ public class GanttControl : TemplatedControl
             taskBar.PointerEntered -= TaskBar_PointerEntered;
             taskBar.PointerExited  -= TaskBar_PointerExited;
         }
+
         _taskBarsDic.Clear();
 
         if (_ganttModel is null)
@@ -338,6 +345,7 @@ public class GanttControl : TemplatedControl
             return;
         }
 
+        //load taskBars
         for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
         {
             var ganttTask = _ganttModel.GanttTasks[i];
@@ -345,10 +353,12 @@ public class GanttControl : TemplatedControl
             var taskBar = new TaskBar
                           {
                               DataContext = ganttTask,
-                              Width       = ganttTask.DateLength.TotalDays * DayWidth
+                              Width       = ganttTask.DateLength.TotalDays * DayWidth,
+                              Row         = i
                           };
             taskBar.PointerEntered += TaskBar_PointerEntered;
             taskBar.PointerExited  += TaskBar_PointerExited;
+
 
             Canvas.SetLeft(taskBar, (ganttTask.StartDate      - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
             Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
@@ -356,7 +366,7 @@ public class GanttControl : TemplatedControl
             _taskBarsDic.Add(ganttTask, taskBar);
         }
 
-
+        // set parent and child
         for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
         {
             var ganttTask = _ganttModel.GanttTasks[i];
@@ -374,6 +384,27 @@ public class GanttControl : TemplatedControl
                 taskBar.ChildTask = childTaskBar;
             }
         }
+
+        //load lines
+        foreach (var parentTaskBar in _taskBarsDic.Values)
+        {
+            if (parentTaskBar.ChildTask is { } childTask)
+            {
+                var path = new Path()
+                           {
+                               UseLayoutRounding = true,
+                               Stroke            = LinkLineBrush,
+                               StrokeThickness   = 1.5,
+                               Fill              = LinkLineBrush
+                           };
+
+                parentTaskBar.LinkPath = path;
+
+
+                UpdateLinkLine(parentTaskBar);
+                _canvasBody.Children.Add(path);
+            }
+        }
     }
 
     private void TaskBar_PointerExited(object? sender, global::Avalonia.Input.PointerEventArgs e)
@@ -383,6 +414,96 @@ public class GanttControl : TemplatedControl
     #region link
 
     private readonly Pinout _pinout = new Pinout();
+
+    private List<Path> _linkLines = new List<Path>(1000);
+
+    #region LinkLineBrush
+
+    public static readonly StyledProperty<IBrush> LinkLineBrushProperty =
+        AvaloniaProperty.Register<GanttControl, IBrush>(nameof(LinkLineBrush), new SolidColorBrush(Color.FromRgb(180, 180, 180)));
+
+    public IBrush LinkLineBrush
+    {
+        get => GetValue(LinkLineBrushProperty);
+        set => SetValue(LinkLineBrushProperty, value);
+    }
+
+    private void LinkLineBrushChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        foreach (var linkLine in _linkLines)
+        {
+            linkLine.Fill   = LinkLineBrush;
+            linkLine.Stroke = LinkLineBrush;
+        }
+    }
+
+    #endregion
+
+
+    private void UpdateLinkLine(TaskBar parentTaskBar)
+    {
+        var childTask = parentTaskBar.ChildTask;
+        if (childTask is null)
+            return;
+
+        var path = parentTaskBar.LinkPath;
+        if (path is null)
+            return;
+
+        var       streamGeometry = new StreamGeometry();
+        using var sgc            = streamGeometry.Open();
+
+
+        var x0 = Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width;
+        var y0 = Canvas.GetTop(parentTaskBar)  + TaskBarHeight / 2d;
+
+        if (Canvas.GetLeft(childTask) >= Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width)
+        {
+            var x1 = Canvas.GetLeft(childTask) - (Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width) + 10;
+            var y1 = Canvas.GetTop(childTask)                                                          - Canvas.GetTop(parentTaskBar) - TaskBarHeight / 2d;
+
+            sgc.BeginFigure(new Point(0, 0), false);
+            sgc.LineTo(new Point(x1,     0),      true);
+            sgc.LineTo(new Point(x1,     y1 - 3), true);
+            sgc.EndFigure(false);
+
+            //arrow
+            sgc.BeginFigure(new Point(x1, y1), true);
+            sgc.LineTo(new Point(x1 - 4,  y1 - 9), false);
+            sgc.LineTo(new Point(x1 + 4,  y1 - 9), false);
+            sgc.EndFigure(true);
+        }
+        else
+        {
+            sgc.BeginFigure(new Point(0, 0), false);
+            var x1 = 10;
+            sgc.LineTo(new Point(x1, 0), true);
+
+            var y2 = childTask.Row * RowHeight - y0;
+            sgc.LineTo(new Point(x1, y2), true);
+
+            var x3 = Canvas.GetLeft(childTask) - x0 - 18;
+            sgc.LineTo(new Point(x3, y2), true);
+
+            var y3 = Canvas.GetTop(childTask) + TaskBarHeight / 2d - y0;
+            sgc.LineTo(new Point(x3, y3), true);
+
+            var x4 = Canvas.GetLeft(childTask) - x0;
+            sgc.LineTo(new Point(x4 - 3, y3), true);
+            sgc.EndFigure(false);
+
+
+            //arrow
+            sgc.BeginFigure(new Point(x4, y3), true);
+            sgc.LineTo(new Point(x4 - 9,  y3 + 4), false);
+            sgc.LineTo(new Point(x4 - 9,  y3 - 4), false);
+            sgc.EndFigure(false);
+        }
+
+        path.Data = streamGeometry;
+        Canvas.SetLeft(path, x0);
+        Canvas.SetTop(path, y0);
+    }
 
     private void CanvasBody_PointerMoved(object? sender, PointerEventArgs e)
     {
@@ -411,6 +532,7 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
+    #region drag
 
     private void TaskBar_MainDragDelta(GanttControl arg1, RoutedEventArgs e)
     {
@@ -424,8 +546,14 @@ public class GanttControl : TemplatedControl
                 ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
                 ganttTask.EndDate   = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
 
-
                 Canvas.SetLeft(_pinout, l + taskBar.Width);
+
+                if (taskBar.ParentTask is not null)
+                {
+                    UpdateLinkLine(taskBar.ParentTask);
+                }
+
+                UpdateLinkLine(taskBar);
             }
         }
     }
@@ -455,6 +583,13 @@ public class GanttControl : TemplatedControl
 
                     l = taskBar.GetValue(Canvas.LeftProperty);
                     Canvas.SetLeft(_pinout, l + taskBar.Width);
+
+                    if (taskBar.ParentTask is not null)
+                    {
+                        UpdateLinkLine(taskBar.ParentTask);
+                    }
+
+                    UpdateLinkLine(taskBar);
                 }
             }
         }
@@ -467,6 +602,13 @@ public class GanttControl : TemplatedControl
             if (e.Edge == Edges.Right)
             {
                 Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
+
+                if (taskBar.ParentTask is not null)
+                {
+                    UpdateLinkLine(taskBar.ParentTask);
+                }
+
+                UpdateLinkLine(taskBar);
             }
         }
     }
@@ -523,6 +665,15 @@ public class GanttControl : TemplatedControl
                     Canvas.SetLeft(_pinout, l + taskBar.Width);
                 }
             }
+
+            if (taskBar.ParentTask is not null)
+            {
+                UpdateLinkLine(taskBar.ParentTask);
+            }
+
+            UpdateLinkLine(taskBar);
         }
     }
+
+    #endregion
 }

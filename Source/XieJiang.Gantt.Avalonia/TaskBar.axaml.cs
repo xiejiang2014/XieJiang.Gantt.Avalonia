@@ -126,10 +126,10 @@ public class TaskBar : ContentControl
 
     #region ParentTask
 
-    public static readonly StyledProperty<TaskBar> ParentTaskProperty =
-        AvaloniaProperty.Register<TaskBar, TaskBar>(nameof(ParentTask));
+    public static readonly StyledProperty<TaskBar?> ParentTaskProperty =
+        AvaloniaProperty.Register<TaskBar, TaskBar?>(nameof(ParentTask));
 
-    public TaskBar ParentTask
+    public TaskBar? ParentTask
     {
         get => GetValue(ParentTaskProperty);
         set => SetValue(ParentTaskProperty, value);
@@ -145,10 +145,10 @@ public class TaskBar : ContentControl
 
     #region ChildTask
 
-    public static readonly StyledProperty<TaskBar> ChildTaskProperty =
-        AvaloniaProperty.Register<TaskBar, TaskBar>(nameof(ChildTask));
+    public static readonly StyledProperty<TaskBar?> ChildTaskProperty =
+        AvaloniaProperty.Register<TaskBar, TaskBar?>(nameof(ChildTask));
 
-    public TaskBar ChildTask
+    public TaskBar? ChildTask
     {
         get => GetValue(ChildTaskProperty);
         set => SetValue(ChildTaskProperty, value);
@@ -163,6 +163,7 @@ public class TaskBar : ContentControl
 
     #endregion
 
+    public int Row { get; set; }
 
     #region Drag
 
@@ -203,8 +204,7 @@ public class TaskBar : ContentControl
     }
 
     #endregion
-
-
+    
     #region WidthDragging
 
     public static readonly RoutedEvent<WidthDragEventArgs> WidthDragDeltaEvent =
@@ -226,7 +226,6 @@ public class TaskBar : ContentControl
     }
 
     #endregion
-
 
     #region WidthDragCompleted
 
@@ -277,8 +276,7 @@ public class TaskBar : ContentControl
         OnMainDragCompleted();
         e.Handled = true;
     }
-
-
+    
     private void RThumb_DragStarted(object? sender, VectorEventArgs e)
     {
         _widthDragStarted = Width;
@@ -392,4 +390,28 @@ public class TaskBar : ContentControl
     }
 
     #endregion
+
+
+    #region LinkPath
+
+    public static readonly StyledProperty<Path?> LinkPathProperty =
+        AvaloniaProperty.Register<TaskBar, Path?>(nameof(LinkPath));
+
+    public Path? LinkPath
+    {
+        get => GetValue(LinkPathProperty);
+        set => SetValue(LinkPathProperty, value);
+    }
+
+    //放在静态构造行数
+    //LinkPathProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.LinkPathChanged(e));
+
+    private void LinkPathChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+
+
+    }
+
+    #endregion
+
 }

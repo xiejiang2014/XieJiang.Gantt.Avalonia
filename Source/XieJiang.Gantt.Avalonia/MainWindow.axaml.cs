@@ -32,9 +32,9 @@ namespace XieJiang.Gantt.Avalonia
                                           EndDate   = new DateTime(2024, 12, 31),
                                       });
 
-            ganttModel.GanttTasks[0].Child     = ganttModel.GanttTasks[1];
+            ganttModel.GanttTasks[0].Child = ganttModel.GanttTasks[1];
             ganttModel.GanttTasks[1].Parent = ganttModel.GanttTasks[0];
-            ganttModel.GanttTasks[1].Child     = ganttModel.GanttTasks[2];
+            ganttModel.GanttTasks[1].Child = ganttModel.GanttTasks[2];
             ganttModel.GanttTasks[2].Parent = ganttModel.GanttTasks[1];
 
 
