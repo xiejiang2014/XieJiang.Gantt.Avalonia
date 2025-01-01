@@ -511,23 +511,39 @@ public class GanttControl : TemplatedControl
         var       streamGeometry = new StreamGeometry();
         using var sgc            = streamGeometry.Open();
 
+        var down = Canvas.GetTop(childTask) > Canvas.GetTop(parentTaskBar) + TaskBarHeight;
+
         var x0 = Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width;
         var y0 = Canvas.GetTop(parentTaskBar)  + TaskBarHeight / 2d;
 
         if (Canvas.GetLeft(childTask) >= Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width)
         {
             var x1 = Canvas.GetLeft(childTask) - (Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width) + 10;
-            var y1 = Canvas.GetTop(childTask)                                                          - Canvas.GetTop(parentTaskBar) - TaskBarHeight / 2d;
+            var y1 = Canvas.GetTop(childTask) - Canvas.GetTop(parentTaskBar) + (down
+                ? -TaskBarHeight / 2d
+                : TaskBarHeight  / 2d);
 
             sgc.BeginFigure(new Point(0, 0), false);
-            sgc.LineTo(new Point(x1,     0),      true);
-            sgc.LineTo(new Point(x1,     y1 - 3), true);
+            sgc.LineTo(new Point(x1,     0), true);
+            sgc.LineTo(new Point(x1, y1 - (down
+                                     ? 3
+                                     : -3)), true);
             sgc.EndFigure(false);
 
             //arrow
-            sgc.BeginFigure(new Point(x1, y1), true);
-            sgc.LineTo(new Point(x1 - 4,  y1 - 9), false);
-            sgc.LineTo(new Point(x1 + 4,  y1 - 9), false);
+            if (down)
+            {
+                sgc.BeginFigure(new Point(x1, y1), true);
+                sgc.LineTo(new Point(x1 - 4,  y1 - 9), false);
+                sgc.LineTo(new Point(x1 + 4,  y1 - 9), false);
+            }
+            else
+            {
+                sgc.BeginFigure(new Point(x1, y1), true);
+                sgc.LineTo(new Point(x1 - 4,  y1 + 9), false);
+                sgc.LineTo(new Point(x1 + 4,  y1 + 9), false);
+            }
+
             sgc.EndFigure(true);
         }
         else
@@ -536,7 +552,9 @@ public class GanttControl : TemplatedControl
             const int x1 = 10;
             sgc.LineTo(new Point(x1, 0), true);
 
-            var y2 = childTask.Row * RowHeight - y0;
+            var y2 = down
+                ? childTask.Row       * RowHeight - y0
+                : (childTask.Row + 1) * RowHeight - y0;
             sgc.LineTo(new Point(x1, y2), true);
 
             var x3 = Canvas.GetLeft(childTask) - x0 - 18;
@@ -644,7 +662,7 @@ public class GanttControl : TemplatedControl
                                                         true
                                                        );
             var hoveringTaskBar = FindHoveringTaskBar(inputElement);
-            
+
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
                 var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask) &&
