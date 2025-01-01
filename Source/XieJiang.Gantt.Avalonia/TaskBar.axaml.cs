@@ -1,5 +1,5 @@
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -27,7 +27,7 @@ public class TaskBar : ContentControl
     private Thumb?     _progressThumb;
     private Rectangle? _progressRectangle;
 
-    private GanttTask? _ganttTask;
+    internal GanttTask? GanttTask { get; private set; }
 
     static TaskBar()
     {
@@ -46,11 +46,11 @@ public class TaskBar : ContentControl
     {
         if (DataContext is GanttTask ganttTask)
         {
-            _ganttTask = ganttTask;
+            GanttTask = ganttTask;
         }
         else
         {
-            _ganttTask = null;
+            GanttTask = null;
         }
     }
 
@@ -92,7 +92,7 @@ public class TaskBar : ContentControl
             _progressThumb.DragDelta   += ProgressThumb_DragDelta;
 
             _progressThumb.GetObservable(IsVisibleProperty)
-                          .Subscribe(new AnonymousObserver<bool>(b => { Update(); }));
+                          .Subscribe(new AnonymousObserver<bool>(_ => { Update(); }));
         }
 
         Update();
@@ -101,9 +101,9 @@ public class TaskBar : ContentControl
 
     private void Update()
     {
-        if (_ganttTask is not null)
+        if (GanttTask is not null)
         {
-            var p = Width * _ganttTask.Progress;
+            var p = Width * GanttTask.Progress;
 
             if (_foregroundBorder is not null)
             {
@@ -124,42 +124,15 @@ public class TaskBar : ContentControl
         }
     }
 
-    #region ParentTask
+    #region ParentsTasks
 
-    public static readonly StyledProperty<TaskBar?> ParentTaskProperty =
-        AvaloniaProperty.Register<TaskBar, TaskBar?>(nameof(ParentTask));
-
-    public TaskBar? ParentTask
-    {
-        get => GetValue(ParentTaskProperty);
-        set => SetValue(ParentTaskProperty, value);
-    }
-
-    //放在静态构造行数
-    //ParentTaskProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ParentTaskChanged(e));
-    private void ParentTaskChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
-
+    public HashSet<TaskBar> ParentsTasks { get; }=new();
+    
     #endregion
 
     #region ChildTask
 
-    public static readonly StyledProperty<TaskBar?> ChildTaskProperty =
-        AvaloniaProperty.Register<TaskBar, TaskBar?>(nameof(ChildTask));
-
-    public TaskBar? ChildTask
-    {
-        get => GetValue(ChildTaskProperty);
-        set => SetValue(ChildTaskProperty, value);
-    }
-
-    //放在静态构造行数
-    //ChildTaskProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.ChildTaskChanged(e));
-
-    private void ChildTaskChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
+    public HashSet<TaskBar> ChildrenTasks { get; } = new();
 
     #endregion
 
@@ -204,7 +177,7 @@ public class TaskBar : ContentControl
     }
 
     #endregion
-    
+
     #region WidthDragging
 
     public static readonly RoutedEvent<WidthDragEventArgs> WidthDragDeltaEvent =
@@ -276,7 +249,7 @@ public class TaskBar : ContentControl
         OnMainDragCompleted();
         e.Handled = true;
     }
-    
+
     private void RThumb_DragStarted(object? sender, VectorEventArgs e)
     {
         _widthDragStarted = Width;
@@ -378,9 +351,9 @@ public class TaskBar : ContentControl
             _leftDragStarted = newLeft;
 
 
-            if (_ganttTask is not null)
+            if (GanttTask is not null)
             {
-                _ganttTask.Progress = newLeft / Width;
+                GanttTask.Progress = newLeft / Width;
             }
 
             Update();
@@ -390,28 +363,4 @@ public class TaskBar : ContentControl
     }
 
     #endregion
-
-
-    #region LinkPath
-
-    public static readonly StyledProperty<Path?> LinkPathProperty =
-        AvaloniaProperty.Register<TaskBar, Path?>(nameof(LinkPath));
-
-    public Path? LinkPath
-    {
-        get => GetValue(LinkPathProperty);
-        set => SetValue(LinkPathProperty, value);
-    }
-
-    //放在静态构造行数
-    //LinkPathProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.LinkPathChanged(e));
-
-    private void LinkPathChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-
-
-    }
-
-    #endregion
-
 }

@@ -7,8 +7,25 @@ namespace XieJiang.Gantt.Avalonia;
 
 public class GanttTask : INotifyPropertyChanged
 {
-    public GanttTask? Parent { get; set; }
-    public GanttTask? Child     { get; set; }
+    public List<GanttTask> Parents  { get; set; } = new List<GanttTask>();
+    public List<GanttTask> Children { get; set; } = new List<GanttTask>();
+
+    #region Id
+
+    private int _id;
+
+    public int Id
+    {
+        get => _id;
+        set
+        {
+            if (value == _id) return;
+            _id = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
 
 
     #region Progress

@@ -13,6 +13,7 @@ namespace XieJiang.Gantt.Avalonia
             var ganttModel = new GanttModel();
             ganttModel.GanttTasks.Add(new GanttTask()
                                       {
+                                          Id        = 1,
                                           Progress  = 0.5d,
                                           StartDate = new DateTime(2024, 12, 21),
                                           EndDate   = new DateTime(2024, 12, 23),
@@ -20,6 +21,7 @@ namespace XieJiang.Gantt.Avalonia
 
             ganttModel.GanttTasks.Add(new GanttTask()
                                       {
+                                          Id        = 2,
                                           Progress  = 0.2d,
                                           StartDate = new DateTime(2024, 12, 23),
                                           EndDate   = new DateTime(2024, 12, 26),
@@ -27,19 +29,19 @@ namespace XieJiang.Gantt.Avalonia
 
             ganttModel.GanttTasks.Add(new GanttTask()
                                       {
+                                          Id        = 3,
                                           Progress  = 0.7d,
                                           StartDate = new DateTime(2024, 12, 27),
                                           EndDate   = new DateTime(2024, 12, 31),
                                       });
 
-            ganttModel.GanttTasks[0].Child = ganttModel.GanttTasks[1];
-            ganttModel.GanttTasks[1].Parent = ganttModel.GanttTasks[0];
-            ganttModel.GanttTasks[1].Child = ganttModel.GanttTasks[2];
-            ganttModel.GanttTasks[2].Parent = ganttModel.GanttTasks[1];
+            ganttModel.GanttTasks[0].Children.Add(ganttModel.GanttTasks[1]);
+            ganttModel.GanttTasks[1].Parents.Add(ganttModel.GanttTasks[0]);
+            ganttModel.GanttTasks[1].Children.Add(ganttModel.GanttTasks[2]);
+            ganttModel.GanttTasks[2].Parents.Add(ganttModel.GanttTasks[1]);
 
 
             GanttControl.DataContext = ganttModel;
-            
         }
 
         protected override void OnLoaded(RoutedEventArgs e)
@@ -54,7 +56,5 @@ namespace XieJiang.Gantt.Avalonia
         {
             GanttControl.Reload();
         }
-
-
     }
 }
