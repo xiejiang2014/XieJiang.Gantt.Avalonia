@@ -6,12 +6,9 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
-using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 using Avalonia.Media;
-using Avalonia.Remote.Protocol.Input;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -409,13 +406,13 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void TaskBar_PointerExited(object? sender, global::Avalonia.Input.PointerEventArgs e)
+    private void TaskBar_PointerExited(object? sender, PointerEventArgs e)
     {
     }
 
     #region link
 
-    private readonly Pinout _pinout = new Pinout();
+    private readonly Pinout _pinout = new();
 
     private readonly Dictionary<TaskBar, Dictionary<TaskBar, Path>> _dependencyLinesDic = new(1000);
 
@@ -469,12 +466,23 @@ public class GanttControl : TemplatedControl
     #endregion
 
 
-    private void UpdateDependencyLine(TaskBar parentTaskBar)
+    private void UpdateDependencyLine(TaskBar taskBar, bool parents = true, bool children = true)
     {
-        foreach (var childrenTask in parentTaskBar.ChildrenTasks)
+        if (parents)
         {
-            var path = _dependencyLinesDic[parentTaskBar][childrenTask];
-            UpdateDependencyLine(parentTaskBar, childrenTask, path);
+            foreach (var parentTaskBar in taskBar.ParentsTasks)
+            {
+                UpdateDependencyLine(parentTaskBar, taskBar, _dependencyLinesDic[parentTaskBar][taskBar]);
+            }
+        }
+
+        if (children)
+        {
+            foreach (var childTaskBar in taskBar.ChildrenTasks)
+            {
+                var path = _dependencyLinesDic[taskBar][childTaskBar];
+                UpdateDependencyLine(taskBar, childTaskBar, path);
+            }
         }
     }
 
@@ -505,7 +513,7 @@ public class GanttControl : TemplatedControl
         else
         {
             sgc.BeginFigure(new Point(0, 0), false);
-            var x1 = 10;
+            const int x1 = 10;
             sgc.LineTo(new Point(x1, 0), true);
 
             var y2 = childTask.Row * RowHeight - y0;
@@ -545,7 +553,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void TaskBar_PointerEntered(object? sender, global::Avalonia.Input.PointerEventArgs e)
+    private void TaskBar_PointerEntered(object? sender, PointerEventArgs e)
     {
         if (_canvasBody is not null && sender is TaskBar taskBar)
         {
@@ -576,11 +584,6 @@ public class GanttControl : TemplatedControl
                 ganttTask.EndDate   = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
 
                 Canvas.SetLeft(_pinout, l + taskBar.Width);
-
-                foreach (var parentTaskBar in taskBar.ParentsTasks)
-                {
-                    UpdateDependencyLine(parentTaskBar, taskBar, _dependencyLinesDic[parentTaskBar][taskBar]);
-                }
 
                 UpdateDependencyLine(taskBar);
             }
@@ -614,11 +617,6 @@ public class GanttControl : TemplatedControl
                     Canvas.SetLeft(_pinout, l + taskBar.Width);
 
 
-                    foreach (var parentTaskBar in taskBar.ParentsTasks)
-                    {
-                        UpdateDependencyLine(parentTaskBar, taskBar, _dependencyLinesDic[parentTaskBar][taskBar]);
-                    }
-
                     UpdateDependencyLine(taskBar);
                 }
             }
@@ -632,13 +630,11 @@ public class GanttControl : TemplatedControl
             if (e.Edge == Edges.Right)
             {
                 Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
-
-                foreach (var parentTaskBar in taskBar.ParentsTasks)
-                {
-                    UpdateDependencyLine(parentTaskBar, taskBar, _dependencyLinesDic[parentTaskBar][taskBar]);
-                }
-
-                UpdateDependencyLine(taskBar);
+                UpdateDependencyLine(taskBar, false);
+            }
+            else if (e.Edge == Edges.Left)
+            {
+                UpdateDependencyLine(taskBar, true, false);
             }
         }
     }
@@ -696,12 +692,15 @@ public class GanttControl : TemplatedControl
                 }
             }
 
-            foreach (var parentTaskBar in taskBar.ParentsTasks)
+            switch (e.Edge)
             {
-                UpdateDependencyLine(parentTaskBar, taskBar, _dependencyLinesDic[parentTaskBar][taskBar]);
+                case Edges.Left:
+                    UpdateDependencyLine(taskBar, true, false);
+                    break;
+                case Edges.Right:
+                    UpdateDependencyLine(taskBar, false);
+                    break;
             }
-
-            UpdateDependencyLine(taskBar);
         }
     }
 
