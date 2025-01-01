@@ -9,6 +9,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -53,13 +54,11 @@ public class GanttControl : TemplatedControl
         TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_MainDragCompleted);
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragDelta);
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragCompleted);
+
+        _pinout.DragStarted   += Pinout_DragStarted;
+        _pinout.DragDelta     += Pinout_DragDelta;
+        _pinout.DragCompleted += Pinout_DragCompleted;
     }
-
-
-    //private void TaskBar_WidthDragCompleted(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
-    //{
-    //    throw new NotImplementedException();
-    //}
 
     #region DataContext
 
@@ -384,39 +383,31 @@ public class GanttControl : TemplatedControl
         }
 
         //load lines
-        _dependencyLinesDic.Clear();
-        foreach (var parentTaskBar in _taskBarsDic.Values)
-        {
-            foreach (var childTaskBar in parentTaskBar.ChildrenTasks)
-            {
-                var path = new Path()
-                           {
-                               UseLayoutRounding = true,
-                               Stroke            = LinkLineBrush,
-                               StrokeThickness   = 1.5,
-                               Fill              = LinkLineBrush
-                           };
-
-                //Debug.Print($"parentTaskBar:{parentTaskBar.GanttTask.Id} ->childTask:{childTaskBar.GanttTask.Id}");
-
-                SetDependencyLine(parentTaskBar, childTaskBar, path);
-                UpdateDependencyLine(parentTaskBar, childTaskBar, path);
-                _canvasBody.Children.Add(path);
-            }
-        }
+        LoadDependencyLines();
     }
 
     private void TaskBar_PointerExited(object? sender, PointerEventArgs e)
     {
     }
 
-    #region link
+    #region DependencyLine
 
-    private readonly Pinout _pinout = new();
+    private readonly Thumb _pinout = new()
+                                     {
+                                         Classes = { "Pinout" }
+                                     };
+
+    private TaskBar? _pinoutTaskBar;
+
+    private readonly Line _temporaryDependencyLine = new()
+                                                     {
+                                                         Classes          = { "TemporaryDependencyLine" },
+                                                         IsHitTestVisible = false
+                                                     };
 
     private readonly Dictionary<TaskBar, Dictionary<TaskBar, Path>> _dependencyLinesDic = new(1000);
 
-    private void SetDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar, Path dependencyLine)
+    private void SaveDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar, Path dependencyLine)
     {
         if (_dependencyLinesDic.TryGetValue(parentTaskBar, out var subDic))
         {
@@ -429,7 +420,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    public Path? GetDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
+    public Path? ReadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
     {
         if (_dependencyLinesDic.TryGetValue(parentTaskBar, out var dict2))
         {
@@ -465,6 +456,35 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
+
+    private void LoadDependencyLines()
+    {
+        _dependencyLinesDic.Clear();
+        foreach (var parentTaskBar in _taskBarsDic.Values)
+        {
+            foreach (var childTaskBar in parentTaskBar.ChildrenTasks)
+            {
+                LoadDependencyLine(parentTaskBar, childTaskBar);
+            }
+        }
+    }
+
+    private void LoadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
+    {
+        var path = new Path()
+                   {
+                       UseLayoutRounding = true,
+                       Stroke            = LinkLineBrush,
+                       StrokeThickness   = 1.5,
+                       Fill              = LinkLineBrush
+                   };
+
+        //Debug.Print($"parentTaskBar:{parentTaskBar.GanttTask.Id} ->childTask:{childTaskBar.GanttTask.Id}");
+
+        SaveDependencyLine(parentTaskBar, childTaskBar, path);
+        UpdateDependencyLine(parentTaskBar, childTaskBar, path);
+        _canvasBody?.Children.Add(path);
+    }
 
     private void UpdateDependencyLine(TaskBar taskBar, bool parents = true, bool children = true)
     {
@@ -553,6 +573,106 @@ public class GanttControl : TemplatedControl
         }
     }
 
+
+    private double _pinoutOffsetX;
+    private double _pinoutOffsetY;
+
+    private void Pinout_DragStarted(object? sender, VectorEventArgs e)
+    {
+        if (_canvasBody is not null)
+        {
+            var x = Canvas.GetLeft(_pinout) + _pinout.Bounds.Width  / 2d;
+            var y = Canvas.GetTop(_pinout)  + _pinout.Bounds.Height / 2d;
+
+            _pinoutOffsetX = e.Vector.X;
+            _pinoutOffsetY = e.Vector.Y;
+
+            _temporaryDependencyLine.StartPoint = new Point(x, y);
+            _temporaryDependencyLine.EndPoint   = new Point(x, y);
+            _canvasBody.Children.Add(_temporaryDependencyLine);
+        }
+    }
+
+    private void Pinout_DragDelta(object? sender, VectorEventArgs e)
+    {
+        if (_canvasBody is not null)
+        {
+            _temporaryDependencyLine.EndPoint = new Point(Canvas.GetLeft(_pinout) + _pinoutOffsetX + e.Vector.X,
+                                                          Canvas.GetTop(_pinout)  + _pinoutOffsetY + e.Vector.Y
+                                                         );
+
+            var inputElement = _canvasBody.InputHitTest(_temporaryDependencyLine.EndPoint,
+                                                        true
+                                                       );
+
+            var            hoveringTaskBar = FindHoveringTaskBar(inputElement);
+            IPseudoClasses classes         = _temporaryDependencyLine.Classes;
+
+            if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
+            {
+                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask) &&
+                             hoveringTaskBar.GanttTask.CircularDependencyCheck(_pinoutTaskBar.GanttTask);
+
+                if (canAdd)
+                {
+                    classes.Set(":Reject", false);
+                    classes.Set(":Accept", true);
+                }
+                else
+                {
+                    classes.Set(":Reject", true);
+                    classes.Set(":Accept", false);
+                }
+
+                Debug.Print($"InputHitTest:{hoveringTaskBar}({hoveringTaskBar.GanttTask.Id})");
+            }
+            else
+            {
+                classes.Set(":Reject", false);
+                classes.Set(":Accept", false);
+            }
+        }
+    }
+
+    private void Pinout_DragCompleted(object? sender, VectorEventArgs e)
+    {
+        if (_canvasBody is not null)
+        {
+            _canvasBody.Children.Remove(_temporaryDependencyLine);
+
+            var inputElement = _canvasBody.InputHitTest(_temporaryDependencyLine.EndPoint,
+                                                        true
+                                                       );
+            var hoveringTaskBar = FindHoveringTaskBar(inputElement);
+            
+            if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
+            {
+                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask) &&
+                             hoveringTaskBar.GanttTask.CircularDependencyCheck(_pinoutTaskBar.GanttTask);
+
+                if (canAdd)
+                {
+                    _pinoutTaskBar.GanttTask.AddingDependentTask(hoveringTaskBar.GanttTask);
+                    _pinoutTaskBar.ChildrenTasks.Add(hoveringTaskBar);
+                    hoveringTaskBar.ParentsTasks.Add(_pinoutTaskBar);
+                    LoadDependencyLine(_pinoutTaskBar, hoveringTaskBar);
+                }
+            }
+        }
+    }
+
+    private TaskBar? FindHoveringTaskBar(IInputElement? inputElement)
+    {
+        if (inputElement is Visual visual && _pinoutTaskBar?.GanttTask is not null)
+        {
+            return visual.FindAncestorOfType<TaskBar>(true);
+        }
+
+        return null;
+    }
+
+
+    //show pinout
     private void TaskBar_PointerEntered(object? sender, PointerEventArgs e)
     {
         if (_canvasBody is not null && sender is TaskBar taskBar)
@@ -564,6 +684,10 @@ public class GanttControl : TemplatedControl
 
             Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
             Canvas.SetTop(_pinout, Canvas.GetTop(taskBar));
+
+            _pinoutTaskBar = taskBar;
+
+            Debug.Print($"TaskBar_PointerEntered {taskBar.GanttTask?.Id}");
         }
     }
 
@@ -599,7 +723,6 @@ public class GanttControl : TemplatedControl
                 if (DragUnit == DragUnits.Daily)
                 {
                     var l = taskBar.GetValue(Canvas.LeftProperty);
-                    var w = taskBar.Width;
 
                     var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
                     var time      = TimeOnly.FromDateTime(startDate);
@@ -625,7 +748,7 @@ public class GanttControl : TemplatedControl
 
     private void TaskBar_WidthDragDelta(GanttControl arg1, WidthDragEventArgs e)
     {
-        if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
+        if (e.Source is TaskBar { DataContext: GanttTask } taskBar)
         {
             if (e.Edge == Edges.Right)
             {

@@ -16,6 +16,26 @@
         </Style>
 
 
+        <Style Selector="Thumb.Pinout">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border
+                            Height="{Binding RelativeSource={RelativeSource Self},
+                                             Path=(avalonia:GanttControl.TaskBarHeight)}"
+                            Padding="2,0,2,0"
+                            Background="Transparent">
+                            <Ellipse
+                                Width="14"
+                                Height="14"
+                                VerticalAlignment="Center"
+                                Stroke="LightGray"
+                                StrokeThickness="3" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style Selector="Thumb.MainThumb">
             <Setter Property="Template">
@@ -26,7 +46,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
 
         <Style Selector="Thumb.LRThumb">
             <Setter Property="Template">
@@ -85,6 +104,44 @@
             </Setter>
         </Style>
 
+
+        <Style Selector="Line.TemporaryDependencyLine">
+            <Setter
+                Property="Stroke"
+                Value="LightGray" />
+            <Setter
+                Property="Fill"
+                Value="LightGray" />
+            <Setter
+                Property="StrokeThickness"
+                Value="2" />
+            <Setter
+                Property="StrokeDashArray"
+                Value="2,2" />
+
+            <Style Selector="^:Reject">
+                <Setter
+                    Property="Stroke"
+                    Value="red" />
+                <Setter
+                    Property="StrokeDashArray"
+                    Value="" />
+            </Style>
+
+            <Style Selector="^:Accept">
+                <Setter
+                    Property="Stroke"
+                    Value="LightGreen" />
+                <Setter
+                    Property="Fill"
+                    Value="LightGreen" />
+                <Setter
+                    Property="StrokeDashArray"
+                    Value="" />
+            </Style>
+        </Style>
+
+
         <!--<Style Selector="Rectangle.ProgressRectangle">
             <Setter
                 Property="FontSize"
@@ -104,7 +161,6 @@
                 <ResourceInclude Source="avares://XieJiang.Gantt.Avalonia/Themes/GanttControl.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-
 
 
         <SolidColorBrush

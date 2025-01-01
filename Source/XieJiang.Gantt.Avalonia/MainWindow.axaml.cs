@@ -36,7 +36,7 @@ namespace XieJiang.Gantt.Avalonia
                                       });
 
             ganttModel.GanttTasks[0].AddingDependentTask(ganttModel.GanttTasks[1]);
-            ganttModel.GanttTasks[1].AddingDependentTask(ganttModel.GanttTasks[2]);
+            //ganttModel.GanttTasks[1].AddingDependentTask(ganttModel.GanttTasks[2]);
 
             GanttControl.DataContext = ganttModel;
         }
