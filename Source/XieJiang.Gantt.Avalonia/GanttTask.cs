@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -7,8 +8,55 @@ namespace XieJiang.Gantt.Avalonia;
 
 public class GanttTask : INotifyPropertyChanged
 {
-    public List<GanttTask> Parents  { get; set; } = new List<GanttTask>();
-    public List<GanttTask> Children { get; set; } = new List<GanttTask>();
+    #region Dependencies
+
+    public FrozenSet<GanttTask> Parents  => _parents.ToFrozenSet();
+    public FrozenSet<GanttTask> Children => _children.ToFrozenSet();
+
+    private readonly List<GanttTask> _parents  = new();
+    private readonly List<GanttTask> _children = new();
+
+    public bool AddingDependentTask(GanttTask childTask)
+    {
+        _children.Add(childTask);
+        childTask._parents.Add(this);
+
+        return true;
+    }
+
+    public bool RemoveDependentTask(GanttTask childTask)
+    {
+        _children.Remove(childTask);
+        childTask._parents.Remove(this);
+        return true;
+    }
+
+
+    public bool CircularDependencyCheck(GanttTask childTask)
+    {
+        return CircularDependencyCheck(this, childTask);
+    }
+    
+    public bool CircularDependencyCheck(GanttTask parentTask, GanttTask childTask)
+    {
+        foreach (var childTaskChild in childTask.Children)
+        {
+            if (ReferenceEquals(childTaskChild, parentTask))
+            {
+                return false;
+            }
+
+            if (!CircularDependencyCheck(parentTask, childTaskChild))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    #endregion
+
 
     #region Id
 
