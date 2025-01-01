@@ -351,7 +351,8 @@ public class GanttControl : TemplatedControl
                           {
                               DataContext = ganttTask,
                               Width       = ganttTask.DateLength.TotalDays * DayWidth,
-                              Row         = i
+                              Row         = i,
+                              ZIndex      = 1
                           };
             taskBar.PointerEntered += TaskBar_PointerEntered;
             taskBar.PointerExited  += TaskBar_PointerExited;
@@ -473,17 +474,25 @@ public class GanttControl : TemplatedControl
     {
         var path = new Path()
                    {
-                       UseLayoutRounding = true,
-                       Stroke            = LinkLineBrush,
-                       StrokeThickness   = 1.5,
-                       Fill              = LinkLineBrush
+                       Classes = { "DependencyLine" },
+                       //UseLayoutRounding = true,
+                       //Stroke            = LinkLineBrush,
+                       //StrokeThickness   = 1.5,
+                       //Fill              = LinkLineBrush,
+                       ZIndex = 0
                    };
+
+        path.PointerPressed += Path_PointerPressed;
 
         //Debug.Print($"parentTaskBar:{parentTaskBar.GanttTask.Id} ->childTask:{childTaskBar.GanttTask.Id}");
 
         SaveDependencyLine(parentTaskBar, childTaskBar, path);
         UpdateDependencyLine(parentTaskBar, childTaskBar, path);
         _canvasBody?.Children.Add(path);
+    }
+
+    private void Path_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
     }
 
     private void UpdateDependencyLine(TaskBar taskBar, bool parents = true, bool children = true)

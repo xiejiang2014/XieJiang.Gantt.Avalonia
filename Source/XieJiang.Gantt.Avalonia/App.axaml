@@ -105,6 +105,28 @@
         </Style>
 
 
+
+        <Style Selector="Path.DependencyLine">
+            <Setter
+                Property="Cursor"
+                Value="hand" />
+            <Setter
+                Property="Stroke"
+                Value="LightGray" />
+            <Setter
+                Property="Fill"
+                Value="LightGray" />
+            <Setter
+                Property="StrokeThickness"
+                Value="2" />
+
+            <Style Selector="^:pointerover">
+                <Setter
+                    Property="ZIndex"
+                    Value="2" />
+            </Style>
+        </Style>
+
         <Style Selector="Line.TemporaryDependencyLine">
             <Setter
                 Property="Stroke"
@@ -141,12 +163,6 @@
             </Style>
         </Style>
 
-
-        <!--<Style Selector="Rectangle.ProgressRectangle">
-            <Setter
-                Property="FontSize"
-                Value="12" />
-        </Style>-->
 
 
     </Application.Styles>
