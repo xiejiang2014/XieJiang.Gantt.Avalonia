@@ -31,9 +31,7 @@
 
                         <ItemsControl.DataTemplates>
                             <DataTemplate DataType="controls:MonthItem">
-
                                 <Panel x:Name="Week">
-
                                     <Rectangle
                                         Width="{Binding Width}"
                                         Height="{Binding RelativeSource={RelativeSource Self},
@@ -66,9 +64,45 @@
                                         VerticalAlignment="Stretch"
                                         Fill="{StaticResource LightGridBrush}" />
                                 </Panel>
-
-
                             </DataTemplate>
+
+
+                            <DataTemplate DataType="controls:YearItem">
+                                <Panel x:Name="Week">
+                                    <Rectangle
+                                        Width="{Binding Width}"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow1Height)}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Fill="White" />
+
+                                    <TextBlock
+                                        Margin="4,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding Path=Header}" />
+
+
+                                    <!--  底边线  -->
+                                    <Rectangle
+                                        Height="1"
+                                        Margin="0,0"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                    <!--  左边线  -->
+                                    <Rectangle
+                                        Width="1"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow1Height)}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{StaticResource LightGridBrush}" />
+                                </Panel>
+                            </DataTemplate>
+
+
                         </ItemsControl.DataTemplates>
                     </ItemsControl>
 
@@ -159,6 +193,44 @@
 
                                 </Panel>
                             </DataTemplate>
+
+
+                            <DataTemplate DataType="controls:MonthItem">
+                                <Panel Width="{Binding Width}">
+                                    <Rectangle
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow2Height)}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Fill="White" />
+
+                                    <!--  左边线  -->
+                                    <Rectangle
+                                        Width="1"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow2Height)}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        Foreground="#a6a6a6"
+                                        Text="{Binding Path=Header2}" />
+
+
+                                    <!--  底边线  -->
+                                    <Rectangle
+                                        Height="1"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                </Panel>
+                            </DataTemplate>
+
 
                         </ItemsControl.DataTemplates>
                     </ItemsControl>

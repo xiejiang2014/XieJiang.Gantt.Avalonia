@@ -32,14 +32,16 @@
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.DataTemplates>
-                        <DataTemplate DataType="controls:DayItem">
+                        <!--<DataTemplate DataType="controls:DayItem">
                             <Panel>
                                 <Rectangle
                                     Width="{Binding Width}"
                                     Fill="{Binding IsRestDay,
                                                    Converter={StaticResource RestDayBgConverter}}" />
 
-                                <!--  左边线  -->
+                        -->
+                        <!--  左边线  -->
+                        <!--
                                 <Rectangle
                                     Width="1"
                                     HorizontalAlignment="Left"
@@ -49,6 +51,22 @@
                         </DataTemplate>
 
                         <DataTemplate DataType="controls:WeekItem">
+                            <Panel>
+                                <Rectangle
+                                    Width="{Binding Width}"
+                                    Fill="White" />
+
+                        -->
+                        <!--  左边线  -->
+                        <!--
+                                <Rectangle
+                                    Width="1"
+                                    HorizontalAlignment="Left"
+                                    Fill="{StaticResource LightGridBrush}" />
+                            </Panel>
+                        </DataTemplate>-->
+
+                        <DataTemplate DataType="controls:DateItem">
                             <Panel>
                                 <Rectangle
                                     Width="{Binding Width}"

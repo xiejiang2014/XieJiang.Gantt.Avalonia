@@ -37,6 +37,7 @@ public class GanttControl : TemplatedControl
         DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,     e) => sender.DayWidthInWeeklyModeChanged(e));
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInMonthlyModeChanged(e));
         DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInSeasonallyModeChanged(e));
+        DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInYearlyModelChanged(e)); 
         DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,                 e) => sender.DayWidthChanged(e));
 
         //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
@@ -207,6 +208,7 @@ public class GanttControl : TemplatedControl
                        DateModes.Weekly     => DayWidthInWeeklyMode,
                        DateModes.Monthly    => DayWidthInMonthlyMode,
                        DateModes.Seasonally => DayWidthInSeasonallyMode,
+                       DateModes.Yearly     => DayWidthInYearlyModel,
                        _                    => DayWidth
                    };
     }
@@ -277,6 +279,31 @@ public class GanttControl : TemplatedControl
     }
 
     #endregion
+
+
+    #region DayWidthInYearlyModel
+
+    public static readonly StyledProperty<double> DayWidthInYearlyModelProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInYearlyModel), 4d, true);
+
+    public double DayWidthInYearlyModel
+    {
+        get => GetValue(DayWidthInYearlyModelProperty);
+        set => SetValue(DayWidthInYearlyModelProperty, value);
+    }
+    
+    private void DayWidthInYearlyModelChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (DateMode == DateModes.Yearly)
+        {
+            DayWidth = e.GetNewValue<double>();
+        }
+    }
+
+    #endregion
+
+
+
 
 
     #region DayWidth
