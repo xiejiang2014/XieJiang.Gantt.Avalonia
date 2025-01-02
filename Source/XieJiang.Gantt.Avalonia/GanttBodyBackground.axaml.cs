@@ -82,7 +82,7 @@ public class GanttBodyBackground : TemplatedControl
 
     #endregion
 
-    public void Reload(List<DateItem>? dateItems)
+    public void Reload(IList<DateItem>? dateItems)
     {
         DateItems.Clear();
 
@@ -95,7 +95,7 @@ public class GanttBodyBackground : TemplatedControl
         }
 
 
-        var mode = GetValue(GanttControl.DateModeProperty);
+        //var mode = GetValue(GanttControl.DateModeProperty);
 
         //if (mode == DateModes.Weekly)
         //{

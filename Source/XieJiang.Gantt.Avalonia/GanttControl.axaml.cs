@@ -33,10 +33,11 @@ public class GanttControl : TemplatedControl
         HeaderRow1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow1HeightChanged(e));
         HeaderRow2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow2HeightChanged(e));
 
-        DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateModeChanged(e));
-        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,  e) => sender.DayWidthInWeeklyModeChanged(e));
-        DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInMonthlyModeChanged(e));
-        DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DayWidthChanged(e));
+        DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,                 e) => sender.DateModeChanged());
+        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,     e) => sender.DayWidthInWeeklyModeChanged(e));
+        DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInMonthlyModeChanged(e));
+        DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInSeasonallyModeChanged(e));
+        DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,                 e) => sender.DayWidthChanged(e));
 
         //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
 
@@ -58,6 +59,8 @@ public class GanttControl : TemplatedControl
         _pinout.DragStarted   += Pinout_DragStarted;
         _pinout.DragDelta     += Pinout_DragDelta;
         _pinout.DragCompleted += Pinout_DragCompleted;
+
+        DateModeChanged();
     }
 
     #region DataContext
@@ -197,16 +200,15 @@ public class GanttControl : TemplatedControl
         set => SetValue(DateModeProperty, value);
     }
 
-    private void DateModeChanged(AvaloniaPropertyChangedEventArgs e)
+    private void DateModeChanged()
     {
-        if (DateMode == DateModes.Weekly)
-        {
-            DayWidth = 72d;
-        }
-        else if (DateMode == DateModes.Monthly)
-        {
-            DayWidth = 36d;
-        }
+        DayWidth = DateMode switch
+                   {
+                       DateModes.Weekly     => DayWidthInWeeklyMode,
+                       DateModes.Monthly    => DayWidthInMonthlyMode,
+                       DateModes.Seasonally => DayWidthInSeasonallyMode,
+                       _                    => DayWidth
+                   };
     }
 
     #endregion
@@ -214,7 +216,7 @@ public class GanttControl : TemplatedControl
     #region DayWidthInWeeklyMode
 
     public static readonly StyledProperty<double> DayWidthInWeeklyModeProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInWeeklyMode), 36d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInWeeklyMode), 72d, true);
 
     public double DayWidthInWeeklyMode
     {
@@ -232,19 +234,17 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
+
     #region DayWidthInMonthlyMode
 
     public static readonly StyledProperty<double> DayWidthInMonthlyModeProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInMonthlyMode), 72d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInMonthlyMode), 36d, true);
 
     public double DayWidthInMonthlyMode
     {
         get => GetValue(DayWidthInMonthlyModeProperty);
         set => SetValue(DayWidthInMonthlyModeProperty, value);
     }
-
-    //放在静态构造行数
-    //
 
     private void DayWidthInMonthlyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
@@ -256,6 +256,29 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
+
+    #region DayWidthInSeasonlyMode
+
+    public static readonly StyledProperty<double> DayWidthInSeasonallyModeProperty =
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInSeasonallyMode), 12d, true);
+
+    public double DayWidthInSeasonallyMode
+    {
+        get => GetValue(DayWidthInSeasonallyModeProperty);
+        set => SetValue(DayWidthInSeasonallyModeProperty, value);
+    }
+
+    private void DayWidthInSeasonallyModeChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (DateMode == DateModes.Seasonally)
+        {
+            DayWidth = e.GetNewValue<double>();
+        }
+    }
+
+    #endregion
+
+
     #region DayWidth
 
     public static readonly StyledProperty<double> DayWidthProperty =
@@ -266,9 +289,6 @@ public class GanttControl : TemplatedControl
         get => GetValue(DayWidthProperty);
         private set => SetValue(DayWidthProperty, value);
     }
-
-    //放在静态构造行数
-    //
 
     private void DayWidthChanged(AvaloniaPropertyChangedEventArgs e)
     {

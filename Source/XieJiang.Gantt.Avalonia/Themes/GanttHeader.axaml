@@ -13,117 +13,160 @@
         TargetType="controls:GanttHeader">
         <Setter Property="Template">
             <ControlTemplate>
-                <ItemsControl
-                    x:Name="PART_ItemsControlL1"
-                    ItemsSource="{TemplateBinding DateItems}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ava:PreciselyVirtualizingStackPanel Orientation="Horizontal" />
-                            <!--<StackPanel Orientation="Horizontal" />-->
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.DataTemplates>
-                        <DataTemplate DataType="controls:MonthItem">
-
-                            <Grid
-                                x:Name="Week"
-                                RowDefinitions="Auto,Auto">
-
-                                <Rectangle
-                                    Height="{Binding RelativeSource={RelativeSource Self},
-                                                     Path=(controls:GanttControl.HeaderRow1Height)}"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    Fill="White" />
-
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Margin="4,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Text="{Binding Path=DayItems[0].Date,
-                                                   StringFormat=y}" />
+                <Grid
+                    x:Name="Week"
+                    RowDefinitions="Auto,Auto">
 
 
-                                <ItemsControl
-                                    x:Name="WeekDaysItemsControl"
-                                    Grid.Row="1"
-                                    ItemsSource="{Binding DayItems}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <!--<VirtualizingStackPanel Orientation="Horizontal" />-->
-                                            <StackPanel Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
+                    <ItemsControl
+                        x:Name="PART_ItemsControlRow1"
+                        ItemsSource="{TemplateBinding Row1Items}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ava:PreciselyVirtualizingStackPanel Orientation="Horizontal" />
+                                <!--<StackPanel Orientation="Horizontal" />-->
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                                    <ItemsControl.DataTemplates>
-                                        <DataTemplate DataType="controls:DayItem">
-                                            <Panel>
-                                                <Rectangle
-                                                    Width="{Binding RelativeSource={RelativeSource Self},
-                                                                    Path=(controls:GanttControl.DayWidth)}"
-                                                    Height="{Binding RelativeSource={RelativeSource Self},
-                                                                     Path=(controls:GanttControl.HeaderRow2Height)}"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    Fill="{Binding IsRestDay,
-                                                                   Converter={StaticResource RestDayBgConverter}}" />
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="controls:MonthItem">
 
-                                                <!--  左边线  -->
-                                                <Rectangle
-                                                    Width="1"
-                                                    Height="{Binding RelativeSource={RelativeSource Self},
-                                                                     Path=(controls:GanttControl.HeaderRow2Height)}"
-                                                    HorizontalAlignment="Left"
-                                                    VerticalAlignment="Stretch"
-                                                    Fill="{StaticResource LightGridBrush}" />
+                                <Panel x:Name="Week">
 
-                                                <TextBlock
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    FontSize="12"
-                                                    Foreground="#a6a6a6"
-                                                    Text="{Binding Path=Date.Day}" />
+                                    <Rectangle
+                                        Width="{Binding Width}"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow1Height)}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Fill="White" />
+
+                                    <TextBlock
+                                        Margin="4,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding Path=Date,
+                                                       StringFormat=y}" />
 
 
-                                            </Panel>
-                                        </DataTemplate>
-                                    </ItemsControl.DataTemplates>
-                                </ItemsControl>
+                                    <!--  底边线  -->
+                                    <Rectangle
+                                        Height="1"
+                                        Margin="0,0"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                    <!--  左边线  -->
+                                    <Rectangle
+                                        Width="1"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow1Height)}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{StaticResource LightGridBrush}" />
+                                </Panel>
 
 
-                                <!--  底边线  -->
-                                <Rectangle
-                                    Grid.Row="0"
-                                    Height="1"
-                                    Margin="0,0"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Bottom"
-                                    Fill="{StaticResource LightGridBrush}" />
-
-                                <!--  底边线  -->
-                                <Rectangle
-                                    Grid.Row="1"
-                                    Height="1"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Bottom"
-                                    Fill="{StaticResource LightGridBrush}" />
-
-                                <!--  左边线  -->
-                                <Rectangle
-                                    Grid.Row="0"
-                                    Width="1"
-                                    Height="{Binding RelativeSource={RelativeSource Self},
-                                                     Path=(controls:GanttControl.HeaderRow1Height)}"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Stretch"
-                                    Fill="{StaticResource DarkGridBrush}" />
-                            </Grid>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
 
 
-                        </DataTemplate>
-                    </ItemsControl.DataTemplates>
-                </ItemsControl>
+                    <ItemsControl
+                        x:Name="PART_ItemsControlRow2"
+                        Grid.Row="1"
+                        ItemsSource="{TemplateBinding Row2Items}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ava:PreciselyVirtualizingStackPanel Orientation="Horizontal" />
+                                <!--<StackPanel Orientation="Horizontal" />-->
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="controls:DayItem">
+                                <Panel>
+                                    <Rectangle
+                                        Width="{Binding RelativeSource={RelativeSource Self},
+                                                        Path=(controls:GanttControl.DayWidth)}"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow2Height)}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{Binding IsRestDay,
+                                                       Converter={StaticResource RestDayBgConverter}}" />
+
+                                    <!--  左边线  -->
+                                    <Rectangle
+                                        Width="1"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow2Height)}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        Foreground="#a6a6a6"
+                                        Text="{Binding Path=Date.Day}" />
+
+
+                                    <!--  底边线  -->
+                                    <Rectangle
+                                        Height="1"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                </Panel>
+                            </DataTemplate>
+
+                            <DataTemplate DataType="controls:WeekItem">
+                                <Panel Width="{Binding Width}">
+                                    <Rectangle
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow2Height)}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Fill="White" />
+
+                                    <!--  左边线  -->
+                                    <Rectangle
+                                        Width="1"
+                                        Height="{Binding RelativeSource={RelativeSource Self},
+                                                         Path=(controls:GanttControl.HeaderRow2Height)}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        Foreground="#a6a6a6"
+                                        Text="{Binding Path=Header}" />
+
+
+                                    <!--  底边线  -->
+                                    <Rectangle
+                                        Height="1"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Bottom"
+                                        Fill="{StaticResource LightGridBrush}" />
+
+                                </Panel>
+                            </DataTemplate>
+
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+
+
+                </Grid>
+
+
             </ControlTemplate>
         </Setter>
     </ControlTheme>

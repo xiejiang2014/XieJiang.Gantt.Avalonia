@@ -35,8 +35,7 @@
                         <DataTemplate DataType="controls:DayItem">
                             <Panel>
                                 <Rectangle
-                                    Width="{Binding RelativeSource={RelativeSource Self},
-                                                    Path=(controls:GanttControl.DayWidth)}"
+                                    Width="{Binding Width}"
                                     Fill="{Binding IsRestDay,
                                                    Converter={StaticResource RestDayBgConverter}}" />
 
@@ -46,6 +45,20 @@
                                     HorizontalAlignment="Left"
                                     Fill="{Binding IsFirstDayOfWeek,
                                                    Converter={StaticResource DarkGridConverter}}" />
+                            </Panel>
+                        </DataTemplate>
+
+                        <DataTemplate DataType="controls:WeekItem">
+                            <Panel>
+                                <Rectangle
+                                    Width="{Binding Width}"
+                                    Fill="White" />
+
+                                <!--  左边线  -->
+                                <Rectangle
+                                    Width="1"
+                                    HorizontalAlignment="Left"
+                                    Fill="{StaticResource LightGridBrush}" />
                             </Panel>
                         </DataTemplate>
                     </ItemsControl.DataTemplates>
