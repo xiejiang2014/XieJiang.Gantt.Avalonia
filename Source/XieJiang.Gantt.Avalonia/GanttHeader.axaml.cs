@@ -148,10 +148,20 @@ public class GanttHeader : TemplatedControl
 
     public IList<DateItem> Reload()
     {
-        var dayWidth  = GetValue(GanttControl.DayWidthProperty);
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
         var endDate   = GetValue(GanttControl.EndDateProperty);
+
+
+        var dayWidth = dateMode switch
+                       {
+                           DateModes.Weekly     => GetValue(GanttControl.DayWidthInWeeklyModeProperty),
+                           DateModes.Monthly    => GetValue(GanttControl.DayWidthInMonthlyModeProperty),
+                           DateModes.Seasonally => GetValue(GanttControl.DayWidthInSeasonallyModeProperty),
+                           DateModes.Yearly     => GetValue(GanttControl.DayWidthInYearlyModelProperty),
+                           _                    => throw new ArgumentOutOfRangeException()
+                       };
+
 
         Row1Items.Clear();
         Row2Items.Clear();

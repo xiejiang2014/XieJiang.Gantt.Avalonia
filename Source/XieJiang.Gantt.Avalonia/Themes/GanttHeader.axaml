@@ -122,8 +122,7 @@
                             <DataTemplate DataType="controls:DayItem">
                                 <Panel>
                                     <Rectangle
-                                        Width="{Binding RelativeSource={RelativeSource Self},
-                                                        Path=(controls:GanttControl.DayWidth)}"
+                                        Width="{Binding Width}"
                                         Height="{Binding RelativeSource={RelativeSource Self},
                                                          Path=(controls:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Stretch"

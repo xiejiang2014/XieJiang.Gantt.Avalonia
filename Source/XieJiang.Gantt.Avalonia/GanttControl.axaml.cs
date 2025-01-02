@@ -37,8 +37,7 @@ public class GanttControl : TemplatedControl
         DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,     e) => sender.DayWidthInWeeklyModeChanged(e));
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInMonthlyModeChanged(e));
         DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInSeasonallyModeChanged(e));
-        DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInYearlyModelChanged(e)); 
-        DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,                 e) => sender.DayWidthChanged(e));
+        DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInYearlyModelChanged(e));
 
         //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
 
@@ -203,14 +202,7 @@ public class GanttControl : TemplatedControl
 
     private void DateModeChanged()
     {
-        DayWidth = DateMode switch
-                   {
-                       DateModes.Weekly     => DayWidthInWeeklyMode,
-                       DateModes.Monthly    => DayWidthInMonthlyMode,
-                       DateModes.Seasonally => DayWidthInSeasonallyMode,
-                       DateModes.Yearly     => DayWidthInYearlyModel,
-                       _                    => DayWidth
-                   };
+
     }
 
     #endregion
@@ -228,10 +220,7 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInWeeklyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (DateMode == DateModes.Weekly)
-        {
-            DayWidth = e.GetNewValue<double>();
-        }
+
     }
 
     #endregion
@@ -250,10 +239,7 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInMonthlyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (DateMode == DateModes.Monthly)
-        {
-            DayWidth = e.GetNewValue<double>();
-        }
+
     }
 
     #endregion
@@ -272,10 +258,7 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInSeasonallyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (DateMode == DateModes.Seasonally)
-        {
-            DayWidth = e.GetNewValue<double>();
-        }
+
     }
 
     #endregion
@@ -291,36 +274,39 @@ public class GanttControl : TemplatedControl
         get => GetValue(DayWidthInYearlyModelProperty);
         set => SetValue(DayWidthInYearlyModelProperty, value);
     }
-    
+
     private void DayWidthInYearlyModelChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (DateMode == DateModes.Yearly)
-        {
-            DayWidth = e.GetNewValue<double>();
-        }
+
     }
 
     #endregion
 
 
-
-
-
     #region DayWidth
 
-    public static readonly StyledProperty<double> DayWidthProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidth), 72d, true);
+    public double DayWidth => DateMode switch
+                              {
+                                  DateModes.Weekly     => DayWidthInWeeklyMode,
+                                  DateModes.Monthly    => DayWidthInMonthlyMode,
+                                  DateModes.Seasonally => DayWidthInSeasonallyMode,
+                                  DateModes.Yearly     => DayWidthInYearlyModel,
+                                  _                    => DayWidth
+                              };
 
-    public double DayWidth
-    {
-        get => GetValue(DayWidthProperty);
-        private set => SetValue(DayWidthProperty, value);
-    }
+    //public static readonly StyledProperty<double> DayWidthProperty =
+    //    AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidth), 72d, true);
 
-    private void DayWidthChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        ReloadTasks();
-    }
+    //public double DayWidth
+    //{
+    //    get => GetValue(DayWidthProperty);
+    //    private set => SetValue(DayWidthProperty, value);
+    //}
+
+    //private void DayWidthChanged(AvaloniaPropertyChangedEventArgs e)
+    //{
+    //    ReloadTasks();
+    //}
 
     #endregion
 
