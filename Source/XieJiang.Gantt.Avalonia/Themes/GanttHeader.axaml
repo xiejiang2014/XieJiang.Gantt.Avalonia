@@ -76,8 +76,7 @@
                                                                      Path=(controls:GanttControl.HeaderRow2Height)}"
                                                     HorizontalAlignment="Left"
                                                     VerticalAlignment="Stretch"
-                                                    Fill="{Binding IsFirstDayOfWeek,
-                                                                   Converter={StaticResource DarkGridConverter}}" />
+                                                    Fill="{StaticResource LightGridBrush}" />
 
                                                 <TextBlock
                                                     HorizontalAlignment="Center"

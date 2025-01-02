@@ -14,7 +14,7 @@
     <Grid RowDefinitions="*,Auto">
         <avalonia:GanttControl
             x:Name="GanttControl"
-            DragUnit="Daily"
+            DragUnit="Daily" DependencyLinePointerPressed="GanttControl_OnDependencyLinePointerPressed"
             EndDate="2028-2-28"
             StartDate="2024-12-1" />
 

@@ -106,7 +106,7 @@
 
 
 
-        <Style Selector="Path.DependencyLine">
+        <Style Selector="avalonia|DependencyLine.DependencyLine">
             <Setter
                 Property="Cursor"
                 Value="hand" />

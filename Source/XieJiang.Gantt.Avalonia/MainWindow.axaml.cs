@@ -1,5 +1,6 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 
 namespace XieJiang.Gantt.Avalonia
@@ -52,6 +53,11 @@ namespace XieJiang.Gantt.Avalonia
         private void Button_OnClick(object? sender, RoutedEventArgs e)
         {
             GanttControl.Reload();
+        }
+
+        private void GanttControl_OnDependencyLinePointerPressed(object? sender, DependencyLinePointerPressedEventArgs e)
+        {
+
         }
     }
 }

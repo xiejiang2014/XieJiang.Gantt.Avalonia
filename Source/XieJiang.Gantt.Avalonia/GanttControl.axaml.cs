@@ -38,7 +38,7 @@ public class GanttControl : TemplatedControl
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInMonthlyModeChanged(e));
         DayWidthProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DayWidthChanged(e));
 
-        LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
+        //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
 
         DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
 
@@ -201,7 +201,11 @@ public class GanttControl : TemplatedControl
     {
         if (DateMode == DateModes.Weekly)
         {
-            DayWidth = e.GetNewValue<double>();
+            DayWidth = 72d;
+        }
+        else if (DateMode == DateModes.Monthly)
+        {
+            DayWidth = 36d;
         }
     }
 
@@ -255,7 +259,7 @@ public class GanttControl : TemplatedControl
     #region DayWidth
 
     public static readonly StyledProperty<double> DayWidthProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidth), 36d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidth), 72d, true);
 
     public double DayWidth
     {
@@ -406,9 +410,30 @@ public class GanttControl : TemplatedControl
                                                          IsHitTestVisible = false
                                                      };
 
-    private readonly Dictionary<TaskBar, Dictionary<TaskBar, Path>> _dependencyLinesDic = new(1000);
 
-    private void SaveDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar, Path dependencyLine)
+    #region DependencyLinePointerPressed
+
+    public static readonly RoutedEvent<DependencyLinePointerPressedEventArgs> DependencyLinePointerPressedEvent =
+        RoutedEvent.Register<GanttControl, DependencyLinePointerPressedEventArgs>(nameof(DependencyLinePointerPressed), RoutingStrategies.Direct);
+
+    public event EventHandler<DependencyLinePointerPressedEventArgs> DependencyLinePointerPressed
+    {
+        add => AddHandler(DependencyLinePointerPressedEvent, value);
+        remove => RemoveHandler(DependencyLinePointerPressedEvent, value);
+    }
+
+    protected virtual void OnDependencyLinePointerPressed(TaskBar parentTaskBar, TaskBar childTaskBar)
+    {
+        var args = new DependencyLinePointerPressedEventArgs(DependencyLinePointerPressedEvent, parentTaskBar, childTaskBar);
+        RaiseEvent(args);
+    }
+
+    #endregion
+
+
+    private readonly Dictionary<TaskBar, Dictionary<TaskBar, DependencyLine>> _dependencyLinesDic = new(1000);
+
+    private void SaveDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar, DependencyLine dependencyLine)
     {
         if (_dependencyLinesDic.TryGetValue(parentTaskBar, out var subDic))
         {
@@ -416,12 +441,12 @@ public class GanttControl : TemplatedControl
         }
         else
         {
-            subDic = new Dictionary<TaskBar, Path> { { childTaskBar, dependencyLine } };
+            subDic = new Dictionary<TaskBar, DependencyLine> { { childTaskBar, dependencyLine } };
             _dependencyLinesDic.Add(parentTaskBar, subDic);
         }
     }
 
-    public Path? ReadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
+    public DependencyLine? ReadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
     {
         if (_dependencyLinesDic.TryGetValue(parentTaskBar, out var dict2))
         {
@@ -431,32 +456,6 @@ public class GanttControl : TemplatedControl
 
         return null;
     }
-
-    #region LinkLineBrush
-
-    public static readonly StyledProperty<IBrush> LinkLineBrushProperty =
-        AvaloniaProperty.Register<GanttControl, IBrush>(nameof(LinkLineBrush), new SolidColorBrush(Color.FromRgb(180, 180, 180)));
-
-    public IBrush LinkLineBrush
-    {
-        get => GetValue(LinkLineBrushProperty);
-        set => SetValue(LinkLineBrushProperty, value);
-    }
-
-    private void LinkLineBrushChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        foreach (var kv in _dependencyLinesDic.Values)
-        {
-            foreach (var path in kv.Values)
-            {
-                path.Fill   = LinkLineBrush;
-                path.Stroke = LinkLineBrush;
-            }
-        }
-    }
-
-    #endregion
-
 
     private void LoadDependencyLines()
     {
@@ -472,27 +471,29 @@ public class GanttControl : TemplatedControl
 
     private void LoadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
     {
-        var path = new Path()
-                   {
-                       Classes = { "DependencyLine" },
-                       //UseLayoutRounding = true,
-                       //Stroke            = LinkLineBrush,
-                       //StrokeThickness   = 1.5,
-                       //Fill              = LinkLineBrush,
-                       ZIndex = 0
-                   };
+        var dependencyLine = new DependencyLine()
+                             {
+                                 Classes       = { "DependencyLine" },
+                                 ParentTaskBar = parentTaskBar,
+                                 ChildTaskBar  = childTaskBar,
+                                 ZIndex        = 0
+                             };
 
-        path.PointerPressed += Path_PointerPressed;
+        dependencyLine.PointerPressed += DependencyLine_PointerPressed;
 
         //Debug.Print($"parentTaskBar:{parentTaskBar.GanttTask.Id} ->childTask:{childTaskBar.GanttTask.Id}");
 
-        SaveDependencyLine(parentTaskBar, childTaskBar, path);
-        UpdateDependencyLine(parentTaskBar, childTaskBar, path);
-        _canvasBody?.Children.Add(path);
+        SaveDependencyLine(parentTaskBar, childTaskBar, dependencyLine);
+        UpdateDependencyLine(parentTaskBar, childTaskBar, dependencyLine);
+        _canvasBody?.Children.Add(dependencyLine);
     }
 
-    private void Path_PointerPressed(object? sender, PointerPressedEventArgs e)
+    private void DependencyLine_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        if (sender is DependencyLine dependencyLine)
+        {
+            OnDependencyLinePointerPressed(dependencyLine.ParentTaskBar, dependencyLine.ChildTaskBar);
+        }
     }
 
     private void UpdateDependencyLine(TaskBar taskBar, bool parents = true, bool children = true)
@@ -509,13 +510,13 @@ public class GanttControl : TemplatedControl
         {
             foreach (var childTaskBar in taskBar.ChildrenTasks)
             {
-                var path = _dependencyLinesDic[taskBar][childTaskBar];
-                UpdateDependencyLine(taskBar, childTaskBar, path);
+                var dependencyLine = _dependencyLinesDic[taskBar][childTaskBar];
+                UpdateDependencyLine(taskBar, childTaskBar, dependencyLine);
             }
         }
     }
 
-    private void UpdateDependencyLine(TaskBar parentTaskBar, TaskBar childTask, Path path)
+    private void UpdateDependencyLine(TaskBar parentTaskBar, TaskBar childTask, DependencyLine dependencyLine)
     {
         var       streamGeometry = new StreamGeometry();
         using var sgc            = streamGeometry.Open();
@@ -584,9 +585,9 @@ public class GanttControl : TemplatedControl
             sgc.EndFigure(false);
         }
 
-        path.Data = streamGeometry;
-        Canvas.SetLeft(path, x0);
-        Canvas.SetTop(path, y0);
+        dependencyLine.Data = streamGeometry;
+        Canvas.SetLeft(dependencyLine, x0);
+        Canvas.SetTop(dependencyLine, y0);
     }
 
     private void CanvasBody_PointerMoved(object? sender, PointerEventArgs e)
