@@ -4,8 +4,9 @@ namespace XieJiang.Gantt.Avalonia;
 
 public class DateItem
 {
-    public double   Width { get; set; }
-    public DateOnly Date  { get; set; }
+    public double   Width       { get; set; }
+    public DateOnly Date        { get; set; }
+    public int      CountOfDays { get; set; }
 }
 
 public class DayItem : DateItem

@@ -9,7 +9,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using XieJiang.CommonModule.Ava;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -168,51 +167,57 @@ public class GanttHeader : TemplatedControl
 
         if (dateMode is DateModes.Weekly or DateModes.Monthly)
         {
-            var result = new List<DateItem>();
-
-            if (startDate.Year  == endDate.Year &&
-                startDate.Month == endDate.Month)
+            var s = startDate;
+            while (true)
             {
-                var monthItem = new MonthItem() { Date = startDate };
-                var dayItems  = GetMonthDayItems(startDate, dayWidth, endDate).ToArray();
-                monthItem.Width = dayItems.Length * dayWidth;
-                Row1Items.Add(monthItem);
-                result.AddRange(dayItems);
-            }
-            else
-            {
-                while (true)
+                var e = new DateOnly(s.Year, s.Month, 1).AddMonths(1).AddDays(-1);
+                if (e > endDate)
                 {
-                    var lastDayOfMonth = new DateOnly(startDate.Year, startDate.Month, 1).AddMonths(1).AddDays(-1);
-
-                    if (lastDayOfMonth >= endDate)
-                    {
-                        var monthItem = new MonthItem() { Date = startDate };
-                        var dayItems  = GetMonthDayItems(startDate, dayWidth, endDate).ToArray();
-                        monthItem.Width = dayItems.Length * dayWidth;
-                        Row1Items.Add(monthItem);
-                        result.AddRange(dayItems);
-                        break;
-                    }
-                    else
-                    {
-                        var monthItem = new MonthItem() { Date = startDate };
-                        var dayItems  = GetMonthDayItems(startDate, dayWidth, lastDayOfMonth).ToArray();
-                        monthItem.Width = dayItems.Length * dayWidth;
-                        Row1Items.Add(monthItem);
-                        result.AddRange(dayItems);
-
-                        startDate = new DateOnly(startDate.Year, startDate.Month, 1).AddMonths(1);
-                    }
+                    e = endDate;
                 }
+
+                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+
+                var monthItem = new MonthItem()
+                                {
+                                    Width       = countOfDays * dayWidth,
+                                    Date        = s,
+                                    CountOfDays = countOfDays
+                                };
+                Row1Items.Add(monthItem);
+
+                Debug.Print($"MonthItem {s} - {e} days:{countOfDays}");
+
+                if (e == endDate)
+                {
+                    break;
+                }
+
+                s = e.AddDays(1);
             }
 
-            Width = result.Count * dayWidth;
 
-            foreach (var dateItem in result)
+            s = startDate;
+            while (true)
             {
-                Row2Items.Add(dateItem);
+                Row2Items.Add(new DayItem()
+                              {
+                                  Date             = s,
+                                  IsFirstDayOfWeek = s.DayOfWeek == 0,
+                                  IsRestDay        = s.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
+                                  Width            = dayWidth,
+                                  CountOfDays      = 1
+                              });
+
+                if (s >= endDate)
+                {
+                    break;
+                }
+
+                s = s.AddDays(1);
             }
+
+            Width = Row2Items.Sum(v => v.Width);
         }
         else if (dateMode is DateModes.Seasonally)
         {
@@ -225,16 +230,17 @@ public class GanttHeader : TemplatedControl
                     e = endDate;
                 }
 
-                var days = (e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
 
                 var monthItem = new MonthItem()
                                 {
-                                    Width = days * dayWidth,
-                                    Date  = s
+                                    Width       = countOfDays * dayWidth,
+                                    Date        = s,
+                                    CountOfDays = countOfDays
                                 };
                 Row1Items.Add(monthItem);
 
-                Debug.Print($"MonthItem {s} - {endDate} days:{days}");
+                Debug.Print($"MonthItem {s} - {endDate} days:{countOfDays}");
 
                 if (e == endDate)
                 {
@@ -260,16 +266,17 @@ public class GanttHeader : TemplatedControl
                     e = endDate;
                 }
 
-                var days = ((e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1);
+                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
 
                 var weekItem = new WeekItem()
                                {
-                                   Date    = s,
-                                   EndDate = e,
-                                   Width   = dayWidth * days
-                               };
+                                   Date        = s,
+                                   EndDate     = e,
+                                   Width       = dayWidth * countOfDays,
+                                   CountOfDays = countOfDays
+                };
 
-                Debug.Print($"WeekItem {s} - {e} days:{days}");
+                Debug.Print($"WeekItem {s} - {e} days:{countOfDays}");
 
                 Row2Items.Add(weekItem);
 
@@ -295,17 +302,18 @@ public class GanttHeader : TemplatedControl
                     e = endDate;
                 }
 
-                var days = (e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
 
                 var yearItem = new YearItem()
                                {
-                                   Date  = s,
-                                   Width = days * dayWidth
+                                   Date        = s,
+                                   Width       = countOfDays * dayWidth,
+                                   CountOfDays = countOfDays
                                };
 
                 Row1Items.Add(yearItem);
 
-                Debug.Print($"YearItem {s} - {e} days:{days}  Width:{yearItem.Width}");
+                Debug.Print($"YearItem {s} - {e} days:{countOfDays}  Width:{yearItem.Width}");
 
                 if (e == endDate)
                 {
@@ -325,15 +333,16 @@ public class GanttHeader : TemplatedControl
                     e = endDate;
                 }
 
-                var days = (e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
                 var monthItem = new MonthItem()
                                 {
-                                    Width = days * dayWidth,
-                                    Date  = s
+                                    Width       = countOfDays * dayWidth,
+                                    Date        = s,
+                                    CountOfDays = countOfDays
                                 };
                 Row2Items.Add(monthItem);
 
-                Debug.Print($"MonthItem {s} - {e} days:{days}  Width:{monthItem.Width}");
+                Debug.Print($"MonthItem {s} - {e} days:{countOfDays}  Width:{monthItem.Width}");
 
 
                 if (e == endDate)
@@ -349,40 +358,5 @@ public class GanttHeader : TemplatedControl
 
 
         return Row2Items;
-    }
-
-    private static IEnumerable<DayItem> GetMonthDayItems(DateOnly startDay, double dayWidth, DateOnly? endDay = null)
-    {
-        //如果没有指定 endDay,那么 endDay 默认为 startDay 同月的最后一天
-        endDay ??= new DateOnly(startDay.Year, startDay.Month, 1).AddMonths(1).AddDays(-1);
-
-        if (startDay.Year != endDay.Value.Year || startDay.Year != endDay.Value.Year)
-        {
-            throw new ArgumentException("The year or month of startDay and endDay do not match.");
-        }
-
-        if (startDay > endDay)
-        {
-            throw new ArgumentException("startDay cannot be greater than endDay.");
-        }
-
-
-        for (var i = 0; i < 35; i++)
-        {
-            var day = startDay.AddDays(i);
-
-            yield return new DayItem()
-                         {
-                             Date             = day,
-                             IsFirstDayOfWeek = day.DayOfWeek == 0,
-                             IsRestDay        = day.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
-                             Width            = dayWidth
-                         };
-
-            if (day == endDay)
-            {
-                break;
-            }
-        }
     }
 }
