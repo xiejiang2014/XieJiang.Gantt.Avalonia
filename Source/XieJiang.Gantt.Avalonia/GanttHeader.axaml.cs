@@ -165,198 +165,164 @@ public class GanttHeader : TemplatedControl
         Row1Items.Clear();
         Row2Items.Clear();
 
-        if (dateMode is DateModes.Weekly or DateModes.Monthly)
+        switch (dateMode)
         {
-            var s = startDate;
-            while (true)
+            case DateModes.Weekly or DateModes.Monthly:
             {
-                var e = new DateOnly(s.Year, s.Month, 1).AddMonths(1).AddDays(-1);
-                if (e > endDate)
+                foreach (var monthItem in LoadRow1MonthItems(startDate, endDate, dayWidth))
                 {
-                    e = endDate;
+                    Row1Items.Add(monthItem);
                 }
 
-                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
-
-                var monthItem = new MonthItem()
-                                {
-                                    Width       = countOfDays * dayWidth,
-                                    Date        = s,
-                                    CountOfDays = countOfDays
-                                };
-                Row1Items.Add(monthItem);
-
-                Debug.Print($"MonthItem {s} - {e} days:{countOfDays}");
-
-                if (e == endDate)
+                var s = startDate;
+                while (true)
                 {
-                    break;
+                    Row2Items.Add(new DayItem()
+                                  {
+                                      Date             = s,
+                                      IsFirstDayOfWeek = s.DayOfWeek == 0,
+                                      IsRestDay        = s.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
+                                      Width            = dayWidth,
+                                      CountOfDays      = 1
+                                  });
+
+                    if (s >= endDate)
+                    {
+                        break;
+                    }
+
+                    s = s.AddDays(1);
                 }
 
-                s = e.AddDays(1);
+                Width = Row2Items.Sum(v => v.Width);
+                break;
             }
-
-
-            s = startDate;
-            while (true)
+            case DateModes.Seasonally:
             {
-                Row2Items.Add(new DayItem()
-                              {
-                                  Date             = s,
-                                  IsFirstDayOfWeek = s.DayOfWeek == 0,
-                                  IsRestDay        = s.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
-                                  Width            = dayWidth,
-                                  CountOfDays      = 1
-                              });
-
-                if (s >= endDate)
+                foreach (var monthItem in LoadRow1MonthItems(startDate, endDate, dayWidth))
                 {
-                    break;
+                    Row1Items.Add(monthItem);
                 }
 
-                s = s.AddDays(1);
-            }
+                var s = startDate;
+                while (true)
+                {
+                    var dayOfWeek = (int)s.DayOfWeek - 1;
+                    if (dayOfWeek < 0)
+                    {
+                        dayOfWeek = 6;
+                    }
 
-            Width = Row2Items.Sum(v => v.Width);
-        }
-        else if (dateMode is DateModes.Seasonally)
-        {
-            var s = startDate;
-            while (true)
+                    var e = s.AddDays(6 - dayOfWeek);
+
+                    if (e > endDate)
+                    {
+                        e = endDate;
+                    }
+
+                    var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+
+                    var weekItem = new WeekItem()
+                                   {
+                                       Date        = s,
+                                       EndDate     = e,
+                                       Width       = dayWidth * countOfDays,
+                                       CountOfDays = countOfDays
+                                   };
+
+                    Debug.Print($"WeekItem {s} - {e} days:{countOfDays}  Width:{weekItem.Width}");
+
+                    Row2Items.Add(weekItem);
+
+                    if (e >= endDate)
+                    {
+                        break;
+                    }
+
+                    s = e.AddDays(1);
+                }
+
+                Width = Row2Items.Sum(v => v.Width);
+                break;
+            }
+            case DateModes.Yearly:
             {
-                var e = new DateOnly(s.Year, s.Month, 1).AddMonths(1).AddDays(-1);
-                if (e > endDate)
+                var s = startDate;
+                while (true)
                 {
-                    e = endDate;
+                    var e = new DateOnly(s.Year, 1, 1).AddYears(1).AddDays(-1);
+
+                    if (e > endDate)
+                    {
+                        e = endDate;
+                    }
+
+                    var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+
+                    var yearItem = new YearItem()
+                                   {
+                                       Date        = s,
+                                       Width       = countOfDays * dayWidth,
+                                       CountOfDays = countOfDays
+                                   };
+
+                    Row1Items.Add(yearItem);
+
+                    Debug.Print($"YearItem {s} - {e} days:{countOfDays}  Width:{yearItem.Width}");
+
+                    if (e == endDate)
+                    {
+                        break;
+                    }
+
+                    s = e.AddDays(1);
                 }
 
-                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
-
-                var monthItem = new MonthItem()
-                                {
-                                    Width       = countOfDays * dayWidth,
-                                    Date        = s,
-                                    CountOfDays = countOfDays
-                                };
-                Row1Items.Add(monthItem);
-
-                Debug.Print($"MonthItem {s} - {endDate} days:{countOfDays}");
-
-                if (e == endDate)
+                foreach (var monthItem in LoadRow1MonthItems(startDate, endDate, dayWidth))
                 {
-                    break;
+                    Row2Items.Add(monthItem);
                 }
 
-                s = e.AddDays(1);
+                Width = Row2Items.Sum(v => v.Width);
+                break;
             }
-
-            s = startDate;
-            while (true)
-            {
-                var dayOfWeek = (int)s.DayOfWeek - 1;
-                if (dayOfWeek < 0)
-                {
-                    dayOfWeek = 6;
-                }
-
-                var e = s.AddDays(6 - dayOfWeek);
-
-                if (e > endDate)
-                {
-                    e = endDate;
-                }
-
-                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
-
-                var weekItem = new WeekItem()
-                               {
-                                   Date        = s,
-                                   EndDate     = e,
-                                   Width       = dayWidth * countOfDays,
-                                   CountOfDays = countOfDays
-                };
-
-                Debug.Print($"WeekItem {s} - {e} days:{countOfDays}");
-
-                Row2Items.Add(weekItem);
-
-                if (e >= endDate)
-                {
-                    break;
-                }
-
-                s = e.AddDays(1);
-            }
-
-            Width = Row2Items.Sum(v => v.Width);
-        }
-        else if (dateMode is DateModes.Yearly)
-        {
-            var s = startDate;
-            while (true)
-            {
-                var e = new DateOnly(s.Year, 1, 1).AddYears(1).AddDays(-1);
-
-                if (e > endDate)
-                {
-                    e = endDate;
-                }
-
-                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
-
-                var yearItem = new YearItem()
-                               {
-                                   Date        = s,
-                                   Width       = countOfDays * dayWidth,
-                                   CountOfDays = countOfDays
-                               };
-
-                Row1Items.Add(yearItem);
-
-                Debug.Print($"YearItem {s} - {e} days:{countOfDays}  Width:{yearItem.Width}");
-
-                if (e == endDate)
-                {
-                    break;
-                }
-
-                s = e.AddDays(1);
-            }
-
-            s = startDate;
-            while (true)
-            {
-                var e = new DateOnly(s.Year, s.Month, 1).AddMonths(1).AddDays(-1);
-
-                if (e > endDate)
-                {
-                    e = endDate;
-                }
-
-                var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
-                var monthItem = new MonthItem()
-                                {
-                                    Width       = countOfDays * dayWidth,
-                                    Date        = s,
-                                    CountOfDays = countOfDays
-                                };
-                Row2Items.Add(monthItem);
-
-                Debug.Print($"MonthItem {s} - {e} days:{countOfDays}  Width:{monthItem.Width}");
-
-
-                if (e == endDate)
-                {
-                    break;
-                }
-
-                s = e.AddDays(1);
-            }
-
-            Width = Row2Items.Sum(v => v.Width);
         }
 
 
         return Row2Items;
+    }
+
+    private static IEnumerable<MonthItem> LoadRow1MonthItems(DateOnly startDate, DateOnly endDate, double dayWidth)
+    {
+        var s = startDate;
+        while (true)
+        {
+            var e = new DateOnly(s.Year, s.Month, 1).AddMonths(1).AddDays(-1);
+            if (e > endDate)
+            {
+                e = endDate;
+            }
+
+            var countOfDays = (int)(e.ToDateTime(TimeOnly.MinValue) - s.ToDateTime(TimeOnly.MinValue)).TotalDays + 1;
+
+            var monthItem = new MonthItem()
+                            {
+                                Width       = countOfDays * dayWidth,
+                                Date        = s,
+                                CountOfDays = countOfDays
+                            };
+
+            yield return monthItem;
+
+
+            Debug.Print($"MonthItem {s} - {e} days:{countOfDays}");
+
+            if (e == endDate)
+            {
+                break;
+            }
+
+            s = e.AddDays(1);
+        }
     }
 }

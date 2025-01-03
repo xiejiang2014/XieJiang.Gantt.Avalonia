@@ -202,7 +202,7 @@ public class GanttControl : TemplatedControl
 
     private void DateModeChanged()
     {
-
+        Reload();
     }
 
     #endregion
