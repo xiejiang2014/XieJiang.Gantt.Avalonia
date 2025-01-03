@@ -220,7 +220,6 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInWeeklyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
-
     }
 
     #endregion
@@ -239,7 +238,6 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInMonthlyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
-
     }
 
     #endregion
@@ -258,7 +256,6 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInSeasonallyModeChanged(AvaloniaPropertyChangedEventArgs e)
     {
-
     }
 
     #endregion
@@ -277,7 +274,6 @@ public class GanttControl : TemplatedControl
 
     private void DayWidthInYearlyModelChanged(AvaloniaPropertyChangedEventArgs e)
     {
-
     }
 
     #endregion
@@ -760,18 +756,15 @@ public class GanttControl : TemplatedControl
     {
         if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
-            if (DateMode == DateModes.Weekly)
-            {
-                var l = taskBar.GetValue(Canvas.LeftProperty);
-                var w = taskBar.Width;
+            var l = taskBar.GetValue(Canvas.LeftProperty);
+            var w = taskBar.Width;
 
-                ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
-                ganttTask.EndDate   = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+            ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
+            ganttTask.EndDate   = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
 
-                Canvas.SetLeft(_pinout, l + taskBar.Width);
+            Canvas.SetLeft(_pinout, l + taskBar.Width);
 
-                UpdateDependencyLine(taskBar);
-            }
+            UpdateDependencyLine(taskBar);
         }
     }
 
@@ -779,30 +772,27 @@ public class GanttControl : TemplatedControl
     {
         if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
-            if (DateMode == DateModes.Weekly)
+            if (DragUnit == DragUnits.Daily)
             {
-                if (DragUnit == DragUnits.Daily)
-                {
-                    var l = taskBar.GetValue(Canvas.LeftProperty);
+                var l = taskBar.GetValue(Canvas.LeftProperty);
 
-                    var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
-                    var time      = TimeOnly.FromDateTime(startDate);
-                    startDate = time.Hour > 12
-                        ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
-                        : new DateTime(startDate.Year, startDate.Month, startDate.Day);
+                var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
+                var time      = TimeOnly.FromDateTime(startDate);
+                startDate = time.Hour > 12
+                    ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
+                    : new DateTime(startDate.Year, startDate.Month, startDate.Day);
 
-                    var endDate = startDate.Add(ganttTask.DateLength);
+                var endDate = startDate.Add(ganttTask.DateLength);
 
-                    ganttTask.StartDate = startDate;
-                    ganttTask.EndDate   = endDate;
-                    Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
+                ganttTask.StartDate = startDate;
+                ganttTask.EndDate   = endDate;
+                Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
 
-                    l = taskBar.GetValue(Canvas.LeftProperty);
-                    Canvas.SetLeft(_pinout, l + taskBar.Width);
+                l = taskBar.GetValue(Canvas.LeftProperty);
+                Canvas.SetLeft(_pinout, l + taskBar.Width);
 
 
-                    UpdateDependencyLine(taskBar);
-                }
+                UpdateDependencyLine(taskBar);
             }
         }
     }

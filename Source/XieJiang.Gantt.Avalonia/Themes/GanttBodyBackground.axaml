@@ -7,11 +7,8 @@
     <Design.PreviewWith>
         <Panel
             Width="800"
-            Height="500"
-            Background="CornflowerBlue">
-            <controls:GanttBodyBackground
-                Margin="10"
-                VerticalAlignment="Stretch" />
+            Height="500">
+            <controls:GanttBodyBackground VerticalAlignment="Stretch" />
         </Panel>
     </Design.PreviewWith>
 
@@ -21,66 +18,85 @@
         TargetType="controls:GanttBodyBackground">
         <Setter Property="Template">
             <ControlTemplate>
-                <ItemsControl
-                    x:Name="PART_ItemsControl"
-                    ItemsSource="{TemplateBinding DateItems}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ava:PreciselyVirtualizingStackPanel Orientation="Horizontal" />
-                            <!--<StackPanel Orientation="Horizontal" />-->
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                <Panel>
+                    <ItemsControl
+                        x:Name="PART_ItemsControl"
+                        ItemsSource="{TemplateBinding DateItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ava:PreciselyVirtualizingStackPanel Orientation="Horizontal" />
+                                <!--<StackPanel Orientation="Horizontal" />-->
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.DataTemplates>
-                        <DataTemplate DataType="controls:DayItem">
-                            <Panel>
-                                <Rectangle
-                                    Width="{Binding Width}"
-                                    Fill="{Binding IsRestDay,
-                                                   Converter={StaticResource RestDayBgConverter}}" />
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="controls:DayItem">
+                                <Panel>
+                                    <Rectangle
+                                        Width="{Binding Width}"
+                                        Fill="{Binding IsRestDay,
+                                                       Converter={StaticResource RestDayBgConverter}}" />
 
-                        
-                          <!--左边线-->  
-                        
-                                <Rectangle
-                                    Width="1"
-                                    HorizontalAlignment="Left"
-                                    Fill="{Binding IsFirstDayOfWeek,
-                                                   Converter={StaticResource DarkGridConverter}}" />
-                            </Panel>
-                        </DataTemplate>
 
-                        <DataTemplate DataType="controls:WeekItem">
-                            <Panel>
-                                <Rectangle
-                                    Width="{Binding Width}"
-                                    Fill="White" />
+                                    <!--  左边线  -->
 
-                        
-                          <!--左边线-->  
-                        
-                                <Rectangle
-                                    Width="1"
-                                    HorizontalAlignment="Left"
-                                    Fill="{StaticResource LightGridBrush}" />
-                            </Panel>
-                        </DataTemplate>
+                                    <Rectangle
+                                        Width="1"
+                                        HorizontalAlignment="Left"
+                                        Fill="{Binding IsFirstDayOfWeek,
+                                                       Converter={StaticResource DarkGridConverter}}" />
+                                </Panel>
+                            </DataTemplate>
 
-                        <DataTemplate DataType="controls:DateItem">
-                            <Panel>
-                                <Rectangle
-                                    Width="{Binding Width}"
-                                    Fill="White" />
+                            <DataTemplate DataType="controls:WeekItem">
+                                <Panel>
+                                    <Rectangle
+                                        Width="{Binding Width}"
+                                        Fill="White" />
 
-                                <!--  左边线  -->
-                                <Rectangle
-                                    Width="1"
-                                    HorizontalAlignment="Left"
-                                    Fill="{StaticResource LightGridBrush}" />
-                            </Panel>
-                        </DataTemplate>
-                    </ItemsControl.DataTemplates>
-                </ItemsControl>
+
+                                    <!--  左边线  -->
+
+                                    <Rectangle
+                                        Width="1"
+                                        HorizontalAlignment="Left"
+                                        Fill="{StaticResource LightGridBrush}" />
+                                </Panel>
+                            </DataTemplate>
+
+                            <DataTemplate DataType="controls:DateItem">
+                                <Panel>
+                                    <Rectangle
+                                        Width="{Binding Width}"
+                                        Fill="White" />
+
+                                    <!--  左边线  -->
+                                    <Rectangle
+                                        Width="1"
+                                        HorizontalAlignment="Left"
+                                        Fill="{StaticResource LightGridBrush}" />
+                                </Panel>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+
+                    <Panel
+                        x:Name="PART_MarkLineToday"
+                        HorizontalAlignment="Left">
+                        <PathIcon
+                            Width="14"
+                            Height="7"
+                            Margin="-7,0,0,0"
+                            VerticalAlignment="Top"
+                            Data="L50 0 L25 25Z" />
+
+                        <Rectangle
+                            Width="1"
+                            Margin="-7,0,0,0"
+                            Fill="Black" />
+                    </Panel>
+
+                </Panel>
             </ControlTemplate>
         </Setter>
     </ControlTheme>

@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -9,26 +11,28 @@ using XieJiang.CommonModule.Ava;
 
 namespace XieJiang.Gantt.Avalonia;
 
+[TemplatePart("PART_ItemsControl",  typeof(ItemsControl))]
+[TemplatePart("PART_MarkLineToday", typeof(Panel))]
 public class GanttBodyBackground : TemplatedControl
 {
     private ItemsControl? _partItemsControl;
+    private Panel?        _markLineToday;
+
     static GanttBodyBackground()
     {
         DateItemsProperty.Changed.AddClassHandler<GanttBodyBackground>((sender, e) => sender.DateItemsChanged(e));
     }
 
-
     public GanttBodyBackground()
     {
     }
-
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
+        _markLineToday    = e.NameScope.Find<Panel>("PART_MarkLineToday");
     }
-
 
     protected override void OnLoaded(RoutedEventArgs e)
     {
@@ -63,6 +67,7 @@ public class GanttBodyBackground : TemplatedControl
     {
         return new Size(Width, viewport.measuredV);
     }
+
     #region DateItems
 
     public static readonly StyledProperty<ObservableCollection<DateItem>> DateItemsProperty =
@@ -84,6 +89,19 @@ public class GanttBodyBackground : TemplatedControl
 
     public void Reload(IList<DateItem>? dateItems)
     {
+        var dateMode  = GetValue(GanttControl.DateModeProperty);
+        var startDate = GetValue(GanttControl.StartDateProperty);
+        //var endDate   = GetValue(GanttControl.EndDateProperty);
+
+        var dayWidth = dateMode switch
+                       {
+                           DateModes.Weekly     => GetValue(GanttControl.DayWidthInWeeklyModeProperty),
+                           DateModes.Monthly    => GetValue(GanttControl.DayWidthInMonthlyModeProperty),
+                           DateModes.Seasonally => GetValue(GanttControl.DayWidthInSeasonallyModeProperty),
+                           DateModes.Yearly     => GetValue(GanttControl.DayWidthInYearlyModelProperty),
+                           _                    => throw new ArgumentOutOfRangeException()
+                       };
+
         DateItems.Clear();
 
         if (dateItems is not null)
@@ -94,13 +112,11 @@ public class GanttBodyBackground : TemplatedControl
             }
         }
 
-
-        //var mode = GetValue(GanttControl.DateModeProperty);
-
-        //if (mode == DateModes.Weekly)
-        //{
-        //    var dayWidth = GetValue(GanttControl.DayWidthProperty);
-        //    Width = dateItems.Count * dayWidth;
-        //}
+        if (_markLineToday != null)
+        {
+            var l = (DateTime.Now - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
+            
+            _markLineToday.Margin = new Thickness(l,0,0,0);
+        }
     }
 }
