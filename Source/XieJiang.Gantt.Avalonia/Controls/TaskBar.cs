@@ -9,7 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
 
-namespace XieJiang.Gantt.Avalonia;
+namespace XieJiang.Gantt.Avalonia.Controls;
 
 [TemplatePart("PART_BackgroundBorder",  typeof(Border))]
 [TemplatePart("PART_ForegroundBorder",  typeof(Border))]

@@ -2,7 +2,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
-    xmlns:controls="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia">
+    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia">
 
     <Design.PreviewWith>
         <Panel
@@ -30,7 +31,7 @@
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.DataTemplates>
-                            <DataTemplate DataType="controls:DayItem">
+                            <DataTemplate DataType="gantt:DayItem">
                                 <Panel>
                                     <Rectangle
                                         Width="{Binding Width}"
@@ -48,7 +49,7 @@
                                 </Panel>
                             </DataTemplate>
 
-                            <DataTemplate DataType="controls:WeekItem">
+                            <DataTemplate DataType="gantt:WeekItem">
                                 <Panel>
                                     <Rectangle
                                         Width="{Binding Width}"
@@ -64,7 +65,7 @@
                                 </Panel>
                             </DataTemplate>
 
-                            <DataTemplate DataType="controls:DateItem">
+                            <DataTemplate DataType="gantt:DateItem">
                                 <Panel>
                                     <Rectangle
                                         Width="{Binding Width}"

@@ -10,7 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using XieJiang.CommonModule.Ava;
 
-namespace XieJiang.Gantt.Avalonia;
+namespace XieJiang.Gantt.Avalonia.Controls;
 
 public class GanttHeader : TemplatedControl
 {

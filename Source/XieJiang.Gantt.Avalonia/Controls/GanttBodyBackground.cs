@@ -9,13 +9,13 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using XieJiang.CommonModule.Ava;
 
-namespace XieJiang.Gantt.Avalonia;
+namespace XieJiang.Gantt.Avalonia.Controls;
 
-[TemplatePart("PART_ItemsControl",  typeof(ItemsControl))]
+[TemplatePart("PART_ItemsControl", typeof(ItemsControl))]
 [TemplatePart("PART_MarkLineToday", typeof(MarkLineToday))]
 public class GanttBodyBackground : TemplatedControl
 {
-    private ItemsControl?  _partItemsControl;
+    private ItemsControl? _partItemsControl;
     private MarkLineToday? _markLineToday;
 
     static GanttBodyBackground()
@@ -31,7 +31,7 @@ public class GanttBodyBackground : TemplatedControl
     {
         base.OnApplyTemplate(e);
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
-        _markLineToday    = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
+        _markLineToday = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -40,7 +40,7 @@ public class GanttBodyBackground : TemplatedControl
         {
             var panel = (PreciselyVirtualizingStackPanel)_partItemsControl.ItemsPanelRoot!;
             panel.EstimateIndexAndPosition = EstimateIndexAndPosition;
-            panel.OnCalculateDesiredSize   = OnCalculateDesiredSize;
+            panel.OnCalculateDesiredSize = OnCalculateDesiredSize;
         }
 
         base.OnLoaded(e);
@@ -89,17 +89,17 @@ public class GanttBodyBackground : TemplatedControl
 
     public void Reload(IList<DateItem>? dateItems)
     {
-        var dateMode  = GetValue(GanttControl.DateModeProperty);
+        var dateMode = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
 
         var dayWidth = dateMode switch
-                       {
-                           DateModes.Weekly     => GetValue(GanttControl.DayWidthInWeeklyModeProperty),
-                           DateModes.Monthly    => GetValue(GanttControl.DayWidthInMonthlyModeProperty),
-                           DateModes.Seasonally => GetValue(GanttControl.DayWidthInSeasonallyModeProperty),
-                           DateModes.Yearly     => GetValue(GanttControl.DayWidthInYearlyModelProperty),
-                           _                    => throw new ArgumentOutOfRangeException()
-                       };
+        {
+            DateModes.Weekly => GetValue(GanttControl.DayWidthInWeeklyModeProperty),
+            DateModes.Monthly => GetValue(GanttControl.DayWidthInMonthlyModeProperty),
+            DateModes.Seasonally => GetValue(GanttControl.DayWidthInSeasonallyModeProperty),
+            DateModes.Yearly => GetValue(GanttControl.DayWidthInYearlyModelProperty),
+            _ => throw new ArgumentOutOfRangeException()
+        };
         ReloadGrid(dateItems, dayWidth);
 
         ReloadMarkLineToday(startDate, dayWidth);

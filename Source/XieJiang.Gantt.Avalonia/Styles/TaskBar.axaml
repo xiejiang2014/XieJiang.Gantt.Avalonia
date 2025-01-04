@@ -1,21 +1,22 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia"
-    x:DataType="avalonia:GanttTask">
+    xmlns:gantt="clr-namespace:XieJiang.Gantt.Avalonia"
+    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    x:DataType="gantt:GanttTask">
 
     <Design.PreviewWith>
         <StackPanel Width="400">
             <StackPanel Background="{DynamicResource SystemRegionBrush}">
-                <avalonia:TaskBar Background="#8E466A" />
+                <controls:TaskBar Background="#8E466A" />
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
 
 
     <ControlTheme
-        x:Key="{x:Type avalonia:TaskBar}"
-        TargetType="avalonia:TaskBar">
+        x:Key="{x:Type controls:TaskBar}"
+        TargetType="controls:TaskBar">
 
         <Setter
             Property="MinWidth"
@@ -55,7 +56,7 @@
                         Grid.Row="0"
                         Width="{TemplateBinding Width}"
                         Height="{Binding RelativeSource={RelativeSource Self},
-                                         Path=(avalonia:GanttControl.TaskBarHeight)}"
+                                         Path=(gantt:GanttControl.TaskBarHeight)}"
                         Background="{TemplateBinding Background}"
                         ClipToBounds="True"
                         CornerRadius="{TemplateBinding CornerRadius}">
