@@ -10,6 +10,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.VisualTree;
+using XieJiang.Gantt.Avalonia.Controls;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -38,7 +39,7 @@ public class GanttControl : TemplatedControl
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInMonthlyModeChanged(e));
         DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInSeasonallyModeChanged(e));
         DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInYearlyModelChanged(e));
-
+        DateTimeNowProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateTimeNowChanged(e));
         //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
 
         DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
@@ -305,6 +306,26 @@ public class GanttControl : TemplatedControl
     //}
 
     #endregion
+
+
+    #region DateTimeNow
+
+    public static readonly StyledProperty<DateTime?> DateTimeNowProperty =
+        AvaloniaProperty.Register<GanttControl, DateTime?>(nameof(DateTimeNow), null, true);
+
+    public DateTime? DateTimeNow
+    {
+        get => GetValue(DateTimeNowProperty);
+        set => SetValue(DateTimeNowProperty, value);
+    }
+
+    private void DateTimeNowChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth);
+    }
+
+    #endregion
+
 
     #region StartDate
 

@@ -12,11 +12,11 @@ using XieJiang.CommonModule.Ava;
 namespace XieJiang.Gantt.Avalonia;
 
 [TemplatePart("PART_ItemsControl",  typeof(ItemsControl))]
-[TemplatePart("PART_MarkLineToday", typeof(Panel))]
+[TemplatePart("PART_MarkLineToday", typeof(MarkLineToday))]
 public class GanttBodyBackground : TemplatedControl
 {
-    private ItemsControl? _partItemsControl;
-    private Panel?        _markLineToday;
+    private ItemsControl?  _partItemsControl;
+    private MarkLineToday? _markLineToday;
 
     static GanttBodyBackground()
     {
@@ -31,7 +31,7 @@ public class GanttBodyBackground : TemplatedControl
     {
         base.OnApplyTemplate(e);
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
-        _markLineToday    = e.NameScope.Find<Panel>("PART_MarkLineToday");
+        _markLineToday    = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -91,7 +91,6 @@ public class GanttBodyBackground : TemplatedControl
     {
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
-        //var endDate   = GetValue(GanttControl.EndDateProperty);
 
         var dayWidth = dateMode switch
                        {
@@ -101,7 +100,14 @@ public class GanttBodyBackground : TemplatedControl
                            DateModes.Yearly     => GetValue(GanttControl.DayWidthInYearlyModelProperty),
                            _                    => throw new ArgumentOutOfRangeException()
                        };
+        ReloadGrid(dateItems, dayWidth);
 
+        ReloadMarkLineToday(startDate, dayWidth);
+    }
+
+
+    public void ReloadGrid(IList<DateItem>? dateItems, double dayWidth)
+    {
         DateItems.Clear();
 
         if (dateItems is not null)
@@ -111,12 +117,21 @@ public class GanttBodyBackground : TemplatedControl
                 DateItems.Add(t);
             }
         }
+    }
 
+    public void ReloadMarkLineToday(DateOnly startDate, double dayWidth)
+    {
+        var dateTimeNow = GetValue(GanttControl.DateTimeNowProperty);
         if (_markLineToday != null)
         {
-            var l = (DateTime.Now - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
-            
-            _markLineToday.Margin = new Thickness(l,0,0,0);
+            if (dateTimeNow is null)
+            {
+                dateTimeNow = DateTime.Now;
+            }
+
+            var l = (dateTimeNow.Value - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
+
+            _markLineToday.Margin = new Thickness(l, 0, 0, 0);
         }
     }
 }

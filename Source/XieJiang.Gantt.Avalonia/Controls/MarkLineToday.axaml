@@ -1,0 +1,49 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+
+    <!--
+        Additional resources
+        Using Control Themes:
+        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+        Using Theme Variants:
+        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+    -->
+
+    <Design.PreviewWith>
+        <Panel
+            Width="50"
+            Height="100">
+            <controls:MarkLineToday
+                Margin="20,0,0,0"
+                ClipToBounds="False" />
+        </Panel>
+    </Design.PreviewWith>
+
+    <ControlTheme
+        x:Key="{x:Type controls:MarkLineToday}"
+        TargetType="controls:MarkLineToday">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel
+                    HorizontalAlignment="Left"
+                    ClipToBounds="False">
+                    <PathIcon
+                        Width="14"
+                        Height="7"
+                        Margin="-6.5,0,0,0"
+                        VerticalAlignment="Top"
+                        Data="L50 0 L25 25Z"
+                        Foreground="DeepSkyBlue" />
+
+                    <Rectangle
+                        Width="1"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Left"
+                        Fill="DeepSkyBlue" />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

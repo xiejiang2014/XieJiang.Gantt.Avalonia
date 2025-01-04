@@ -27,7 +27,10 @@
         <StackPanel
             Grid.Row="1"
             Orientation="Horizontal">
-            <Button Click="Button_OnClick">Reload</Button>
+            <Button Click="ButtonReload_OnClick">Reload</Button>
+
+
+            <Button Click="ButtonToday_OnClick">Today</Button>
 
             <Button Click="ButtonWeekly_OnClick">Weekly</Button>
             <Button Click="ButtonMonthly_OnClick">Monthly</Button>

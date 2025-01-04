@@ -12,9 +12,16 @@
         </StackPanel>
     </Design.PreviewWith>
 
+
+
+
+
     <ControlTheme
         x:Key="{x:Type avalonia:TaskBar}"
         TargetType="avalonia:TaskBar">
+
+
+
 
         <Setter
             Property="MinWidth"

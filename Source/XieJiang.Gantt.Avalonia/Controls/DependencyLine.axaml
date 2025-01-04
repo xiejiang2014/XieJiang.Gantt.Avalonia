@@ -1,0 +1,36 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Add Styles Here  -->
+
+
+    <Style Selector="controls|DependencyLine">
+        <Setter
+            Property="Cursor"
+            Value="hand" />
+        <Setter
+            Property="Stroke"
+            Value="LightGray" />
+        <Setter
+            Property="Fill"
+            Value="LightGray" />
+        <Setter
+            Property="StrokeThickness"
+            Value="2" />
+
+        <Style Selector="^:pointerover">
+            <Setter
+                Property="ZIndex"
+                Value="2" />
+        </Style>
+    </Style>
+
+
+</Styles>

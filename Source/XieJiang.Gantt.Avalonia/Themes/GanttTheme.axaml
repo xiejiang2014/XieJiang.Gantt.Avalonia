@@ -1,8 +1,101 @@
-<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Styles
+    x:Class="XieJiang.Gantt.Avalonia.Themes.GanttTheme"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
+
+    <StyleInclude Source="/Controls/Thumb.axaml" />
+    <StyleInclude Source="/Controls/DependencyLine.axaml" />
+
+
+    <Style Selector="TextBlock.ProgressTextBlock">
+        <Setter
+            Property="FontSize"
+            Value="12" />
+    </Style>
+
+
+    <Style Selector="Thumb.MainThumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Background="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+    <Style Selector="Line.TemporaryDependencyLine">
+        <Setter
+            Property="Stroke"
+            Value="LightGray" />
+        <Setter
+            Property="Fill"
+            Value="LightGray" />
+        <Setter
+            Property="StrokeThickness"
+            Value="2" />
+        <Setter
+            Property="StrokeDashArray"
+            Value="2,2" />
+
+        <Style Selector="^:Reject">
+            <Setter
+                Property="Stroke"
+                Value="red" />
+            <Setter
+                Property="StrokeDashArray"
+                Value="" />
+        </Style>
+
+        <Style Selector="^:Accept">
+            <Setter
+                Property="Stroke"
+                Value="LightGreen" />
+            <Setter
+                Property="Fill"
+                Value="LightGreen" />
+            <Setter
+                Property="StrokeDashArray"
+                Value="" />
+        </Style>
+    </Style>
+
     <Styles.Resources>
+
         <ResourceDictionary>
 
+            <SolidColorBrush
+                x:Key="LightGridBrush"
+                Color="#EBEBEB" />
 
+            <SolidColorBrush
+                x:Key="DarkGridBrush"
+                Color="#D6D6D6" />
+
+            <avalonia:BoolToBrushConverter
+                x:Key="RestDayBgConverter"
+                FalseBrush="White"
+                TrueBrush="#FAFAFA" />
+
+            <avalonia:BoolToBrushConverter
+                x:Key="DarkGridConverter"
+                FalseBrush="#EBEBEB"
+                TrueBrush="#D6D6D6" />
+
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Controls/Pinout.axaml" />
+                <ResourceInclude Source="/Controls/MarkLineToday.axaml" />
+                <ResourceInclude Source="/Controls/TaskBar.axaml" />
+                <ResourceInclude Source="/Controls/GanttHeader.axaml" />
+                <ResourceInclude Source="/Controls/GanttBodyBackground.axaml" />
+                <ResourceInclude Source="/Controls/GanttControl.axaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+
+
     </Styles.Resources>
 </Styles>

@@ -50,13 +50,18 @@ namespace XieJiang.Gantt.Avalonia
         }
 
 
-        private void Button_OnClick(object? sender, RoutedEventArgs e)
+        private void GanttControl_OnDependencyLinePointerPressed(object? sender, DependencyLinePointerPressedEventArgs e)
+        {
+        }
+
+        private void ButtonReload_OnClick(object? sender, RoutedEventArgs e)
         {
             GanttControl.Reload();
         }
 
-        private void GanttControl_OnDependencyLinePointerPressed(object? sender, DependencyLinePointerPressedEventArgs e)
+        private void ButtonToday_OnClick(object? sender, RoutedEventArgs e)
         {
+
         }
 
         private void ButtonWeekly_OnClick(object? sender, RoutedEventArgs e)
@@ -78,5 +83,6 @@ namespace XieJiang.Gantt.Avalonia
         {
             GanttControl.DateMode = DateModes.Yearly;
         }
+
     }
 }

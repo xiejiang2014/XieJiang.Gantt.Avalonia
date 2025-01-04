@@ -80,22 +80,10 @@
                         </ItemsControl.DataTemplates>
                     </ItemsControl>
 
-                    <Panel
+                    <controls:MarkLineToday
                         x:Name="PART_MarkLineToday"
-                        HorizontalAlignment="Left">
-                        <PathIcon
-                            Width="14"
-                            Height="7"
-                            Margin="-7,0,0,0"
-                            VerticalAlignment="Top"
-                            Data="L50 0 L25 25Z" />
-
-                        <Rectangle
-                            Width="1"
-                            Margin="-7,0,0,0"
-                            Fill="Black" />
-                    </Panel>
-
+                        HorizontalAlignment="Left"
+                        ClipToBounds="False" />
                 </Panel>
             </ControlTemplate>
         </Setter>

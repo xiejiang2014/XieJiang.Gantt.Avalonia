@@ -1,0 +1,72 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
+
+
+    <Style Selector="Thumb.Pinout">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border
+                        Height="{Binding RelativeSource={RelativeSource Self},
+                                         Path=(avalonia:GanttControl.TaskBarHeight)}"
+                        Padding="2,0,2,0"
+                        Background="Transparent">
+                        <Ellipse
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Stroke="LightGray"
+                            StrokeThickness="3" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- <Style Selector="Thumb.MainThumb"> -->
+    <!--     <Setter Property="Template"> -->
+    <!--         <Setter.Value> -->
+    <!--             <ControlTemplate> -->
+    <!--                 <Border Background="Transparent" /> -->
+    <!--             </ControlTemplate> -->
+    <!--         </Setter.Value> -->
+    <!--     </Setter> -->
+    <!-- </Style> -->
+
+    <Style Selector="Thumb.LRThumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Border
+                            Width="5"
+                            Background="#66000000"
+                            CornerRadius="2" />
+                        <Rectangle
+                            Width="1"
+                            Margin="0,3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Stretch"
+                            Fill="White"
+                            StrokeThickness="0" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style Selector="Thumb.ProgressThumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+
+                    <Path
+                        Height="8"
+                        Data="M6,0 L12,8 L0,8z"
+                        Fill="{TemplateBinding Background}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</Styles>
