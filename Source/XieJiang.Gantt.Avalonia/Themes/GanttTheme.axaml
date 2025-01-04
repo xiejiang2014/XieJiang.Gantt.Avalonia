@@ -15,15 +15,6 @@
     </Style>
 
 
-    <Style Selector="Thumb.MainThumb">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border Background="Transparent" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
 
 

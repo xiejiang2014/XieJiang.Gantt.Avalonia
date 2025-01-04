@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="GanttHeader2.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\DoubleNegationConverter.cs" Link="XieJiang.CommonModule\DoubleNegationConverter.cs" />
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\DoubleSubtractiveConverter.cs" Link="XieJiang.CommonModule\DoubleSubtractiveConverter.cs" />
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\CollectionUtils.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\CollectionUtils.cs" />
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\IEnumerableUtils.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\IEnumerableUtils.cs" />
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\PreciselyVirtualizingStackPanel.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\PreciselyVirtualizingStackPanel.cs" />
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\RealizedStackElements.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\RealizedStackElements.cs" />
-    <Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\VirtualizingSnapPointsList.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\VirtualizingSnapPointsList.cs" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.2" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.2" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.2" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.2" />
-  </ItemGroup>
+	<Import Project="../Package.props" />
 
-  <ItemGroup>
-    <Folder Include="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\" />
-    <Folder Include="XieJiang.CommonModule\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<Title>XieJiang.Gantt.Avalonia</Title>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\DoubleNegationConverter.cs" Link="XieJiang.CommonModule\DoubleNegationConverter.cs" />
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\DoubleSubtractiveConverter.cs" Link="XieJiang.CommonModule\DoubleSubtractiveConverter.cs" />
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\CollectionUtils.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\CollectionUtils.cs" />
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\IEnumerableUtils.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\IEnumerableUtils.cs" />
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\PreciselyVirtualizingStackPanel.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\PreciselyVirtualizingStackPanel.cs" />
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\RealizedStackElements.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\RealizedStackElements.cs" />
+		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\VirtualizingSnapPointsList.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\VirtualizingSnapPointsList.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\" />
+		<Folder Include="XieJiang.CommonModule\" />
+	</ItemGroup>
 </Project>

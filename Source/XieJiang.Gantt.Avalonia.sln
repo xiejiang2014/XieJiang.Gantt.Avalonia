@@ -5,6 +5,13 @@ VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XieJiang.Gantt.Avalonia", "XieJiang.Gantt.Avalonia\XieJiang.Gantt.Avalonia.csproj", "{1A1CBFD5-F398-42EA-A0F3-4C9446523077}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{62D67F77-37ED-44C2-ADCD-9CC12F700A62}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		Package.props = Package.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
