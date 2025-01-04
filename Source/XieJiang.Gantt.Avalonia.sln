@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		Package.props = Package.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XieJiang.Gantt.Avalonia.Demo", "XieJiang.Gantt.Avalonia.Demo\XieJiang.Gantt.Avalonia.Demo.csproj", "{BEFD66E2-A714-452B-ACDE-7533FAD86D03}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{1A1CBFD5-F398-42EA-A0F3-4C9446523077}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A1CBFD5-F398-42EA-A0F3-4C9446523077}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A1CBFD5-F398-42EA-A0F3-4C9446523077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEFD66E2-A714-452B-ACDE-7533FAD86D03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEFD66E2-A714-452B-ACDE-7533FAD86D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEFD66E2-A714-452B-ACDE-7533FAD86D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEFD66E2-A714-452B-ACDE-7533FAD86D03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
