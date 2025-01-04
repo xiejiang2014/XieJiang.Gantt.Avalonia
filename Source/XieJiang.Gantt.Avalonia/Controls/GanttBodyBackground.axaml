@@ -2,7 +2,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
-    xmlns:controls="using:XieJiang.Gantt.Avalonia">
+    xmlns:controls="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia">
 
     <Design.PreviewWith>
         <Panel

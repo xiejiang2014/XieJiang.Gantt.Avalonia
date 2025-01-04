@@ -1,9 +1,9 @@
 <Project>
     <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
-        <Version>11.2.2.0</Version>
+        <Version>11.2.3.0</Version>
         <Authors>XieJiang</Authors>
         <Description>Gantt chart component for AvaloniaUI.</Description>
         <RepositoryUrl>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</RepositoryUrl>
@@ -13,7 +13,7 @@
         <!--<PackageIcon>Icon.Png</PackageIcon>-->
 
         <PackageProjectUrl>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</PackageProjectUrl>
-        <AvaloniaVersion>11.2.2</AvaloniaVersion>
+        <AvaloniaVersion>11.2.3</AvaloniaVersion>
     </PropertyGroup>
 
     <ItemGroup>
