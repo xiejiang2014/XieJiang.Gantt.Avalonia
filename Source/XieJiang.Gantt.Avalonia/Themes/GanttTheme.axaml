@@ -78,12 +78,12 @@
 
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Styles/Pinout.axaml" />
-                <ResourceInclude Source="/Styles/MarkLineToday.axaml" />
-                <ResourceInclude Source="/Styles/TaskBar.axaml" />
-                <ResourceInclude Source="/Styles/GanttHeader.axaml" />
-                <ResourceInclude Source="/Styles/GanttBodyBackground.axaml" />
-                <ResourceInclude Source="/Styles/GanttControl.axaml" />
+                <ResourceInclude Source="/Themes/Pinout.axaml" />
+                <ResourceInclude Source="/Themes/MarkLineToday.axaml" />
+                <ResourceInclude Source="/Themes/TaskBar.axaml" />
+                <ResourceInclude Source="/Themes/GanttHeader.axaml" />
+                <ResourceInclude Source="/Themes/GanttBodyBackground.axaml" />
+                <ResourceInclude Source="/Themes/GanttControl.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 

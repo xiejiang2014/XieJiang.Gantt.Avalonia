@@ -21,6 +21,7 @@
         <Setter
             Property="MinWidth"
             Value="50" />
+
         <Setter
             Property="VerticalContentAlignment"
             Value="Center" />
