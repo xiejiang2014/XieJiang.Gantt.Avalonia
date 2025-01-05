@@ -19,17 +19,26 @@
         </StackPanel>
     </Design.PreviewWith>
 
+
+    <ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary.MergedDictionaries>
+
+
+    <QuarticEaseInOut x:Key="QuarticEaseInOut" />
+
     <ControlTheme
         x:Key="{x:Type gantt:GanttControl}"
         TargetType="gantt:GanttControl">
         <Setter Property="Template">
+
             <ControlTemplate>
                 <Grid RowDefinitions="Auto,*,Auto">
                     <controls:GanttHeader
                         x:Name="PART_GanttHeader"
                         HorizontalAlignment="Left">
                         <controls:GanttHeader.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform
+                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </controls:GanttHeader.RenderTransform>
                     </controls:GanttHeader>
 
@@ -41,7 +50,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch">
                         <controls:GanttBodyBackground.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform
+                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </controls:GanttBodyBackground.RenderTransform>
                     </controls:GanttBodyBackground>
 
@@ -54,14 +64,15 @@
                         VerticalAlignment="Stretch"
                         Background="Transparent">
                         <Canvas.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform
+                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </Canvas.RenderTransform>
 
 
                     </Canvas>
 
                     <ScrollBar
-                        x:Name="HScrollBar"
+                        x:Name="PART_HScrollBar"
                         Grid.Row="2"
                         VerticalAlignment="Bottom"
                         AllowAutoHide="False"
@@ -69,12 +80,18 @@
                         <ScrollBar.Maximum>
                             <MultiBinding Converter="{x:Static ava:DoubleSubtractiveConverter.Default}">
                                 <Binding Path="#PART_GanttHeader.Width" />
-                                <Binding Path="#HScrollBar.Bounds.Width" />
+                                <Binding Path="#PART_HScrollBar.Bounds.Width" />
                             </MultiBinding>
                         </ScrollBar.Maximum>
+                        <ScrollBar.Transitions>
+                            <Transitions>
+                                <DoubleTransition Easing="{StaticResource QuarticEaseInOut}" Property="Value" Duration="0:0:0.8" />
+                            </Transitions>
+                        </ScrollBar.Transitions>
                     </ScrollBar>
 
                     <ScrollBar
+                        x:Name="PART_VScrollBar"
                         Grid.Row="1"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Stretch" />

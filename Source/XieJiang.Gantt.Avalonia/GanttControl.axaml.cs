@@ -17,11 +17,19 @@ namespace XieJiang.Gantt.Avalonia;
 [TemplatePart("PART_GanttHeader",         typeof(GanttHeader))]
 [TemplatePart("PART_GanttBodyBackground", typeof(GanttBodyBackground))]
 [TemplatePart("PART_CanvasBody",          typeof(Canvas))]
+[TemplatePart("PART_HScrollBar",          typeof(ScrollBar))]
+[TemplatePart("PART_VScrollBar",          typeof(ScrollBar))]
 public class GanttControl : TemplatedControl
 {
+    #region Parts
+
     private GanttHeader?         _ganttHeader;
     private GanttBodyBackground? _ganttBodyBackground;
     private Canvas?              _canvasBody;
+    private ScrollBar?           _hScrollBar;
+    private ScrollBar?           _vScrollBar;
+
+    #endregion
 
 
     static GanttControl()
@@ -91,6 +99,8 @@ public class GanttControl : TemplatedControl
         _ganttHeader         = e.NameScope.Find<GanttHeader>("PART_GanttHeader");
         _ganttBodyBackground = e.NameScope.Find<GanttBodyBackground>("PART_GanttBodyBackground");
         _canvasBody          = e.NameScope.Find<Canvas>("PART_CanvasBody");
+        _hScrollBar          = e.NameScope.Find<ScrollBar>("PART_HScrollBar");
+        _vScrollBar          = e.NameScope.Find<ScrollBar>("PART_VScrollBar");
 
         if (_canvasBody is not null)
         {
@@ -922,6 +932,22 @@ public class GanttControl : TemplatedControl
                     UpdateDependencyLine(taskBar, false);
                     break;
             }
+        }
+    }
+
+    #endregion
+
+    #region Scroll
+
+    public void ScrollToNow()
+    {
+        if (_hScrollBar is not null)
+        {
+            var dateTimeNow = DateTimeNow ?? DateTime.Now;
+
+            var nowOffset = (dateTimeNow - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - _hScrollBar.Bounds.Width / 2d;
+
+            _hScrollBar.Value = nowOffset;
         }
     }
 

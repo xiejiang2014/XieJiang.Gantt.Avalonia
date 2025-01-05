@@ -2,8 +2,8 @@
     x:Class="XieJiang.Gantt.Avalonia.Demo.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:XieJiang="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="XieJiang.Gantt.Avalonia.Demo"
     d:DesignHeight="450"
@@ -11,7 +11,7 @@
     mc:Ignorable="d">
 
     <Grid RowDefinitions="*,Auto">
-        <XieJiang:GanttControl
+        <gantt:GanttControl
             x:Name="GanttControl"
             DateMode="Weekly"
             DependencyLinePointerPressed="GanttControl_OnDependencyLinePointerPressed"
@@ -25,9 +25,17 @@
             <Button Click="ButtonReload_OnClick">Reload</Button>
 
 
-            <Button Click="ButtonToday_OnClick">Today</Button>
+            <Button
+                Margin="20,0,0,0"
+                Click="ButtonScrollToNow_OnClick">
+                ScrollToNow
+            </Button>
 
-            <Button Click="ButtonWeekly_OnClick">Weekly</Button>
+            <Button
+                Margin="20,0,0,0"
+                Click="ButtonWeekly_OnClick">
+                Weekly
+            </Button>
             <Button Click="ButtonMonthly_OnClick">Monthly</Button>
             <Button Click="ButtonSeasonally_OnClick">Seasonally</Button>
             <Button Click="ButtonYearly_OnClick">Yearly</Button>

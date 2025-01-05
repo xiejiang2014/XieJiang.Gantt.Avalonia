@@ -57,9 +57,9 @@ namespace XieJiang.Gantt.Avalonia.Demo
             GanttControl.Reload();
         }
 
-        private void ButtonToday_OnClick(object? sender, RoutedEventArgs e)
+        private void ButtonScrollToNow_OnClick(object? sender, RoutedEventArgs e)
         {
-
+            GanttControl.ScrollToNow();
         }
 
         private void ButtonWeekly_OnClick(object? sender, RoutedEventArgs e)
