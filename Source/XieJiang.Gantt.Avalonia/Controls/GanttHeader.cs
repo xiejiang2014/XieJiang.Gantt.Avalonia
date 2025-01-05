@@ -145,7 +145,7 @@ public class GanttHeader : TemplatedControl
     #endregion
 
 
-    public IList<DateItem> Reload()
+    public IList<DateItem> Reload(GanttModel ganttModel)
     {
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);

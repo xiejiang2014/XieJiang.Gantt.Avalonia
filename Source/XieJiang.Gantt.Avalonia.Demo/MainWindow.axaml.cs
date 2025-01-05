@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
+using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Demo
 {
@@ -11,31 +12,39 @@ namespace XieJiang.Gantt.Avalonia.Demo
             InitializeComponent();
             var ganttModel = new GanttModel();
             ganttModel.GanttTasks.Add(new GanttTask()
-            {
-                Id = 1,
-                Progress = 0.5d,
-                StartDate = new DateTime(2024, 12, 21),
-                EndDate = new DateTime(2024, 12, 23),
-            });
+                                      {
+                                          Id        = 1,
+                                          Progress  = 0.5d,
+                                          StartDate = new DateTime(2024, 12, 21),
+                                          EndDate   = new DateTime(2024, 12, 23),
+                                      });
 
             ganttModel.GanttTasks.Add(new GanttTask()
-            {
-                Id = 2,
-                Progress = 0.2d,
-                StartDate = new DateTime(2024, 12, 23),
-                EndDate = new DateTime(2024, 12, 26),
-            });
+                                      {
+                                          Id        = 2,
+                                          Progress  = 0.2d,
+                                          StartDate = new DateTime(2024, 12, 23),
+                                          EndDate   = new DateTime(2024, 12, 26),
+                                      });
 
             ganttModel.GanttTasks.Add(new GanttTask()
-            {
-                Id = 3,
-                Progress = 0.7d,
-                StartDate = new DateTime(2024, 12, 27),
-                EndDate = new DateTime(2024, 12, 31),
-            });
+                                      {
+                                          Id        = 3,
+                                          Progress  = 0.7d,
+                                          StartDate = new DateTime(2024, 12, 27),
+                                          EndDate   = new DateTime(2024, 12, 31),
+                                      });
 
             ganttModel.GanttTasks[0].AddingDependentTask(ganttModel.GanttTasks[1]);
-            //ganttModel.GanttTasks[1].AddingDependentTask(ganttModel.GanttTasks[2]);
+            ganttModel.GanttTasks[1].AddingDependentTask(ganttModel.GanttTasks[2]);
+
+
+            ganttModel.Milestones.Add(new Milestone()
+                                      {
+                                          DateTime = new DateTime(2025, 1, 6, 12, 30, 0),
+                                          Title    = "Deadline"
+                                      });
+
 
             GanttControl.DataContext = ganttModel;
         }
@@ -81,6 +90,5 @@ namespace XieJiang.Gantt.Avalonia.Demo
         {
             GanttControl.DateMode = DateModes.Yearly;
         }
-
     }
 }

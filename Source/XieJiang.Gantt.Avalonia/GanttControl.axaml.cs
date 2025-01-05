@@ -11,6 +11,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Controls;
+using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -31,9 +32,9 @@ public class GanttControl : TemplatedControl
 
     #endregion
 
-
     static GanttControl()
     {
+        // -----------------------------   Property.Changed:
         //TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBarsChanged(e));
         TaskBarHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskBarHeightChanged(e));
 
@@ -54,6 +55,7 @@ public class GanttControl : TemplatedControl
 
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
+        // -----------------------------   
     }
 
     public GanttControl()
@@ -65,11 +67,41 @@ public class GanttControl : TemplatedControl
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragDelta);
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragCompleted);
 
+        Button.ClickEvent.AddClassHandler<GanttControl>(ButtonClicked);
+
         _pinout.DragStarted   += Pinout_DragStarted;
         _pinout.DragDelta     += Pinout_DragDelta;
         _pinout.DragCompleted += Pinout_DragCompleted;
 
+        //PointerPressed += GanttControl_PointerPressed;
+
+
         DateModeChanged();
+    }
+
+    private void ButtonClicked(GanttControl sender, RoutedEventArgs e)
+    {
+        if (e.Source is Button button && button.Classes.Contains("HeaderMilestoneButton"))
+        {
+        }
+    }
+
+    //private void GanttControl_PointerPressed(object? sender, PointerPressedEventArgs e)
+    //{
+    //    if (e.Source is IInputElement v)
+    //    {
+    //        var xxx = FindHeaderDayItem(v);
+    //    }
+    //}
+
+    private HeaderDayItem? FindHeaderDayItem(IInputElement? inputElement)
+    {
+        if (inputElement is Visual visual)
+        {
+            return visual.FindAncestorOfType<HeaderDayItem>(true);
+        }
+
+        return null;
     }
 
     #region DataContext
@@ -377,10 +409,19 @@ public class GanttControl : TemplatedControl
 
     public void Reload()
     {
-        var dateItems = _ganttHeader?.Reload();
-        _ganttBodyBackground?.Reload(dateItems);
+        if (_ganttModel is null)
+        {
+            //todo clear
+
+            return;
+        }
+
+        var dateItems = _ganttHeader?.Reload(_ganttModel);
+        _ganttBodyBackground?.Reload(dateItems, _ganttModel);
         ReloadTasks();
+        ReloadMilestones();
     }
+
 
     private readonly Dictionary<GanttTask, TaskBar> _taskBarsDic = new(1000);
 
@@ -461,7 +502,12 @@ public class GanttControl : TemplatedControl
         LoadDependencyLines();
     }
 
+
     private void TaskBar_PointerExited(object? sender, PointerEventArgs e)
+    {
+    }
+
+    private void ReloadMilestones()
     {
     }
 
@@ -703,7 +749,7 @@ public class GanttControl : TemplatedControl
                                                         true
                                                        );
 
-            var            hoveringTaskBar = FindHoveringTaskBar(inputElement);
+            var            hoveringTaskBar = FindTaskBar(inputElement);
             IPseudoClasses classes         = _temporaryDependencyLine.Classes;
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
@@ -741,7 +787,7 @@ public class GanttControl : TemplatedControl
             var inputElement = _canvasBody.InputHitTest(_temporaryDependencyLine.EndPoint,
                                                         true
                                                        );
-            var hoveringTaskBar = FindHoveringTaskBar(inputElement);
+            var hoveringTaskBar = FindTaskBar(inputElement);
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
@@ -759,7 +805,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private TaskBar? FindHoveringTaskBar(IInputElement? inputElement)
+    private TaskBar? FindTaskBar(IInputElement? inputElement)
     {
         if (inputElement is Visual visual && _pinoutTaskBar?.GanttTask is not null)
         {
@@ -950,6 +996,11 @@ public class GanttControl : TemplatedControl
             _hScrollBar.Value = nowOffset;
         }
     }
+
+    #endregion
+
+
+    #region Milestone
 
     #endregion
 }

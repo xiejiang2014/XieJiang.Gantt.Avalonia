@@ -8,15 +8,20 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using XieJiang.CommonModule.Ava;
+using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
+[TemplatePart("PART_RootPanel",     typeof(Panel))]
 [TemplatePart("PART_ItemsControl",  typeof(ItemsControl))]
 [TemplatePart("PART_MarkLineToday", typeof(MarkLineToday))]
 public class GanttBodyBackground : TemplatedControl
 {
+    private Panel?         _rootPanel;
     private ItemsControl?  _partItemsControl;
     private MarkLineToday? _markLineToday;
+
+    private List<MilestoneLine> _MilestoneLines = new(20);
 
     static GanttBodyBackground()
     {
@@ -30,6 +35,7 @@ public class GanttBodyBackground : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
+        _rootPanel        = e.NameScope.Find<Panel>("PART_RootPanel");
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
         _markLineToday    = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
     }
@@ -87,7 +93,7 @@ public class GanttBodyBackground : TemplatedControl
 
     #endregion
 
-    public void Reload(IList<DateItem>? dateItems)
+    public void Reload(IList<DateItem>? dateItems, GanttModel ganttModel)
     {
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
@@ -103,6 +109,8 @@ public class GanttBodyBackground : TemplatedControl
         ReloadGrid(dateItems, dayWidth);
 
         ReloadMarkLineToday(startDate, dayWidth);
+
+        ReloadMilestones(ganttModel.Milestones, dayWidth);
     }
 
 
@@ -132,6 +140,43 @@ public class GanttBodyBackground : TemplatedControl
             var left = (dateTimeNow.Value - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
 
             _markLineToday.Margin = new Thickness(left, 0, 0, 0);
+        }
+    }
+
+
+    public void ReloadMilestones(IEnumerable<Milestone> milestones, double dayWidth)
+    {
+        if (_rootPanel is not null)
+        {
+            foreach (var MilestoneLine in _MilestoneLines)
+            {
+                _rootPanel.Children.Remove(MilestoneLine);
+            }
+
+
+            var startDate   = GetValue(GanttControl.StartDateProperty);
+
+            var dateTimeNow = GetValue(GanttControl.DateTimeNowProperty);
+            if (dateTimeNow is null)
+            {
+                dateTimeNow = DateTime.Now;
+            }
+
+            foreach (var milestone in milestones)
+            {
+                var MilestoneLine = new MilestoneLine()
+                                        {
+                                            ClipToBounds = false,
+                                            DataContext = milestone,
+                                            HorizontalAlignment = HorizontalAlignment.Left
+                                        };
+
+                var left = (milestone.DateTime- startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
+                MilestoneLine.Margin = new Thickness(left, 0, 0, 0);
+
+                _MilestoneLines.Add(MilestoneLine);
+                _rootPanel.Children.Add(MilestoneLine);
+            }
         }
     }
 }

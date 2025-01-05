@@ -19,7 +19,7 @@
         TargetType="controls:GanttBodyBackground">
         <Setter Property="Template">
             <ControlTemplate>
-                <Panel>
+                <Panel x:Name="PART_RootPanel">
                     <ItemsControl
                         x:Name="PART_ItemsControl"
                         ItemsSource="{TemplateBinding DateItems}">

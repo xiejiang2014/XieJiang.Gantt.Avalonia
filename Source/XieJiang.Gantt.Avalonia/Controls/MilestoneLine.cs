@@ -5,7 +5,7 @@ using Avalonia.Controls.Shapes;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
-public class MarkLineToday : TemplatedControl
+public class MilestoneLine : TemplatedControl
 {
     private Line? _line;
 
@@ -23,7 +23,7 @@ public class MarkLineToday : TemplatedControl
 
         if (_line is not null)
         {
-            _line.EndPoint = new Point(0, e.NewSize.Height);
+            _line.EndPoint= new Point(0, e.NewSize.Height);
         }
     }
 }

@@ -9,6 +9,12 @@
         <controls:GanttHeader Width="800" />
     </Design.PreviewWith>
 
+    <!-- <ResourceDictionary.MergedDictionaries> -->
+    <!-- </ResourceDictionary.MergedDictionaries> -->
+
+
+
+
     <ControlTheme
         x:Key="{x:Type controls:GanttHeader}"
         TargetType="controls:GanttHeader">
@@ -121,7 +127,7 @@
 
                         <ItemsControl.DataTemplates>
                             <DataTemplate DataType="gantt:DayItem">
-                                <Panel>
+                                <controls:HeaderDayItem x:Name="HeaderDayItem">
                                     <Rectangle
                                         Width="{Binding Width}"
                                         Height="{Binding RelativeSource={RelativeSource Self},
@@ -147,6 +153,13 @@
                                         Foreground="#a6a6a6"
                                         Text="{Binding Path=Date.Day}" />
 
+                                    <!-- milestone flag -->
+                                    <Button Classes="HeaderMilestoneButton"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            IsVisible="{Binding #HeaderDayItem.IsPointerOver }">
+                                    </Button>
+
 
                                     <!--  底边线  -->
                                     <Rectangle
@@ -154,8 +167,8 @@
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
                                         Fill="{StaticResource LightGridBrush}" />
+                                </controls:HeaderDayItem>
 
-                                </Panel>
                             </DataTemplate>
 
                             <DataTemplate DataType="gantt:WeekItem">

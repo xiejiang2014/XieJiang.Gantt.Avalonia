@@ -1,47 +1,48 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls">
-
-    <!--
-        Additional resources
-        Using Control Themes:
-        https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
-        Using Theme Variants:
-        https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
-    -->
+    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    xmlns:models="clr-namespace:XieJiang.Gantt.Avalonia.Models">
 
     <Design.PreviewWith>
         <Panel
             Width="50"
             Height="100">
-            <controls:MarkLineToday
+            <controls:MilestoneHeader
                 Margin="20,0,0,0"
                 ClipToBounds="False" />
         </Panel>
     </Design.PreviewWith>
 
     <ControlTheme
-        x:Key="{x:Type controls:MarkLineToday}"
-        TargetType="controls:MarkLineToday">
+        x:Key="{x:Type controls:MilestoneHeader}"
+        TargetType="controls:MilestoneHeader">
         <Setter Property="Template">
             <ControlTemplate>
-                <Panel HorizontalAlignment="Left">
+                <Panel
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    x:DataType="models:Milestone"
+                    ToolTip.ShowDelay="0"
+                    ToolTip.Tip="{Binding Path=ToolTip}">
+
                     <PathIcon
                         Width="14"
                         Height="7"
                         Margin="-7,0,0,0"
                         VerticalAlignment="Top"
                         Data="L50 0 L25 25Z"
-                        Foreground="DeepSkyBlue" />
+                        Foreground="IndianRed" />
 
                     <Line
                         x:Name="PART_Line"
                         Width="1"
                         HorizontalAlignment="Left"
-                        Stroke="DeepSkyBlue"
+                        Stroke="IndianRed"
+                        StrokeDashArray="4,4"
                         StrokeThickness="1"
                         EndPoint="0,1000" />
+
                 </Panel>
             </ControlTemplate>
         </Setter>

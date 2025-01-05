@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -9,6 +10,7 @@ public class GanttModel : INotifyPropertyChanged
 {
     public ObservableCollection<GanttTask> GanttTasks { get; } = new();
 
+    public ObservableCollection<Milestone> Milestones { get; } = new();
 
     public GanttModel()
     {

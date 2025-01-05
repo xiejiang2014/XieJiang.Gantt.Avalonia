@@ -1,18 +1,17 @@
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
+using Avalonia;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
-public class MarkLineToday : TemplatedControl
+public class MilestoneHeader : TemplatedControl
 {
     private Line? _line;
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-
 
         _line = e.NameScope.Find<Line>("PART_Line");
     }
