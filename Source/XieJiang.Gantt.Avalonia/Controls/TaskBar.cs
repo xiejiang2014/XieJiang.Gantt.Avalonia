@@ -260,9 +260,9 @@ public class TaskBar : ContentControl
     {
         var newWidth = _widthDragStarted + e.Vector.X;
 
-        if (newWidth <= 50)
+        if (newWidth <= MinWidth)
         {
-            newWidth = 50;
+            newWidth = MinWidth;
         }
 
         Width             = newWidth;

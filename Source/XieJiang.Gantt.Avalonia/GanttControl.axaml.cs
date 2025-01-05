@@ -401,13 +401,23 @@ public class GanttControl : TemplatedControl
         {
             var ganttTask = _ganttModel.GanttTasks[i];
 
+            var width = ganttTask.DateLength.TotalDays * DayWidth;
+
+            if (width < 20)
+            {
+                width = 20;
+            }
+
             var taskBar = new TaskBar
                           {
+                              MinWidth    = 20,
                               DataContext = ganttTask,
-                              Width       = ganttTask.DateLength.TotalDays * DayWidth,
+                              Width       = width,
                               Row         = i,
                               ZIndex      = 1
                           };
+
+
             taskBar.PointerEntered += TaskBar_PointerEntered;
             taskBar.PointerExited  += TaskBar_PointerExited;
 
@@ -842,50 +852,66 @@ public class GanttControl : TemplatedControl
             var l = taskBar.GetValue(Canvas.LeftProperty);
             var w = taskBar.Width;
 
-            if (DateMode == DateModes.Weekly)
+            //if (DateMode == DateModes.Weekly)
+            //{
+            if (e.Edge == Edges.Left)
             {
-                if (e.Edge == Edges.Left)
+                if (DragUnit == DragUnits.Free)
                 {
-                    if (DragUnit == DragUnits.Free)
-                    {
-                        ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
-                    }
-                    else if (DragUnit == DragUnits.Daily)
-                    {
-                        var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
-                        var time      = TimeOnly.FromDateTime(startDate);
-
-                        ganttTask.StartDate = time.Hour > 12
-                            ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
-                            : new DateTime(startDate.Year, startDate.Month, startDate.Day);
-
-                        taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
-
-                        Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
-                    }
+                    ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
                 }
-                else if (e.Edge == Edges.Right)
+                else if (DragUnit == DragUnits.Daily)
                 {
-                    if (DragUnit == DragUnits.Free)
+                    var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
+                    var time      = TimeOnly.FromDateTime(startDate);
+
+                    var temp = time.Hour > 12
+                        ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
+                        : new DateTime(startDate.Year, startDate.Month, startDate.Day);
+
+                    if (ganttTask.EndDate - temp <= TimeSpan.FromDays(1))
                     {
-                        ganttTask.EndDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
-                    }
-                    else if (DragUnit == DragUnits.Daily)
-                    {
-                        var endDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
-                        var time    = TimeOnly.FromDateTime(endDate);
-
-                        ganttTask.EndDate = time.Hour > 12
-                            ? new DateTime(endDate.Year, endDate.Month, endDate.Day).AddDays(1)
-                            : new DateTime(endDate.Year, endDate.Month, endDate.Day);
-
-
-                        taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
+                        temp = ganttTask.EndDate.AddDays(-1);
                     }
 
-                    Canvas.SetLeft(_pinout, l + taskBar.Width);
+                    ganttTask.StartDate = temp;
+
+                    taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
+
+                    Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
                 }
+
+                Debug.Print($"Task:{ganttTask.Id} StartDate=>{ganttTask.StartDate} DateLength:{ganttTask.DateLength}");
             }
+            else if (e.Edge == Edges.Right)
+            {
+                if (DragUnit == DragUnits.Free)
+                {
+                    ganttTask.EndDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+                }
+                else if (DragUnit == DragUnits.Daily)
+                {
+                    var endDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+                    var time    = TimeOnly.FromDateTime(endDate);
+
+                    var temp = time.Hour > 12
+                        ? new DateTime(endDate.Year, endDate.Month, endDate.Day).AddDays(1)
+                        : new DateTime(endDate.Year, endDate.Month, endDate.Day);
+
+                    if (temp - ganttTask.StartDate <= TimeSpan.FromDays(1))
+                    {
+                        temp = ganttTask.StartDate.AddDays(1);
+                    }
+
+                    ganttTask.EndDate = temp;
+
+
+                    taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
+                }
+
+                Canvas.SetLeft(_pinout, l + taskBar.Width);
+            }
+            //}
 
             switch (e.Edge)
             {
