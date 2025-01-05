@@ -2,8 +2,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
-    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
-    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls">
+    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia">
 
     <Design.PreviewWith>
         <controls:GanttHeader Width="800" />
@@ -22,7 +22,7 @@
             <ControlTemplate>
 
                 <Grid
-                    x:Name="Week"
+                    x:Name="PART_RootGrid"
                     RowDefinitions="Auto,Auto">
 
 
@@ -153,12 +153,12 @@
                                         Foreground="#a6a6a6"
                                         Text="{Binding Path=Date.Day}" />
 
-                                    <!-- milestone flag -->
-                                    <Button Classes="HeaderMilestoneButton"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            IsVisible="{Binding #HeaderDayItem.IsPointerOver }">
-                                    </Button>
+                                    <!--  milestone flag  -->
+                                    <Button
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Classes="HeaderMilestoneButton"
+                                        IsVisible="{Binding #HeaderDayItem.IsPointerOver}" />
 
 
                                     <!--  底边线  -->

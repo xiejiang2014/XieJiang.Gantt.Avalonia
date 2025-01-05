@@ -2,48 +2,78 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     xmlns:models="clr-namespace:XieJiang.Gantt.Avalonia.Models">
 
     <Design.PreviewWith>
         <Panel
-            Width="50"
+            Width="100"
             Height="100">
             <controls:MilestoneHeader
-                Margin="20,0,0,0"
+                Margin="40,0,0,0"
                 ClipToBounds="False" />
         </Panel>
     </Design.PreviewWith>
 
     <ControlTheme
         x:Key="{x:Type controls:MilestoneHeader}"
+        x:DataType="models:Milestone"
         TargetType="controls:MilestoneHeader">
         <Setter Property="Template">
             <ControlTemplate>
-                <Panel
+                <Grid
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
+                    VerticalAlignment="Stretch"
                     x:DataType="models:Milestone"
                     ToolTip.ShowDelay="0"
                     ToolTip.Tip="{Binding Path=ToolTip}">
 
-                    <PathIcon
-                        Width="14"
-                        Height="7"
-                        Margin="-7,0,0,0"
-                        VerticalAlignment="Top"
-                        Data="L50 0 L25 25Z"
-                        Foreground="IndianRed" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow1Height)}" />
+                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow2Height)}" />
+                    </Grid.RowDefinitions>
+
+
+                    <Border
+                        x:Name="Border"
+                        MinWidth="30"
+                        MaxHeight="{Binding RelativeSource={RelativeSource Self},
+                                            Path=(gantt:GanttControl.HeaderRow1Height)}"
+                        Padding="8,4"
+                        VerticalAlignment="Center"
+                        Background="IndianRed"
+                        CornerRadius="4">
+                        <Border.RenderTransform>
+                            <TranslateTransform>
+                                <TranslateTransform.X>
+                                    <Binding
+                                        Converter="{x:Static gantt:DoubleMultiplicationConverter.Default}"
+                                        Path="#Border.Bounds.Width">
+                                        <Binding.ConverterParameter>
+                                            <x:Double>-0.5</x:Double>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TranslateTransform.X>
+                            </TranslateTransform>
+                        </Border.RenderTransform>
+
+                        <TextBlock
+                            x:DataType="models:Milestone"
+                            Foreground="White"
+                            Text="{Binding Path=Title}" />
+                    </Border>
 
                     <Line
                         x:Name="PART_Line"
+                        Grid.Row="1"
                         Width="1"
                         HorizontalAlignment="Left"
                         Stroke="IndianRed"
                         StrokeDashArray="4,4"
                         StrokeThickness="1"
-                        EndPoint="0,1000" />
+                        EndPoint="0,0" />
 
-                </Panel>
+                </Grid>
             </ControlTemplate>
         </Setter>
     </ControlTheme>

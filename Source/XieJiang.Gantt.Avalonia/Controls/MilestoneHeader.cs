@@ -22,7 +22,8 @@ public class MilestoneHeader : TemplatedControl
 
         if (_line is not null)
         {
-            _line.EndPoint = new Point(0, e.NewSize.Height);
+            _line.StartPoint = new Point(0,0);
+            _line.EndPoint   = new Point(0, GetValue(GanttControl.HeaderRow2HeightProperty));
         }
     }
 }

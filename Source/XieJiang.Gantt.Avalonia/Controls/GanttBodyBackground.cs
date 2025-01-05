@@ -21,7 +21,7 @@ public class GanttBodyBackground : TemplatedControl
     private ItemsControl?  _partItemsControl;
     private MarkLineToday? _markLineToday;
 
-    private List<MilestoneLine> _MilestoneLines = new(20);
+    private readonly List<MilestoneLine> _milestoneLines = new(20);
 
     static GanttBodyBackground()
     {
@@ -148,7 +148,7 @@ public class GanttBodyBackground : TemplatedControl
     {
         if (_rootPanel is not null)
         {
-            foreach (var MilestoneLine in _MilestoneLines)
+            foreach (var MilestoneLine in _milestoneLines)
             {
                 _rootPanel.Children.Remove(MilestoneLine);
             }
@@ -174,7 +174,7 @@ public class GanttBodyBackground : TemplatedControl
                 var left = (milestone.DateTime- startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
                 MilestoneLine.Margin = new Thickness(left, 0, 0, 0);
 
-                _MilestoneLines.Add(MilestoneLine);
+                _milestoneLines.Add(MilestoneLine);
                 _rootPanel.Children.Add(MilestoneLine);
             }
         }
