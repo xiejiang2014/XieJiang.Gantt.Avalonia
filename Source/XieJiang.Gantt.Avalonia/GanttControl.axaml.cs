@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
@@ -81,10 +82,23 @@ public class GanttControl : TemplatedControl
 
     private void ButtonClicked(GanttControl sender, RoutedEventArgs e)
     {
-        if (e.Source is Button button && button.Classes.Contains("HeaderMilestoneButton"))
+        if (e.Source is Button button)
         {
+            if (button.DataContext is DayItem dayItem)
+            {
+                if (button.Classes.Contains("HeaderMilestoneButton"))
+                {
+                    CreateNewMilestone(dayItem);
+                }
+            }
+            
+            if (button.Classes.Contains("MilestoneDeleteButton"))
+            {
+                //DeleteNewMilestone(dayItem);
+            }
         }
     }
+
 
     //private void GanttControl_PointerPressed(object? sender, PointerPressedEventArgs e)
     //{
@@ -416,10 +430,9 @@ public class GanttControl : TemplatedControl
             return;
         }
 
-        var dateItems = _ganttHeader?.Reload(_ganttModel);
-        _ganttBodyBackground?.Reload(dateItems, _ganttModel);
+        _ganttHeader?.Reload(_ganttModel);
+        _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, _ganttModel);
         ReloadTasks();
-        ReloadMilestones();
     }
 
 
@@ -507,9 +520,6 @@ public class GanttControl : TemplatedControl
     {
     }
 
-    private void ReloadMilestones()
-    {
-    }
 
     #region DependencyLine
 
@@ -1001,6 +1011,24 @@ public class GanttControl : TemplatedControl
 
 
     #region Milestone
+
+    private void CreateNewMilestone(DayItem dayItem)
+    {
+        var milestone = new Milestone()
+                        {
+                            DateTime  = dayItem.Date.ToDateTime(TimeOnly.MinValue),
+                            IsEditing = true
+                        };
+
+        _ganttHeader?.AddMilestone(milestone, DayWidth, StartDate);
+        _ganttBodyBackground?.AddMilestone(milestone, DayWidth, StartDate);
+    }
+
+    private void DeleteNewMilestone(DayItem dayItem)
+    {
+        //_ganttHeader?.RemoveMilestone(milestone, DayWidth, StartDate);
+        //_ganttBodyBackground?.RemoveMilestone(milestone, DayWidth, StartDate);
+    }
 
     #endregion
 }

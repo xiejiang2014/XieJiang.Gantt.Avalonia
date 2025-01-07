@@ -21,8 +21,6 @@ public class GanttBodyBackground : TemplatedControl
     private ItemsControl?  _partItemsControl;
     private MarkLineToday? _markLineToday;
 
-    private readonly List<MilestoneLine> _milestoneLines = new(20);
-
     static GanttBodyBackground()
     {
         DateItemsProperty.Changed.AddClassHandler<GanttBodyBackground>((sender, e) => sender.DateItemsChanged(e));
@@ -143,40 +141,55 @@ public class GanttBodyBackground : TemplatedControl
         }
     }
 
+    private readonly Dictionary<Milestone, MilestoneLine> _milestoneLines = new(20);
+
 
     public void ReloadMilestones(IEnumerable<Milestone> milestones, double dayWidth)
     {
         if (_rootPanel is not null)
         {
-            foreach (var MilestoneLine in _milestoneLines)
+            foreach (var milestoneLine in _milestoneLines.Values)
             {
-                _rootPanel.Children.Remove(MilestoneLine);
+                _rootPanel.Children.Remove(milestoneLine);
             }
 
-
-            var startDate   = GetValue(GanttControl.StartDateProperty);
-
-            var dateTimeNow = GetValue(GanttControl.DateTimeNowProperty);
-            if (dateTimeNow is null)
-            {
-                dateTimeNow = DateTime.Now;
-            }
+            var startDate = GetValue(GanttControl.StartDateProperty);
 
             foreach (var milestone in milestones)
             {
-                var MilestoneLine = new MilestoneLine()
-                                        {
-                                            ClipToBounds = false,
-                                            DataContext = milestone,
-                                            HorizontalAlignment = HorizontalAlignment.Left
-                                        };
-
-                var left = (milestone.DateTime- startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
-                MilestoneLine.Margin = new Thickness(left, 0, 0, 0);
-
-                _milestoneLines.Add(MilestoneLine);
-                _rootPanel.Children.Add(MilestoneLine);
+                AddMilestone(milestone, dayWidth, startDate);
             }
         }
+    }
+
+    public void AddMilestone(Milestone milestone, double dayWidth, DateOnly startDate)
+    {
+        var milestoneLine = new MilestoneLine()
+                            {
+                                ClipToBounds        = false,
+                                DataContext         = milestone,
+                                HorizontalAlignment = HorizontalAlignment.Left
+                            };
+
+        var left = (milestone.DateTime - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
+        milestoneLine.Margin = new Thickness(left, 0, 0, 0);
+
+        _milestoneLines.Add(milestone, milestoneLine);
+
+        if (_rootPanel is not null)
+        {
+            _rootPanel.Children.Add(milestoneLine);
+        }
+    }
+
+
+    public void RemoveMilestone(Milestone milestone)
+    {
+        if (_rootPanel is not null)
+        {
+            _rootPanel.Children.Remove(_milestoneLines[milestone]);
+        }
+
+        _milestoneLines.Remove(milestone);
     }
 }

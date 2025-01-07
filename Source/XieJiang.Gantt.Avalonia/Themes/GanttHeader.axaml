@@ -9,10 +9,6 @@
         <controls:GanttHeader Width="800" />
     </Design.PreviewWith>
 
-    <!-- <ResourceDictionary.MergedDictionaries> -->
-    <!-- </ResourceDictionary.MergedDictionaries> -->
-
-
 
 
     <ControlTheme

@@ -42,7 +42,7 @@ namespace XieJiang.Gantt.Avalonia.Demo
             ganttModel.Milestones.Add(new Milestone()
                                       {
                                           DateTime = new DateTime(2025, 1, 6, 12, 30, 0),
-                                          Title    = "Deadline"
+                                          Title    = "Deadline hahaha"
                                       });
 
 
