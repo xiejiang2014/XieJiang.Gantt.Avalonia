@@ -86,7 +86,7 @@ public class GanttControl : TemplatedControl
     private void ButtonClicked(GanttControl sender, RoutedEventArgs e)
     {
         Debug.Print($"buttonclicked sender:{sender}  e.Source:{e.Source}");
-        
+
         if (e.Source is Button button)
         {
             if (button.DataContext is DayItem dayItem)
@@ -1025,14 +1025,14 @@ public class GanttControl : TemplatedControl
 
     public void ReloadMilestones()
     {
-        _milestoneControls.Clear();
-
         if (_secondaryComponents is not null && _ganttModel is not null)
         {
             foreach (var milestoneControl in _milestoneControls.Values)
             {
                 _secondaryComponents.Children.Remove(milestoneControl);
             }
+
+            _milestoneControls.Clear();
 
             foreach (var milestone in _ganttModel.Milestones)
             {
@@ -1051,6 +1051,7 @@ public class GanttControl : TemplatedControl
                         };
 
         var milestoneControl = AddMilestone(milestone);
+
         milestoneControl?.ApplyTemplate();
         milestoneControl?.ShowFlyout();
     }
@@ -1060,11 +1061,11 @@ public class GanttControl : TemplatedControl
         if (_secondaryComponents is not null)
         {
             var milestoneControl = new MilestoneControl()
-                                  {
-                                      ClipToBounds        = false,
-                                      DataContext         = milestone,
-                                      HorizontalAlignment = HorizontalAlignment.Left
-                                  };
+                                   {
+                                       ClipToBounds        = false,
+                                       DataContext         = milestone,
+                                       HorizontalAlignment = HorizontalAlignment.Left
+                                   };
 
             var left = (milestone.DateTime - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth;
             milestoneControl.Margin = new Thickness(left, 0, 0, 0);
