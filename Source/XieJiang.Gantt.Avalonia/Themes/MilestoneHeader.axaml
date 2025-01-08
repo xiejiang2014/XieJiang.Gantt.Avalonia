@@ -180,8 +180,8 @@
                     ToolTip.Tip="{Binding Path=ToolTip}">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow1Height)}" />
-                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow2Height)}" />
+                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow1Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" />
+                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow2Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" />
                     </Grid.RowDefinitions>
 
 
