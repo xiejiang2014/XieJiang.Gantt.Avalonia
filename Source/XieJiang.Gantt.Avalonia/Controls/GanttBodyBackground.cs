@@ -8,7 +8,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using XieJiang.CommonModule.Ava;
-using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
@@ -107,8 +106,6 @@ public class GanttBodyBackground : TemplatedControl
         ReloadGrid(dateItems, dayWidth);
 
         ReloadMarkLineToday(startDate, dayWidth);
-
-        ReloadMilestones(ganttModel.Milestones, dayWidth);
     }
 
 
@@ -141,55 +138,4 @@ public class GanttBodyBackground : TemplatedControl
         }
     }
 
-    private readonly Dictionary<Milestone, MilestoneLine> _milestoneLines = new(20);
-
-
-    public void ReloadMilestones(IEnumerable<Milestone> milestones, double dayWidth)
-    {
-        if (_rootPanel is not null)
-        {
-            foreach (var milestoneLine in _milestoneLines.Values)
-            {
-                _rootPanel.Children.Remove(milestoneLine);
-            }
-
-            var startDate = GetValue(GanttControl.StartDateProperty);
-
-            foreach (var milestone in milestones)
-            {
-                AddMilestone(milestone, dayWidth, startDate);
-            }
-        }
-    }
-
-    public void AddMilestone(Milestone milestone, double dayWidth, DateOnly startDate)
-    {
-        var milestoneLine = new MilestoneLine()
-                            {
-                                ClipToBounds        = false,
-                                DataContext         = milestone,
-                                HorizontalAlignment = HorizontalAlignment.Left
-                            };
-
-        var left = (milestone.DateTime - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
-        milestoneLine.Margin = new Thickness(left, 0, 0, 0);
-
-        _milestoneLines.Add(milestone, milestoneLine);
-
-        if (_rootPanel is not null)
-        {
-            _rootPanel.Children.Add(milestoneLine);
-        }
-    }
-
-
-    public void RemoveMilestone(Milestone milestone)
-    {
-        if (_rootPanel is not null)
-        {
-            _rootPanel.Children.Remove(_milestoneLines[milestone]);
-        }
-
-        _milestoneLines.Remove(milestone);
-    }
 }

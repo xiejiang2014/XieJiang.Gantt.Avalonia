@@ -2,8 +2,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
-    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     x:DataType="gantt:GanttModel">
 
     <Design.PreviewWith>
@@ -20,8 +20,7 @@
     </Design.PreviewWith>
 
 
-    <ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary.MergedDictionaries />
 
 
     <QuarticEaseInOut x:Key="QuarticEaseInOut" />
@@ -37,8 +36,7 @@
                         x:Name="PART_GanttHeader"
                         HorizontalAlignment="Left">
                         <controls:GanttHeader.RenderTransform>
-                            <TranslateTransform
-                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </controls:GanttHeader.RenderTransform>
                     </controls:GanttHeader>
 
@@ -50,11 +48,24 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch">
                         <controls:GanttBodyBackground.RenderTransform>
-                            <TranslateTransform
-                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </controls:GanttBodyBackground.RenderTransform>
                     </controls:GanttBodyBackground>
 
+                    <Grid
+                        x:Name="PART_SecondaryComponents"
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Width="{Binding #PART_GanttHeader.Width}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Stretch"
+                        Background="{x:Null}">
+                        <Grid.RenderTransform>
+                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                        </Grid.RenderTransform>
+                    </Grid>
+
+                    <!--  All taskBars will be added to this canvas  -->
                     <Canvas
                         x:Name="PART_CanvasBody"
                         Grid.Row="1"
@@ -62,13 +73,10 @@
                         Width="{Binding #PART_GanttHeader.Width}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch"
-                        Background="Transparent">
+                        Background="{x:Null}">
                         <Canvas.RenderTransform>
-                            <TranslateTransform
-                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </Canvas.RenderTransform>
-
-
                     </Canvas>
 
                     <ScrollBar
@@ -85,7 +93,10 @@
                         </ScrollBar.Maximum>
                         <ScrollBar.Transitions>
                             <Transitions>
-                                <DoubleTransition Easing="{StaticResource QuarticEaseInOut}" Property="Value" Duration="0:0:0.8" />
+                                <DoubleTransition
+                                    Easing="{StaticResource QuarticEaseInOut}"
+                                    Property="Value"
+                                    Duration="0:0:0.8" />
                             </Transitions>
                         </ScrollBar.Transitions>
                     </ScrollBar>

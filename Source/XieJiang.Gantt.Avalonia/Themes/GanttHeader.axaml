@@ -10,7 +10,6 @@
     </Design.PreviewWith>
 
 
-
     <ControlTheme
         x:Key="{x:Type controls:GanttHeader}"
         TargetType="controls:GanttHeader">

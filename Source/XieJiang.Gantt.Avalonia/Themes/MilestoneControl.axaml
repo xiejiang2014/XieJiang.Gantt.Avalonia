@@ -9,7 +9,7 @@
         <Panel
             Width="100"
             Height="100">
-            <controls:MilestoneHeader
+            <controls:MilestoneControl
                 Margin="40,0,0,0"
                 ClipToBounds="False" />
         </Panel>
@@ -19,6 +19,11 @@
     <ControlTheme
         x:Key="{x:Type Button}"
         TargetType="Button">
+
+        <Setter
+            Property="Opacity"
+            Value="0.6" />
+
         <Setter
             Property="Background"
             Value="{DynamicResource ButtonBackground}" />
@@ -51,6 +56,9 @@
                 <TransformOperationsTransition
                     Property="RenderTransform"
                     Duration="0:0:.075" />
+                <DoubleTransition 
+                    Property="Opacity"
+                    Duration="0:0:.075" />
             </Transitions>
         </Setter>
 
@@ -71,69 +79,21 @@
             </ControlTemplate>
         </Setter>
 
-        <!--<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Style Selector="^:pointerover">
             <Setter
-                Property="Background"
-                Value="{DynamicResource ButtonBackgroundPointerOver}" />
-            <Setter
-                Property="BorderBrush"
-                Value="{DynamicResource ButtonBorderBrushPointerOver}" />
-            <Setter
-                Property="Foreground"
-                Value="{DynamicResource ButtonForegroundPointerOver}" />
-        </Style>-->
-
-        <!--<Style Selector="^:pressed">
-            <Setter
-                Property="RenderTransform"
-                Value="scale(0.98)" />
-        </Style>-->
-
-        <!--<Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter
-                Property="Background"
-                Value="{DynamicResource ButtonBackgroundPressed}" />
-            <Setter
-                Property="BorderBrush"
-                Value="{DynamicResource ButtonBorderBrushPressed}" />
-            <Setter
-                Property="Foreground"
-                Value="{DynamicResource ButtonForegroundPressed}" />
+                Property="Opacity"
+                Value="1" />
         </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter
-                Property="Background"
-                Value="{DynamicResource ButtonBackgroundDisabled}" />
-            <Setter
-                Property="BorderBrush"
-                Value="{DynamicResource ButtonBorderBrushDisabled}" />
-            <Setter
-                Property="Foreground"
-                Value="{DynamicResource ButtonForegroundDisabled}" />
-        </Style>-->
 
         <Style Selector="^.MilestoneHeaderButton">
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                <!--<Setter
-                    Property="Background"
-                    Value="{DynamicResource AccentButtonBackground}" />-->
-                <!--<Setter
-                    Property="BorderBrush"
-                    Value="{DynamicResource AccentButtonBorderBrush}" />-->
                 <Setter
                     Property="Foreground"
                     Value="{DynamicResource AccentButtonForeground}" />
             </Style>
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-
-                <!--<Setter
-                    Property="Background"
-                    Value="{DynamicResource AccentButtonBackgroundPointerOver}" />-->
-                <!--<Setter
-                    Property="BorderBrush"
-                    Value="{DynamicResource AccentButtonBorderBrushPointerOver}" />-->
+  
 
                 <Setter
                     Property="Foreground"
@@ -141,12 +101,7 @@
             </Style>
 
             <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                <!--<Setter
-                    Property="Background"
-                    Value="{DynamicResource AccentButtonBackgroundPressed}" />
-                <Setter
-                    Property="BorderBrush"
-                    Value="{DynamicResource AccentButtonBorderBrushPressed}" />-->
+
                 <Setter
                     Property="Foreground"
                     Value="{DynamicResource AccentButtonForegroundPressed}" />
@@ -167,9 +122,9 @@
     </ControlTheme>
 
     <ControlTheme
-        x:Key="{x:Type controls:MilestoneHeader}"
+        x:Key="{x:Type controls:MilestoneControl}"
         x:DataType="models:Milestone"
-        TargetType="controls:MilestoneHeader">
+        TargetType="controls:MilestoneControl">
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid
@@ -182,6 +137,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow1Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" />
                         <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow2Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
 
@@ -221,12 +177,11 @@
                                         Watermark="Title" />
 
                                     <Button
+                                        x:Name="PART_MilestoneDeleteButton"
                                         Grid.Row="0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Top"
                                         Classes="MilestoneDeleteButton" />
-
-
 
 
                                     <TextBox
@@ -262,6 +217,7 @@
                     <Line
                         x:Name="PART_Line"
                         Grid.Row="1"
+                        Grid.RowSpan="2"
                         Width="1"
                         HorizontalAlignment="Left"
                         Stroke="IndianRed"

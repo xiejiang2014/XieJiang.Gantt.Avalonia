@@ -10,7 +10,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using XieJiang.CommonModule.Ava;
-using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
@@ -152,7 +151,7 @@ public class GanttHeader : TemplatedControl
     #endregion
 
 
-    public IList<DateItem> Reload(GanttModel ganttModel)
+    public void Reload(GanttModel ganttModel)
     {
         var dateMode  = GetValue(GanttControl.DateModeProperty);
         var startDate = GetValue(GanttControl.StartDateProperty);
@@ -294,11 +293,6 @@ public class GanttHeader : TemplatedControl
                 break;
             }
         }
-
-
-        ReloadMilestones(ganttModel.Milestones, dayWidth);
-
-        return Row2Items;
     }
 
     private static IEnumerable<MonthItem> LoadRow1MonthItems(DateOnly startDate, DateOnly endDate, double dayWidth)
@@ -333,58 +327,5 @@ public class GanttHeader : TemplatedControl
 
             s = e.AddDays(1);
         }
-    }
-
-    private readonly Dictionary<Milestone, MilestoneHeader> _milestoneHeaders = new(20);
-
-    public void ReloadMilestones(IEnumerable<Milestone> milestones, double dayWidth)
-    {
-        _milestoneHeaders.Clear();
-
-        if (_rootGrid is not null)
-        {
-            foreach (var milestoneHeader in _milestoneHeaders.Values)
-            {
-                _rootGrid.Children.Remove(milestoneHeader);
-            }
-
-            var startDate = GetValue(GanttControl.StartDateProperty);
-            foreach (var milestone in milestones)
-            {
-                AddMilestone(milestone, dayWidth, startDate);
-            }
-        }
-    }
-
-
-    public MilestoneHeader? AddMilestone(Milestone milestone, double dayWidth, DateOnly startDate)
-    {
-        if (_rootGrid is not null)
-        {
-            var milestoneHeader = new MilestoneHeader()
-                                  {
-                                      ClipToBounds        = false,
-                                      DataContext         = milestone,
-                                      HorizontalAlignment = HorizontalAlignment.Left
-                                  };
-            milestoneHeader.SetValue(Grid.RowSpanProperty, 2);
-
-            var left = (milestone.DateTime - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
-            milestoneHeader.Margin = new Thickness(left, 0, 0, 0);
-
-            _milestoneHeaders.Add(milestone, milestoneHeader);
-            _rootGrid.Children.Add(milestoneHeader);
-
-            return milestoneHeader;
-        }
-
-        return null;
-    }
-
-    public void RemoveMilestone(Milestone milestone)
-    {
-        _rootGrid?.Children.Remove(_milestoneHeaders[milestone]);
-
-        _milestoneHeaders.Remove(milestone);
     }
 }

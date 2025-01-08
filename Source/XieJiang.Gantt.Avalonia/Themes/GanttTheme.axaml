@@ -133,7 +133,7 @@
                 <ResourceInclude Source="/Themes/Pinout.axaml" />
                 <ResourceInclude Source="/Themes/MarkLineToday.axaml" />
                 <ResourceInclude Source="/Themes/MilestoneLine.axaml" />
-                <ResourceInclude Source="/Themes/MilestoneHeader.axaml" />
+                <ResourceInclude Source="/Themes/MilestoneControl.axaml" />
                 <ResourceInclude Source="/Themes/TaskBar.axaml" />
                 <ResourceInclude Source="/Themes/GanttHeader.axaml" />
                 <ResourceInclude Source="/Themes/GanttBodyBackground.axaml" />

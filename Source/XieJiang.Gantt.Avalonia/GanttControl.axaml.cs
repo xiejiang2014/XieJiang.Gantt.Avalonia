@@ -9,6 +9,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Controls;
@@ -21,12 +22,14 @@ namespace XieJiang.Gantt.Avalonia;
 [TemplatePart("PART_CanvasBody",          typeof(Canvas))]
 [TemplatePart("PART_HScrollBar",          typeof(ScrollBar))]
 [TemplatePart("PART_VScrollBar",          typeof(ScrollBar))]
+[TemplatePart("PART_SecondaryComponents", typeof(Grid))]
 public class GanttControl : TemplatedControl
 {
     #region Parts
 
     private GanttHeader?         _ganttHeader;
     private GanttBodyBackground? _ganttBodyBackground;
+    private Grid?                _secondaryComponents;
     private Canvas?              _canvasBody;
     private ScrollBar?           _hScrollBar;
     private ScrollBar?           _vScrollBar;
@@ -82,6 +85,8 @@ public class GanttControl : TemplatedControl
 
     private void ButtonClicked(GanttControl sender, RoutedEventArgs e)
     {
+        Debug.Print($"buttonclicked sender:{sender}  e.Source:{e.Source}");
+        
         if (e.Source is Button button)
         {
             if (button.DataContext is DayItem dayItem)
@@ -92,9 +97,11 @@ public class GanttControl : TemplatedControl
                 }
             }
 
-            if (button.Classes.Contains("MilestoneDeleteButton"))
+            if (button.Classes.Contains("MilestoneDeleteButton") && button.DataContext is Milestone milestone)
             {
-                //DeleteNewMilestone(dayItem);
+                Debug.Print("MilestoneDeleteButton");
+
+                DeleteNewMilestone(milestone);
             }
         }
     }
@@ -144,6 +151,7 @@ public class GanttControl : TemplatedControl
 
         _ganttHeader         = e.NameScope.Find<GanttHeader>("PART_GanttHeader");
         _ganttBodyBackground = e.NameScope.Find<GanttBodyBackground>("PART_GanttBodyBackground");
+        _secondaryComponents = e.NameScope.Find<Grid>("PART_SecondaryComponents");
         _canvasBody          = e.NameScope.Find<Canvas>("PART_CanvasBody");
         _hScrollBar          = e.NameScope.Find<ScrollBar>("PART_HScrollBar");
         _vScrollBar          = e.NameScope.Find<ScrollBar>("PART_VScrollBar");
@@ -426,12 +434,13 @@ public class GanttControl : TemplatedControl
         if (_ganttModel is null)
         {
             //todo clear
-
             return;
         }
 
         _ganttHeader?.Reload(_ganttModel);
         _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, _ganttModel);
+
+        ReloadMilestones();
         ReloadTasks();
     }
 
@@ -1012,6 +1021,26 @@ public class GanttControl : TemplatedControl
 
     #region Milestone
 
+    private readonly Dictionary<Milestone, MilestoneControl> _milestoneControls = new(20);
+
+    public void ReloadMilestones()
+    {
+        _milestoneControls.Clear();
+
+        if (_secondaryComponents is not null && _ganttModel is not null)
+        {
+            foreach (var milestoneControl in _milestoneControls.Values)
+            {
+                _secondaryComponents.Children.Remove(milestoneControl);
+            }
+
+            foreach (var milestone in _ganttModel.Milestones)
+            {
+                AddMilestone(milestone);
+            }
+        }
+    }
+
     private void CreateNewMilestone(DayItem dayItem)
     {
         var milestone = new Milestone()
@@ -1021,17 +1050,43 @@ public class GanttControl : TemplatedControl
                             Title     = "New milestone"
                         };
 
-        var milestoneHeader = _ganttHeader?.AddMilestone(milestone, DayWidth, StartDate);
-        _ganttBodyBackground?.AddMilestone(milestone, DayWidth, StartDate);
-
-        milestoneHeader?.ApplyTemplate();
-        milestoneHeader?.ShowFlyout();
+        var milestoneControl = AddMilestone(milestone);
+        milestoneControl?.ApplyTemplate();
+        milestoneControl?.ShowFlyout();
     }
 
-    private void DeleteNewMilestone(DayItem dayItem)
+    public MilestoneControl? AddMilestone(Milestone milestone)
     {
-        //_ganttHeader?.RemoveMilestone(milestone, DayWidth, StartDate);
-        //_ganttBodyBackground?.RemoveMilestone(milestone, DayWidth, StartDate);
+        if (_secondaryComponents is not null)
+        {
+            var milestoneControl = new MilestoneControl()
+                                  {
+                                      ClipToBounds        = false,
+                                      DataContext         = milestone,
+                                      HorizontalAlignment = HorizontalAlignment.Left
+                                  };
+
+            var left = (milestone.DateTime - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth;
+            milestoneControl.Margin = new Thickness(left, 0, 0, 0);
+
+            _milestoneControls.Add(milestone, milestoneControl);
+            _secondaryComponents.Children.Add(milestoneControl);
+
+            return milestoneControl;
+        }
+
+        return null;
+    }
+
+
+    private void DeleteNewMilestone(Milestone milestone)
+    {
+        if (_secondaryComponents is not null)
+        {
+            _secondaryComponents.Children.Remove(_milestoneControls[milestone]);
+        }
+
+        _milestoneControls.Remove(milestone);
     }
 
     #endregion
