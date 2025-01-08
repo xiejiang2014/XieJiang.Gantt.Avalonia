@@ -357,7 +357,7 @@ public class GanttHeader : TemplatedControl
     }
 
 
-    public void AddMilestone(Milestone milestone, double dayWidth, DateOnly startDate)
+    public MilestoneHeader? AddMilestone(Milestone milestone, double dayWidth, DateOnly startDate)
     {
         if (_rootGrid is not null)
         {
@@ -374,7 +374,11 @@ public class GanttHeader : TemplatedControl
 
             _milestoneHeaders.Add(milestone, milestoneHeader);
             _rootGrid.Children.Add(milestoneHeader);
+
+            return milestoneHeader;
         }
+
+        return null;
     }
 
     public void RemoveMilestone(Milestone milestone)

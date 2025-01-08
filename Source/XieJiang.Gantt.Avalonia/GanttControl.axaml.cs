@@ -91,7 +91,7 @@ public class GanttControl : TemplatedControl
                     CreateNewMilestone(dayItem);
                 }
             }
-            
+
             if (button.Classes.Contains("MilestoneDeleteButton"))
             {
                 //DeleteNewMilestone(dayItem);
@@ -1017,11 +1017,15 @@ public class GanttControl : TemplatedControl
         var milestone = new Milestone()
                         {
                             DateTime  = dayItem.Date.ToDateTime(TimeOnly.MinValue),
-                            IsEditing = true
+                            IsEditing = true,
+                            Title     = "New milestone"
                         };
 
-        _ganttHeader?.AddMilestone(milestone, DayWidth, StartDate);
+        var milestoneHeader = _ganttHeader?.AddMilestone(milestone, DayWidth, StartDate);
         _ganttBodyBackground?.AddMilestone(milestone, DayWidth, StartDate);
+
+        milestoneHeader?.ApplyTemplate();
+        milestoneHeader?.ShowFlyout();
     }
 
     private void DeleteNewMilestone(DayItem dayItem)

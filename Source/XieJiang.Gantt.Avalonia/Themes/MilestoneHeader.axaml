@@ -186,7 +186,7 @@
 
 
                     <Button
-                        x:Name="Border"
+                        x:Name="PART_HeaderButton"
                         MinWidth="30"
                         MaxHeight="{Binding RelativeSource={RelativeSource Self},
                                             Path=(gantt:GanttControl.HeaderRow1Height)}"
@@ -200,7 +200,7 @@
                         ToolTip.Tip="{Binding Path=(models:Milestone).Content}">
                         <!--    -->
                         <Button.Flyout>
-                            <Flyout>
+                            <Flyout ShowMode="Standard">
                                 <Grid
                                     Width="200"
                                     Background="Transparent"
@@ -214,6 +214,12 @@
                                                        StringFormat='D'}"
                                         TextWrapping="Wrap" />
 
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Margin="0,10,0,0"
+                                        Text="{Binding Path=(models:Milestone).Title}"
+                                        Watermark="Title" />
+
                                     <Button
                                         Grid.Row="0"
                                         HorizontalAlignment="Right"
@@ -221,11 +227,6 @@
                                         Classes="MilestoneDeleteButton" />
 
 
-                                    <TextBox
-                                        Grid.Row="1"
-                                        Margin="0,10,0,0"
-                                        Text="{Binding Path=(models:Milestone).Title}"
-                                        Watermark="Title" />
 
 
                                     <TextBox
@@ -243,7 +244,7 @@
                                 <TranslateTransform.X>
                                     <Binding
                                         Converter="{x:Static gantt:DoubleMultiplicationConverter.Default}"
-                                        Path="#Border.Bounds.Width">
+                                        Path="#PART_HeaderButton.Bounds.Width">
                                         <Binding.ConverterParameter>
                                             <x:Double>-0.5</x:Double>
                                         </Binding.ConverterParameter>
