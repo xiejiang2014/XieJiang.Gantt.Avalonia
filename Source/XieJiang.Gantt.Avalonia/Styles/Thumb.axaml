@@ -33,7 +33,7 @@
         </Setter>
     </Style>
 
-    <Style Selector="Thumb.LRThumb">
+    <Style Selector="Thumb.TaskLRThumb">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>

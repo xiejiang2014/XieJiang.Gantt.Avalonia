@@ -115,7 +115,7 @@
                                 x:Name="PART_LThumb"
                                 Width="4"
                                 HorizontalAlignment="Left"
-                                Classes="LRThumb"
+                                Classes="TaskLRThumb"
                                 Cursor="SizeWestEast"
                                 IsVisible="False" />
 
@@ -123,7 +123,7 @@
                                 x:Name="PART_RThumb"
                                 Width="4"
                                 HorizontalAlignment="Right"
-                                Classes="LRThumb"
+                                Classes="TaskLRThumb"
                                 Cursor="SizeWestEast"
                                 IsVisible="False" />
                         </Panel>
@@ -157,7 +157,7 @@
 
         <Style Selector="^:pointerover">
 
-            <Style Selector="^ /template/ Thumb.LRThumb">
+            <Style Selector="^ /template/ Thumb.TaskLRThumb">
                 <Setter
                     Property="IsVisible"
                     Value="True" />
