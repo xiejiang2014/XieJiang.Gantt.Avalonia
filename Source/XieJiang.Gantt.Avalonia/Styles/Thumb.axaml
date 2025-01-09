@@ -1,5 +1,7 @@
-<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
 
 
     <Style Selector="Thumb.TaskPinout">
@@ -55,7 +57,7 @@
         </Setter>
     </Style>
 
-    <Style Selector="Thumb.ProgressThumb">
+    <Style Selector="Thumb.TaskProgressThumb">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
