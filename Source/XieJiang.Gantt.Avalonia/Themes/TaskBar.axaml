@@ -72,9 +72,9 @@
                                 CornerRadius="{TemplateBinding CornerRadius}" />
 
                             <Thumb
-                                x:Name="PART_MainThumb"
+                                x:Name="PART_TaskMainThumb"
                                 HorizontalAlignment="Stretch"
-                                Classes="MainThumb" />
+                                Classes="TaskMainThumb" />
 
 
                             <ContentPresenter

@@ -2,7 +2,7 @@
         xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
 
 
-    <Style Selector="Thumb.Pinout">
+    <Style Selector="Thumb.TaskPinout">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
@@ -23,7 +23,7 @@
         </Setter>
     </Style>
 
-    <Style Selector="Thumb.MainThumb">
+    <Style Selector="Thumb.TaskMainThumb">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>

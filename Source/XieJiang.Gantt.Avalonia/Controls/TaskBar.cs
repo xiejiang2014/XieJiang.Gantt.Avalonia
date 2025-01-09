@@ -21,7 +21,7 @@ public class TaskBar : ContentControl
 {
     private Border?    _backgroundBorder;
     private Border?    _foregroundBorder;
-    private Thumb?     _mainThumb;
+    private Thumb?     _taskMainThumb;
     private Thumb?     _lThumb;
     private Thumb?     _rThumb;
     private Thumb?     _progressThumb;
@@ -58,17 +58,17 @@ public class TaskBar : ContentControl
     {
         _backgroundBorder  = e.NameScope.Find<Border>("PART_BackgroundBorder");
         _foregroundBorder  = e.NameScope.Find<Border>("PART_ForegroundBorder");
-        _mainThumb         = e.NameScope.Find<Thumb>("PART_MainThumb");
+        _taskMainThumb         = e.NameScope.Find<Thumb>("PART_TaskMainThumb");
         _lThumb            = e.NameScope.Find<Thumb>("PART_LThumb");
         _rThumb            = e.NameScope.Find<Thumb>("PART_RThumb");
         _progressThumb     = e.NameScope.Find<Thumb>("PART_ProgressThumb");
         _progressRectangle = e.NameScope.Find<Rectangle>("PART_ProgressRectangle");
 
-        if (_mainThumb is not null)
+        if (_taskMainThumb is not null)
         {
-            _mainThumb.DragStarted   += Main_ThumbOnDragStarted;
-            _mainThumb.DragDelta     += Main_ThumbOnDragDelta;
-            _mainThumb.DragCompleted += Main_ThumbOnDragCompleted;
+            _taskMainThumb.DragStarted   += Main_ThumbOnDragStarted;
+            _taskMainThumb.DragDelta     += Main_ThumbOnDragDelta;
+            _taskMainThumb.DragCompleted += Main_ThumbOnDragCompleted;
         }
 
 

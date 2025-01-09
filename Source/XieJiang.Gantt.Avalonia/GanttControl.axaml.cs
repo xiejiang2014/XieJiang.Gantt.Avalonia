@@ -534,7 +534,7 @@ public class GanttControl : TemplatedControl
 
     private readonly Thumb _pinout = new()
                                      {
-                                         Classes = { "Pinout" }
+                                         Classes = { "TaskPinout" }
                                      };
 
     private TaskBar? _pinoutTaskBar;
