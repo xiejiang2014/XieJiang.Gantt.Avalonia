@@ -2,7 +2,17 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
-
+    <Design.PreviewWith>
+        <StackPanel
+            Width="100"
+            Height="100">
+            <StackPanel Background="{DynamicResource SystemRegionBrush}">
+                <Thumb
+                    Background="Blue"
+                    Classes="MilestonePanThumb" />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
 
     <Style Selector="Thumb.TaskPinout">
         <Setter Property="Template">
@@ -62,10 +72,30 @@
             <Setter.Value>
                 <ControlTemplate>
 
-                    <Path
+                    <PathIcon
                         Height="8"
                         Data="M6,0 L12,8 L0,8z"
-                        Fill="{TemplateBinding Background}" />
+                        Foreground="{TemplateBinding Background}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style Selector="Thumb.MilestonePanThumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border
+                        Padding="4,0"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="0,0,6,6">
+                        <PathIcon
+                            Width="16"
+                            Height="16"
+                            Data="M725.333 490.667h-426.667v170.667l-213.333-213.333 213.333-213.333v170.667h426.667v-170.667l213.333 213.333-213.333 213.333z"
+                            Foreground="White" />
+                    </Border>
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -71,6 +71,9 @@ public class GanttControl : TemplatedControl
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragDelta);
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragCompleted);
 
+        MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>(MilestoneControl_HThumbDragDelta);
+        MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>(MilestoneControl_HThumbDragCompleted);
+
         Button.ClickEvent.AddClassHandler<GanttControl>(ButtonClicked);
 
         _pinout.DragStarted   += Pinout_DragStarted;
@@ -82,6 +85,7 @@ public class GanttControl : TemplatedControl
 
         DateModeChanged();
     }
+
 
     private void ButtonClicked(GanttControl sender, RoutedEventArgs e)
     {
@@ -1088,6 +1092,19 @@ public class GanttControl : TemplatedControl
         }
 
         _milestoneControls.Remove(milestone);
+    }
+
+    private void MilestoneControl_HThumbDragDelta(GanttControl sender, RoutedEventArgs e)
+    {
+        if (e.Source is MilestoneControl { DataContext: Milestone milestone } maskMilestoneControl)
+        {
+            var l = maskMilestoneControl.Margin.Left;
+            milestone.DateTime = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
+        }
+    }
+
+    private void MilestoneControl_HThumbDragCompleted(GanttControl sender, RoutedEventArgs e)
+    {
     }
 
     #endregion

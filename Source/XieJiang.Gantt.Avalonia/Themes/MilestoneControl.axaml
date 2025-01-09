@@ -20,9 +20,9 @@
         x:Key="{x:Type Button}"
         TargetType="Button">
 
-        <Setter
+        <!--<Setter
             Property="Opacity"
-            Value="0.6" />
+            Value="0.6" />-->
 
         <Setter
             Property="Background"
@@ -56,7 +56,7 @@
                 <TransformOperationsTransition
                     Property="RenderTransform"
                     Duration="0:0:.075" />
-                <DoubleTransition 
+                <DoubleTransition
                     Property="Opacity"
                     Duration="0:0:.075" />
             </Transitions>
@@ -79,11 +79,11 @@
             </ControlTemplate>
         </Setter>
 
-        <Style Selector="^:pointerover">
+        <!--<Style Selector="^:pointerover">
             <Setter
                 Property="Opacity"
                 Value="1" />
-        </Style>
+        </Style>-->
 
         <Style Selector="^.MilestoneHeaderButton">
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -93,7 +93,7 @@
             </Style>
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-  
+
 
                 <Setter
                     Property="Foreground"
@@ -125,6 +125,9 @@
         x:Key="{x:Type controls:MilestoneControl}"
         x:DataType="models:Milestone"
         TargetType="controls:MilestoneControl">
+        <Setter
+            Property="Opacity"
+            Value="0.6" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid
@@ -135,8 +138,12 @@
                     ToolTip.Tip="{Binding Path=ToolTip}">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow1Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" />
-                        <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow2Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" />
+                        <!-- <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow1Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" /> -->
+                        <!-- <RowDefinition Height="{Binding RelativeSource={RelativeSource Self}, Path=(gantt:GanttControl.HeaderRow2Height), Converter={x:Static gantt:DoubleToGridLengthConverter.Default}}" /> -->
+
+
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -149,6 +156,7 @@
                         Padding="8,4"
                         VerticalAlignment="Center"
                         Background="IndianRed"
+                        BorderThickness="0"
                         Classes="MilestoneHeaderButton"
                         CornerRadius="4"
                         Cursor="Hand"
@@ -214,12 +222,40 @@
                             Text="{Binding Path=Title}" />
                     </Button>
 
+
+                    <Thumb
+                        x:Name="PART_PanThumb"
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        Background="IndianRed"
+                        Classes="MilestonePanThumb"
+                        Cursor="SizeWestEast"
+                        IsVisible="{TemplateBinding IsPointerOver}">
+
+                        <Thumb.RenderTransform>
+                            <TranslateTransform>
+                                <TranslateTransform.X>
+                                    <Binding
+                                        Converter="{x:Static gantt:DoubleMultiplicationConverter.Default}"
+                                        Path="#PART_HeaderButton.Bounds.Width">
+                                        <Binding.ConverterParameter>
+                                            <x:Double>-0.5</x:Double>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TranslateTransform.X>
+                            </TranslateTransform>
+                        </Thumb.RenderTransform>
+
+                    </Thumb>
+
+
                     <Line
                         x:Name="PART_Line"
                         Grid.Row="1"
                         Grid.RowSpan="2"
                         Width="1"
                         HorizontalAlignment="Left"
+                        IsHitTestVisible="False"
                         Stroke="IndianRed"
                         StrokeDashArray="4,4"
                         StrokeThickness="1"
@@ -228,5 +264,11 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
+
+        <Style Selector="^:pointerover">
+            <Setter
+                Property="Opacity"
+                Value="1" />
+        </Style>
     </ControlTheme>
 </ResourceDictionary>
