@@ -51,10 +51,10 @@ public class MilestoneControl : TemplatedControl
     {
         var       args  = new RoutedEventArgs(Button.ClickEvent);
         using var route = BuildEventRoute(Button.ClickEvent);
-        route.RaiseEvent(_milestoneDeleteButton, args);
+        route.RaiseEvent(_milestoneDeleteButton!, args);
     }
 
-    private void Flyout_Opened(object? sender, System.EventArgs e)
+    private void Flyout_Opened(object? sender, EventArgs e)
     {
         //_headerButton.Flyout.
     }

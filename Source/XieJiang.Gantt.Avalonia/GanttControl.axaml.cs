@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
@@ -610,12 +609,10 @@ public class GanttControl : TemplatedControl
 
     private void LoadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
     {
-        var dependencyLine = new DependencyLine()
+        var dependencyLine = new DependencyLine(parentTaskBar, childTaskBar)
                              {
-                                 Classes       = { "DependencyLine" },
-                                 ParentTaskBar = parentTaskBar,
-                                 ChildTaskBar  = childTaskBar,
-                                 ZIndex        = 0
+                                 Classes = { "DependencyLine" },
+                                 ZIndex  = 0
                              };
 
         dependencyLine.PointerPressed += DependencyLine_PointerPressed;
@@ -1099,7 +1096,7 @@ public class GanttControl : TemplatedControl
         if (e.Source is MilestoneControl { DataContext: Milestone milestone } maskMilestoneControl)
         {
             var l = maskMilestoneControl.Margin.Left;
-            milestone.DateTime = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
+            milestone.DateTime = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
         }
     }
 

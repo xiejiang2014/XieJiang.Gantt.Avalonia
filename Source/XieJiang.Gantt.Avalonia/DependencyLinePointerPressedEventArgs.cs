@@ -1,6 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Input;
-using Avalonia.Interactivity;
+﻿using Avalonia.Interactivity;
 using XieJiang.Gantt.Avalonia.Controls;
 
 namespace XieJiang.Gantt.Avalonia;
