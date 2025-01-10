@@ -36,7 +36,7 @@
 
 
 
-    <Style Selector="Button.MilestoneDeleteButton">
+    <!--<Style Selector="Button.MilestoneDeleteButton">
         <Setter
             Property="Cursor"
             Value="Hand" />
@@ -45,7 +45,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Panel>
-                        <!--  trash  -->
+                        --><!--  trash  --><!--
                         <PathIcon
                             Width="14"
                             Height="14"
@@ -56,7 +56,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
 
 

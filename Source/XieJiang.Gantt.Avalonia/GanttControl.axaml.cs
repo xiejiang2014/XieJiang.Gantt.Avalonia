@@ -118,15 +118,15 @@ public class GanttControl : TemplatedControl
     //    }
     //}
 
-    private HeaderDayItem? FindHeaderDayItem(IInputElement? inputElement)
-    {
-        if (inputElement is Visual visual)
-        {
-            return visual.FindAncestorOfType<HeaderDayItem>(true);
-        }
+    //private HeaderDayItem? FindHeaderDayItem(IInputElement? inputElement)
+    //{
+    //    if (inputElement is Visual visual)
+    //    {
+    //        return visual.FindAncestorOfType<HeaderDayItem>(true);
+    //    }
 
-        return null;
-    }
+    //    return null;
+    //}
 
     #region DataContext
 
@@ -440,8 +440,11 @@ public class GanttControl : TemplatedControl
             return;
         }
 
-        _ganttHeader?.Reload(_ganttModel);
-        _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, _ganttModel);
+        if (_ganttHeader is not null)
+        {
+            _ganttHeader.Reload(_ganttModel);
+            _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, _ganttModel);
+        }
 
         ReloadMilestones();
         ReloadTasks();

@@ -4,7 +4,8 @@
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
     xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
-    x:DataType="gantt:GanttModel">
+    xmlns:models="clr-namespace:XieJiang.Gantt.Avalonia.Models"
+    x:DataType="models:GanttModel">
 
     <Design.PreviewWith>
         <StackPanel Spacing="10">

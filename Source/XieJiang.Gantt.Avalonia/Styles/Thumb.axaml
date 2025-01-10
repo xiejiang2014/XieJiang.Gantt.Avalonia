@@ -81,7 +81,7 @@
         </Setter>
     </Style>
 
-    <Style Selector="Thumb.MilestonePanThumb">
+    <!--<Style Selector="Thumb.MilestonePanThumb">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
@@ -99,6 +99,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
 </Styles>

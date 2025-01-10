@@ -2,9 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using XieJiang.Gantt.Avalonia.Models;
 
-namespace XieJiang.Gantt.Avalonia;
+namespace XieJiang.Gantt.Avalonia.Models;
 
 public class GanttModel : INotifyPropertyChanged
 {
