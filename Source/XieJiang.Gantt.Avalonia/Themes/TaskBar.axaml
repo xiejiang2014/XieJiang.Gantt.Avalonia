@@ -144,7 +144,7 @@
                             Cursor="SizeWestEast"
                             IsVisible="False">
                             <Thumb.RenderTransform>
-                                <TranslateTransform X="-6" />
+                                <TranslateTransform X="-10" />
                             </Thumb.RenderTransform>
                         </Thumb>
                     </Canvas>

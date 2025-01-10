@@ -163,9 +163,18 @@ public class GanttControl : TemplatedControl
         {
             _canvasBody.PointerMoved += CanvasBody_PointerMoved;
         }
-
+        if (_secondaryComponents is not null)
+        {
+            _secondaryComponents.PointerMoved += SecondaryComponents_PointerMoved;
+        }
+        if (_ganttBodyBackground is not null)
+        {
+            _ganttBodyBackground.PointerMoved += GanttBodyBackground_PointerMoved;
+        }
         ReloadTasks();
     }
+
+
 
 
     #region TaskBarHeight
@@ -731,6 +740,7 @@ public class GanttControl : TemplatedControl
 
     private void CanvasBody_PointerMoved(object? sender, PointerEventArgs e)
     {
+        //todo 已经没用了
         if (ReferenceEquals(e.Source, _canvasBody))
         {
             if (_canvasBody is not null)
@@ -739,7 +749,29 @@ public class GanttControl : TemplatedControl
             }
         }
     }
+    private void SecondaryComponents_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        //todo 已经没用了
+        if (ReferenceEquals(e.Source, _secondaryComponents))
+        {
+            if (_canvasBody is not null)
+            {
+                _canvasBody.Children.Remove(_pinout);
+            }
+        }
+    }
+    private void GanttBodyBackground_PointerMoved(object? sender, PointerEventArgs e)
+    {
 
+
+        //if (ReferenceEquals(e.Source, _secondaryComponents))
+        //{
+            if (_canvasBody is not null)
+            {
+                _canvasBody.Children.Remove(_pinout);
+            }
+        //}
+    }
 
     private double _pinoutOffsetX;
     private double _pinoutOffsetY;
@@ -777,8 +809,7 @@ public class GanttControl : TemplatedControl
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
-                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask) &&
-                             hoveringTaskBar.GanttTask.CircularDependencyCheck(_pinoutTaskBar.GanttTask);
+                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask);
 
                 if (canAdd)
                 {
@@ -814,8 +845,7 @@ public class GanttControl : TemplatedControl
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
-                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask) &&
-                             hoveringTaskBar.GanttTask.CircularDependencyCheck(_pinoutTaskBar.GanttTask);
+                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask);
 
                 if (canAdd)
                 {

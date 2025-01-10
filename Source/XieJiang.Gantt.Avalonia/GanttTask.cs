@@ -2,6 +2,7 @@
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace XieJiang.Gantt.Avalonia;
@@ -36,23 +37,54 @@ public class GanttTask : INotifyPropertyChanged
     {
         return CircularDependencyCheck(this, childTask);
     }
-    
+
     public bool CircularDependencyCheck(GanttTask parentTask, GanttTask childTask)
     {
-        foreach (var childTaskChild in childTask.Children)
+        if (ReferenceEquals(parentTask, childTask))
         {
-            if (ReferenceEquals(childTaskChild, parentTask))
-            {
-                return false;
-            }
+            return false;
+        }
 
-            if (!CircularDependencyCheck(parentTask, childTaskChild))
+        if (parentTask.Children.Contains(childTask))
+        {
+            return false;
+        }
+
+        foreach (var ancestor in TraversingAncestors(parentTask))
+        {
+            if (ReferenceEquals(ancestor, childTask))
             {
                 return false;
             }
         }
 
         return true;
+    }
+
+    public IEnumerable<GanttTask> TraversingChildren(GanttTask ganttTask)
+    {
+        foreach (var child in ganttTask.Children)
+        {
+            yield return child;
+
+            foreach (var childChild in TraversingChildren(child))
+            {
+                yield return childChild;
+            }
+        }
+    }
+
+    public IEnumerable<GanttTask> TraversingAncestors(GanttTask ganttTask)
+    {
+        foreach (var parent in ganttTask.Parents)
+        {
+            yield return parent;
+
+            foreach (var parentParent in TraversingAncestors(parent))
+            {
+                yield return parentParent;
+            }
+        }
     }
 
     #endregion
