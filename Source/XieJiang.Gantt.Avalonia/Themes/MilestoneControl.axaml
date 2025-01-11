@@ -17,8 +17,8 @@
 
 
     <ControlTheme
-        x:Key="{x:Type Button}"
-        TargetType="Button">
+        x:Key="{x:Type controls:GanttButton}"
+        TargetType="controls:GanttButton">
 
 
         <Style Selector="^.MilestoneDeleteButton">
@@ -212,7 +212,7 @@
                     </Grid.RowDefinitions>
 
 
-                    <Button
+                    <controls:GanttButton
                         x:Name="PART_HeaderButton"
                         MinWidth="30"
                         MaxHeight="{Binding RelativeSource={RelativeSource Self},
@@ -227,7 +227,7 @@
                         ToolTip.ShowDelay="0"
                         ToolTip.Tip="{Binding Path=(models:Milestone).Content}">
 
-                        <Button.Flyout>
+                        <controls:GanttButton.Flyout>
                             <Flyout ShowMode="Standard">
                                 <Grid
                                     Width="200"
@@ -248,7 +248,7 @@
                                         Text="{Binding Path=(models:Milestone).Title}"
                                         Watermark="Title" />
 
-                                    <Button
+                                    <controls:GanttButton
                                         x:Name="PART_MilestoneDeleteButton"
                                         Grid.Row="0"
                                         HorizontalAlignment="Right"
@@ -264,7 +264,7 @@
                                         Watermark="Content" />
                                 </Grid>
                             </Flyout>
-                        </Button.Flyout>
+                        </controls:GanttButton.Flyout>
 
                         <Button.RenderTransform>
                             <TranslateTransform>
@@ -284,7 +284,7 @@
                             x:DataType="models:Milestone"
                             Foreground="White"
                             Text="{Binding Path=Title}" />
-                    </Button>
+                    </controls:GanttButton>
 
                     <!--<Border
                         x:Name="PART_DateTimeBorder"
