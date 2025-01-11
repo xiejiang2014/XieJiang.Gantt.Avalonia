@@ -5,7 +5,6 @@
     xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
 
     <StyleInclude Source="/Styles/Thumb.axaml" />
-    <StyleInclude Source="/Styles/DependencyLine.axaml" />
 
 
     <Style Selector="Button.HeaderMilestoneButton">
@@ -45,7 +44,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Panel>
-                        --><!--  trash  --><!--
+    -->
+    <!--  trash  -->
+    <!--
                         <PathIcon
                             Width="14"
                             Height="14"
@@ -129,8 +130,40 @@
                 TrueBrush="#D6D6D6" />
 
 
+            <!--  =================================  -->
+            <SolidColorBrush
+                x:Key="BrushPrimary"
+                Color="#FF0077FA" />
+
+            <SolidColorBrush
+                x:Key="BrushSecondary"
+                Color="#FF0095EE" />
+
+            <SolidColorBrush
+                x:Key="BrushTertiary"
+                Color="#FF6B7075" />
+
+            <SolidColorBrush
+                x:Key="BrushInformation"
+                Color="#FF0077FA" />
+
+            <SolidColorBrush
+                x:Key="BrushSuccess"
+                Color="#FF3BB346" />
+
+            <SolidColorBrush
+                x:Key="BrushWarning"
+                Color="#FFFC8800" />
+
+            <SolidColorBrush
+                x:Key="BrushDanger"
+                Color="#FFF93920" />
+
+            <!--  =================================  -->
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Themes/Pinout.axaml" />
+                <ResourceInclude Source="/Themes/DependencyLine.axaml" />
                 <ResourceInclude Source="/Themes/MarkLineToday.axaml" />
                 <ResourceInclude Source="/Themes/MilestoneLine.axaml" />
                 <ResourceInclude Source="/Themes/MilestoneControl.axaml" />

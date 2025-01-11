@@ -15,6 +15,60 @@
 
 
     <ControlTheme
+        x:Key="TaskBarThumbs"
+        TargetType="Thumb">
+
+
+        <Style Selector="^.TaskMainThumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.TaskLRThumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Border
+                                Width="5"
+                                Background="#66000000"
+                                CornerRadius="2" />
+                            <Rectangle
+                                Width="1"
+                                Margin="0,3"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                Fill="White"
+                                StrokeThickness="0" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.TaskProgressThumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+
+                        <PathIcon
+                            Height="8"
+                            Data="M6,0 L12,8 L0,8z"
+                            Foreground="{TemplateBinding Background}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </ControlTheme>
+
+
+    <ControlTheme
         x:Key="{x:Type controls:TaskBar}"
         TargetType="controls:TaskBar">
 
@@ -74,7 +128,8 @@
                             <Thumb
                                 x:Name="PART_TaskMainThumb"
                                 HorizontalAlignment="Stretch"
-                                Classes="TaskMainThumb" />
+                                Classes="TaskMainThumb"
+                                Theme="{DynamicResource TaskBarThumbs}" />
 
 
                             <ContentPresenter
@@ -117,7 +172,8 @@
                                 HorizontalAlignment="Left"
                                 Classes="TaskLRThumb"
                                 Cursor="SizeWestEast"
-                                IsVisible="False" />
+                                IsVisible="False"
+                                Theme="{DynamicResource TaskBarThumbs}" />
 
                             <Thumb
                                 x:Name="PART_RThumb"
@@ -125,7 +181,8 @@
                                 HorizontalAlignment="Right"
                                 Classes="TaskLRThumb"
                                 Cursor="SizeWestEast"
-                                IsVisible="False" />
+                                IsVisible="False"
+                                Theme="{DynamicResource TaskBarThumbs}" />
                         </Panel>
                     </Border>
 
@@ -142,7 +199,8 @@
                             Background="Gray"
                             Classes="TaskProgressThumb"
                             Cursor="SizeWestEast"
-                            IsVisible="False">
+                            IsVisible="False"
+                            Theme="{DynamicResource TaskBarThumbs}">
                             <Thumb.RenderTransform>
                                 <TranslateTransform X="-10" />
                             </Thumb.RenderTransform>

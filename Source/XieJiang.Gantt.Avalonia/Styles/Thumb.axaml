@@ -9,7 +9,7 @@
             <StackPanel Background="{DynamicResource SystemRegionBrush}">
                 <Thumb
                     Background="Blue"
-                    Classes="MilestonePanThumb" />
+                    Classes="TaskPinout" />
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
@@ -34,71 +34,5 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style Selector="Thumb.TaskMainThumb">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border Background="Transparent" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style Selector="Thumb.TaskLRThumb">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Grid>
-                        <Border
-                            Width="5"
-                            Background="#66000000"
-                            CornerRadius="2" />
-                        <Rectangle
-                            Width="1"
-                            Margin="0,3"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Stretch"
-                            Fill="White"
-                            StrokeThickness="0" />
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style Selector="Thumb.TaskProgressThumb">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-
-                    <PathIcon
-                        Height="8"
-                        Data="M6,0 L12,8 L0,8z"
-                        Foreground="{TemplateBinding Background}" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!--<Style Selector="Thumb.MilestonePanThumb">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border
-                        Padding="4,0"
-                        Background="{TemplateBinding Background}"
-                        CornerRadius="0,0,6,6">
-                        <PathIcon
-                            Width="16"
-                            Height="16"
-                            Data="M725.333 490.667h-426.667v170.667l-213.333-213.333 213.333-213.333v170.667h426.667v-170.667l213.333 213.333-213.333 213.333z"
-                            Foreground="White" />
-                    </Border>
-
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>-->
 
 </Styles>

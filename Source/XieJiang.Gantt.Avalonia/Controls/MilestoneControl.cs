@@ -5,33 +5,63 @@ using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using System;
+using Avalonia.Media;
+using XieJiang.Gantt.Avalonia.Models;
+using Avalonia.Input;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
-[TemplatePart("PART_HeaderButton",          typeof(Button))]
-[TemplatePart("PART_MilestoneDeleteButton", typeof(Button))]
-[TemplatePart("PART_Line",                  typeof(Line))]
-[TemplatePart("PART_PanThumb",              typeof(Thumb))]
+[TemplatePart("PART_HeaderButton",                typeof(Button))]
+[TemplatePart("PART_MilestoneDeleteButton",       typeof(Button))]
+[TemplatePart("PART_Line",                        typeof(Line))]
+[TemplatePart("PART_PanThumb",                    typeof(Thumb))]
+[TemplatePart("PART_ColorRadioButtonsStackPanel", typeof(Panel))]
 public class MilestoneControl : TemplatedControl
 {
     private Line?   _line;
     private Button? _headerButton;
     private Button? _milestoneDeleteButton;
     private Thumb?  _panThumb;
+    private Panel?  _colorRadioButtonsStackPanel;
+
+    private Milestone? _milestone;
+
+    static MilestoneControl()
+    {
+    }
+
+    public MilestoneControl()
+    {
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        _milestone = DataContext as Milestone;
+
+        base.OnDataContextChanged(e);
+    }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
 
-        _headerButton          = e.NameScope.Find<Button>("PART_HeaderButton");
-        _milestoneDeleteButton = e.NameScope.Find<Button>("PART_MilestoneDeleteButton");
-        _line                  = e.NameScope.Find<Line>("PART_Line");
-        _panThumb              = e.NameScope.Find<Thumb>("PART_PanThumb");
+        _headerButton                = e.NameScope.Find<Button>("PART_HeaderButton");
+        _milestoneDeleteButton       = e.NameScope.Find<Button>("PART_MilestoneDeleteButton");
+        _line                        = e.NameScope.Find<Line>("PART_Line");
+        _panThumb                    = e.NameScope.Find<Thumb>("PART_PanThumb");
+        _colorRadioButtonsStackPanel = e.NameScope.Find<Panel>("PART_ColorRadioButtonsStackPanel");
+
 
         if (_headerButton?.Flyout is not null)
         {
             _headerButton.Flyout.Opened += Flyout_Opened;
         }
+
+        if (_colorRadioButtonsStackPanel is not null)
+        {
+            _colorRadioButtonsStackPanel.AddHandler(ToggleButton.IsCheckedChangedEvent, ToggleButtonIsCheckedChanged, RoutingStrategies.Bubble);
+        }
+
 
         if (_milestoneDeleteButton is not null)
         {
@@ -146,4 +176,22 @@ public class MilestoneControl : TemplatedControl
     }
 
     #endregion
+
+    private static void ToggleButtonIsCheckedChanged(Panel sender, RoutedEventArgs e)
+    {
+        if (e.Source is RadioButton rb && rb.IsChecked.GetValueOrDefault(false) && rb.DataContext is Milestone milestone)
+        {
+            milestone.Color = rb.Tag switch
+                              {
+                                  "Primary" => GanttColors.Primary,
+                                  "Secondary" => GanttColors.Secondary,
+                                  "Tertiary" => GanttColors.Tertiary,
+                                  "Information" => GanttColors.Information,
+                                  "Success" => GanttColors.Success,
+                                  "Warning" => GanttColors.Warning,
+                                  "Danger" => GanttColors.Danger,
+                                  _ => GanttColors.Primary
+                              };
+        }
+    }
 }

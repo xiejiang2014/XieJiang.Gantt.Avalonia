@@ -8,7 +8,7 @@ namespace XieJiang.Gantt.Avalonia.Models;
 public class Milestone : INotifyPropertyChanged
 {
     internal bool IsEditing { get; set; }
-    
+
     #region DateTime
 
     private DateTime _dateTime;
@@ -42,7 +42,7 @@ public class Milestone : INotifyPropertyChanged
     }
 
     #endregion
-    
+
     #region ToolTip
 
     private object? _toolTip;
@@ -59,7 +59,7 @@ public class Milestone : INotifyPropertyChanged
     }
 
     #endregion
-    
+
     #region Title
 
     private string _title = string.Empty;
@@ -77,7 +77,22 @@ public class Milestone : INotifyPropertyChanged
 
     #endregion
 
+    #region Color
 
+    private GanttColors _color;
+
+    public GanttColors Color
+    {
+        get => _color;
+        set
+        {
+            if (value == _color) return;
+            _color = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
 
 
     #region PropertyChanged
@@ -99,3 +114,4 @@ public class Milestone : INotifyPropertyChanged
 
     #endregion
 }
+

@@ -1,17 +1,19 @@
-<Styles
+<ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls">
+
     <Design.PreviewWith>
-        <Border Padding="20">
-            <!--  Add Controls for Previewer Here  -->
-        </Border>
+        <Panel
+            Width="800"
+            Height="500">
+            <controls:GanttBodyBackground VerticalAlignment="Stretch" />
+        </Panel>
     </Design.PreviewWith>
 
-    <!--  Add Styles Here  -->
-
-
-    <Style Selector="controls|DependencyLine">
+    <ControlTheme
+        x:Key="{x:Type controls:DependencyLine}"
+        TargetType="controls:DependencyLine">
         <Setter
             Property="Cursor"
             Value="hand" />
@@ -30,7 +32,7 @@
                 Property="ZIndex"
                 Value="2" />
         </Style>
-    </Style>
+    </ControlTheme>
 
 
-</Styles>
+</ResourceDictionary>
