@@ -1,7 +1,6 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:System="clr-namespace:System;assembly=System.Runtime"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
     xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     xmlns:models="clr-namespace:XieJiang.Gantt.Avalonia.Models">

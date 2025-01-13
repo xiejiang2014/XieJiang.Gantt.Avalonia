@@ -14,6 +14,19 @@
     </Design.PreviewWith>
 
 
+
+
+    <ControlTheme
+        x:Key="TaskBarTextBlock"
+        TargetType="TextBlock">
+        <Style Selector="^.ProgressTextBlock">
+            <Setter
+                Property="FontSize"
+                Value="12" />
+        </Style>
+    </ControlTheme>
+
+
     <ControlTheme
         x:Key="TaskBarThumbs"
         TargetType="Thumb">
@@ -90,9 +103,7 @@
         <Setter
             Property="Background"
             Value="#8E466A" />
-        <Setter
-            Property="Foreground"
-            Value="#66334C" />
+
         <Setter
             Property="ClipToBounds"
             Value="False" />
@@ -122,7 +133,7 @@
                                 Width="30"
                                 Height="{TemplateBinding Height}"
                                 HorizontalAlignment="Left"
-                                Background="{TemplateBinding Foreground}"
+                                Background="#33000000"
                                 CornerRadius="{TemplateBinding CornerRadius}" />
 
                             <Thumb
@@ -160,9 +171,11 @@
                                 ToolTip.VerticalOffset="0">
                                 <ToolTip.Tip>
                                     <TextBlock
+                                        x:DataType="gantt:GanttTask"
                                         Classes="ProgressTextBlock"
                                         Text="{Binding Path=Progress,
-                                                       StringFormat={}{0:p2}}" />
+                                                       StringFormat={}{0:p2}}"
+                                        Theme="{StaticResource TaskBarTextBlock}" />
                                 </ToolTip.Tip>
                             </Rectangle>
 

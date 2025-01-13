@@ -5,9 +5,7 @@ using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using System;
-using Avalonia.Media;
 using XieJiang.Gantt.Avalonia.Models;
-using Avalonia.Input;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 

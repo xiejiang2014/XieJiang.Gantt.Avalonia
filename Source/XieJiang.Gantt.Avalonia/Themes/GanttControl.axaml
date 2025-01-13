@@ -21,9 +21,6 @@
     </Design.PreviewWith>
 
 
-    <ResourceDictionary.MergedDictionaries />
-
-
     <QuarticEaseInOut x:Key="QuarticEaseInOut" />
 
     <ControlTheme
