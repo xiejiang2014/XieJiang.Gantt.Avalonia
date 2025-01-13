@@ -6,6 +6,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -53,6 +54,7 @@ public class GanttControl : TemplatedControl
         DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInYearlyModelChanged(e));
         DateTimeNowProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateTimeNowChanged(e));
         //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
+        TaskContentTemplateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskContentTemplateChanged(e));
 
         DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
 
@@ -1138,4 +1140,25 @@ public class GanttControl : TemplatedControl
     }
 
     #endregion
+
+
+    #region TaskContentTemplate
+
+    public static readonly StyledProperty<IDataTemplate> TaskContentTemplateProperty =
+        AvaloniaProperty.Register<GanttControl, IDataTemplate>(nameof(TaskContentTemplate),null,true);
+
+    public IDataTemplate TaskContentTemplate
+    {
+        get => GetValue(TaskContentTemplateProperty);
+        set => SetValue(TaskContentTemplateProperty, value);
+    }
+
+    private void TaskContentTemplateChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+
+
+    }
+
+    #endregion
+
 }

@@ -11,6 +11,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\1.jpg" />
+	  <None Remove="Assets\2.jpg" />
+	  <None Remove="Assets\3.png" />
+	  <None Remove="Assets\4.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AvaloniaResource Include="Assets\1.jpg" />
+	  <AvaloniaResource Include="Assets\2.jpg" />
+	  <AvaloniaResource Include="Assets\3.png" />
+	  <AvaloniaResource Include="Assets\4.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />

@@ -94,6 +94,10 @@
             Value="Center" />
 
         <Setter
+            Property="Content"
+            Value="{Binding Path=(gantt:GanttTask).Content}" />
+
+        <Setter
             Property="Padding"
             Value="4,0,4,0" />
 
@@ -104,7 +108,6 @@
             Property="Background"
             Value="{Binding Path=(gantt:GanttTask).Color,
                             Converter={x:Static gantt:GanttColorToBrushConverter.Default}}" />
-
         <Setter
             Property="ClipToBounds"
             Value="False" />
@@ -116,8 +119,6 @@
                     ClipToBounds="False"
                     RowDefinitions="Auto,Auto"
                     ShowGridLines="False">
-
-
                     <Border
                         x:Name="PART_BackgroundBorder"
                         Grid.Row="0"
@@ -144,19 +145,6 @@
                                 Theme="{DynamicResource TaskBarThumbs}" />
 
 
-                            <ContentPresenter
-                                Name="PART_ContentPresenter"
-                                Margin="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                FontFamily="{TemplateBinding FontFamily}"
-                                FontSize="{TemplateBinding FontSize}"
-                                FontStyle="{TemplateBinding FontStyle}"
-                                FontWeight="{TemplateBinding FontWeight}"
-                                RecognizesAccessKey="True" />
-
                             <Rectangle
                                 x:Name="PART_ProgressRectangle"
                                 Width="1"
@@ -179,6 +167,21 @@
                                         Theme="{StaticResource TaskBarTextBlock}" />
                                 </ToolTip.Tip>
                             </Rectangle>
+
+                            <ContentPresenter
+                                Name="PART_ContentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                ClipToBounds="True"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{Binding RelativeSource={RelativeSource Self},
+                                                          Path=(gantt:GanttControl.TaskContentTemplate)}"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontStyle="{TemplateBinding FontStyle}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                RecognizesAccessKey="True" />
 
                             <Thumb
                                 x:Name="PART_LThumb"
