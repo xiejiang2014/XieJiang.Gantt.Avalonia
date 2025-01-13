@@ -106,6 +106,22 @@ public class GanttTask : INotifyPropertyChanged
 
     #endregion
 
+    #region Color
+
+    private GanttColors _color;
+
+    public GanttColors Color
+    {
+        get => _color;
+        set
+        {
+            if (value == _color) return;
+            _color = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
 
     #region Progress
 
@@ -150,7 +166,6 @@ public class GanttTask : INotifyPropertyChanged
     }
 
     #endregion
-
 
     #region EndDate
 
