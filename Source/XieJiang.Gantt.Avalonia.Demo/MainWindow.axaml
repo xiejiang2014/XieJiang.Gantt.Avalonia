@@ -11,13 +11,25 @@
     mc:Ignorable="d">
 
     <Grid RowDefinitions="*,Auto">
-        <gantt:GanttControl
-            x:Name="GanttControl"
-            DateMode="Weekly"
-            DependencyLinePointerPressed="GanttControl_OnDependencyLinePointerPressed"
-            DragUnit="Daily"
-            EndDate="2025-12-31"
-            StartDate="2024-12-20" />
+        <Grid ColumnDefinitions="1*,Auto,2*">
+            <TreeDataGrid
+                x:Name="TreeDataGrid1"
+                CanUserSortColumns="False" />
+
+            <GridSplitter
+                Grid.Column="1"
+                Width="2"
+                Background="DarkGray" />
+
+            <gantt:GanttControl
+                x:Name="GanttControl"
+                Grid.Column="2"
+                DateMode="Weekly"
+                DependencyLinePointerPressed="GanttControl_OnDependencyLinePointerPressed"
+                DragUnit="Daily"
+                EndDate="2025-12-31"
+                StartDate="2024-12-20" />
+        </Grid>
 
         <StackPanel
             Grid.Row="1"
