@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
+using System.Globalization;
+using System.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media;
 using XieJiang.Gantt.Avalonia.Models;
@@ -15,7 +17,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         var ganttModel = new GanttModel();
-        ganttModel.GanttTasks.Add(new GanttTask()
+        ganttModel.GanttTasks.Add(new MyGanttTask()
                                   {
                                       Id        = 1,
                                       Progress  = 0.5d,
@@ -24,11 +26,11 @@ public partial class MainWindow : Window
                                       Content = new TaskContent()
                                                 {
                                                     HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/1.jpg"))),
-                                                    Title = "Open the refrigerator",
+                                                    Title     = "Open the refrigerator",
                                                 }
                                   });
 
-        ganttModel.GanttTasks.Add(new GanttTask()
+        ganttModel.GanttTasks.Add(new MyGanttTask()
                                   {
                                       Id        = 2,
                                       Progress  = 0.2d,
@@ -37,11 +39,11 @@ public partial class MainWindow : Window
                                       Content = new TaskContent()
                                                 {
                                                     HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/2.jpg"))),
-                                                    Title = "Put the elephant in the refrigerator",
+                                                    Title     = "Put the elephant in the refrigerator",
                                                 }
                                   });
 
-        ganttModel.GanttTasks.Add(new GanttTask()
+        ganttModel.GanttTasks.Add(new MyGanttTask()
                                   {
                                       Id        = 3,
                                       Progress  = 0.7d,
@@ -50,7 +52,7 @@ public partial class MainWindow : Window
                                       Content = new TaskContent()
                                                 {
                                                     HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png"))),
-                                                    Title = "Close the refrigerator",
+                                                    Title     = "Close the refrigerator",
                                                 }
                                   });
 
@@ -67,22 +69,53 @@ public partial class MainWindow : Window
 
         GanttControl.DataContext = ganttModel;
 
-        TreeDataGrid1.Source = new FlatTreeDataGridSource<GanttTask>(ganttModel.GanttTasks)
+        TreeDataGrid1.Source = new FlatTreeDataGridSource<MyGanttTask>(ganttModel.GanttTasks.Cast<MyGanttTask>())
                                {
                                    Columns =
                                    {
-                                       new TextColumn<GanttTask, int>("ID", x => x.Id, new GridLength(3,                                     GridUnitType.Auto)),
-                                       new TextColumn<GanttTask, string>("Title", x => (((TaskContent)x.Content!)).Title, new GridLength(3, GridUnitType.Auto)),
-                                       new TextColumn<GanttTask, DateTime>("StartDate", x => x.StartDate, new GridLength(3, GridUnitType.Auto), new()
-                                                                               {
-                                                                                   TextAlignment = TextAlignment.Right,
-                                                                                   MaxWidth      = new GridLength(150)
-                                                                               }),
-                                       new TextColumn<GanttTask, DateTime>("EndDate", x => x.EndDate, new GridLength(3, GridUnitType.Auto), new()
-                                                                               {
-                                                                                   TextAlignment = TextAlignment.Right,
-                                                                                   MaxWidth      = new GridLength(150)
-                                                                               }),
+                                       new TextColumn<MyGanttTask, int>("ID",
+                                                                        x => x.Id,
+                                                                        new GridLength(1, GridUnitType.Auto),
+                                                                        new()
+                                                                        {
+                                                                            TextAlignment = TextAlignment.Center,
+                                                                        }
+                                                                       ),
+
+                                       new TemplateColumn<MyGanttTask>("Header",
+                                                                       "HeaderCell"
+                                                                      ),
+
+                                       new TextColumn<MyGanttTask, string>("Title",
+                                                                           x => ((TaskContent)x.Content!).Title,
+                                                                           new GridLength(1, GridUnitType.Auto)
+                                                                          ),
+
+
+                                       new TemplateColumn<MyGanttTask>("Progress",
+                                                                       "ProgressCell",
+                                                                       "ProgressCellEditing"
+                                                                      ),
+
+                                       new TextColumn<MyGanttTask, DateTime>("StartDate",
+                                                                             x => x.StartDate,
+                                                                             new GridLength(1, GridUnitType.Auto),
+                                                                             new()
+                                                                             {
+                                                                                 TextAlignment = TextAlignment.Right,
+                                                                                 MaxWidth      = new GridLength(150)
+                                                                             }
+                                                                            ),
+
+                                       new TextColumn<MyGanttTask, DateTime>("EndDate",
+                                                                             x => x.EndDate,
+                                                                             new GridLength(1, GridUnitType.Auto),
+                                                                             new()
+                                                                             {
+                                                                                 TextAlignment = TextAlignment.Right,
+                                                                                 MaxWidth      = new GridLength(150)
+                                                                             }
+                                                                            ),
                                    }
                                };
     }

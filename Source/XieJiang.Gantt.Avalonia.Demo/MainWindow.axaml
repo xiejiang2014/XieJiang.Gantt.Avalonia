@@ -13,10 +13,78 @@
     mc:Ignorable="d">
 
     <Grid RowDefinitions="*,Auto">
-        <Grid ColumnDefinitions="1*,Auto,2*">
+        <Grid ColumnDefinitions="1*,Auto,1.5*">
             <TreeDataGrid
                 x:Name="TreeDataGrid1"
-                CanUserSortColumns="False" />
+                CanUserSortColumns="False">
+
+                <TreeDataGrid.Resources>
+                    <DataTemplate
+                        x:Key="HeaderCell"
+                        DataType="demo:MyGanttTask">
+                        <Border
+                            Width="26"
+                            Height="26"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            BorderBrush="White"
+                            BorderThickness="6"
+                            ClipToBounds="True"
+                            CornerRadius="26"
+                            UseLayoutRounding="True">
+                            <Image
+                                Width="26"
+                                Height="26"
+                                Source="{Binding Path=Content(demo:TaskContent).HeaderImg}"
+                                Stretch="UniformToFill" />
+                        </Border>
+                    </DataTemplate>
+
+
+                    <DataTemplate
+                        x:Key="ProgressCell"
+                        DataType="demo:MyGanttTask">
+                        <TextBlock
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            Text="{Binding Path=ProgressString}"
+                            TextAlignment="Right" />
+                    </DataTemplate>
+
+                    <DataTemplate
+                        x:Key="ProgressCellEditing"
+                        DataType="demo:MyGanttTask">
+                        <TextBox
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Text="{Binding Path=ProgressString}"
+                            TextAlignment="Right" />
+                    </DataTemplate>
+                </TreeDataGrid.Resources>
+
+                <TreeDataGrid.Styles>
+                    <Style Selector="TreeDataGridColumnHeader">
+                        <Setter
+                            Property="MinHeight"
+                            Value="57" />
+
+                        <Setter Property="ContentTemplate">
+                            <DataTemplate DataType="x:String">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding}"
+                                    TextTrimming="CharacterEllipsis" />
+                            </DataTemplate>
+                        </Setter>
+                    </Style>
+                    <Style Selector="TreeDataGridRow">
+                        <Setter
+                            Property="Height"
+                            Value="{Binding #GanttControl.RowHeight}" />
+                    </Style>
+                </TreeDataGrid.Styles>
+
+            </TreeDataGrid>
 
             <GridSplitter
                 Grid.Column="1"
