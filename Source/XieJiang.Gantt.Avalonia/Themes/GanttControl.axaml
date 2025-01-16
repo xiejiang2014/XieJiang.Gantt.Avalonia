@@ -34,7 +34,8 @@
                         x:Name="PART_GanttHeader"
                         HorizontalAlignment="Left">
                         <controls:GanttHeader.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform
+                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </controls:GanttHeader.RenderTransform>
                     </controls:GanttHeader>
 
@@ -46,36 +47,44 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch">
                         <controls:GanttBodyBackground.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform
+                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </controls:GanttBodyBackground.RenderTransform>
                     </controls:GanttBodyBackground>
 
+                    <!--  Elements that do not scroll vertically are placed here  -->
                     <Grid
                         x:Name="PART_SecondaryComponents"
                         Grid.Row="0"
                         Grid.RowSpan="2"
                         Width="{Binding #PART_GanttHeader.Width}"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
+                        VerticalAlignment="Top"
                         Background="{x:Null}">
                         <Grid.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            <TranslateTransform
+                                X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
                         </Grid.RenderTransform>
                     </Grid>
 
                     <!--  All taskBars will be added to this canvas  -->
-                    <Canvas
-                        x:Name="PART_CanvasBody"
+                    <Panel
                         Grid.Row="1"
-                        Grid.RowSpan="2"
-                        Width="{Binding #PART_GanttHeader.Width}"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
-                        Background="{x:Null}">
-                        <Canvas.RenderTransform>
-                            <TranslateTransform X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
-                        </Canvas.RenderTransform>
-                    </Canvas>
+                        ClipToBounds="True"
+                        Grid.RowSpan="2">
+                        <Canvas
+                            x:Name="PART_CanvasBody"
+                            Width="{Binding #PART_GanttHeader.Width}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="{x:Null}">
+                            <Canvas.RenderTransform>
+                                <TranslateTransform
+                                    X="{Binding Path=#PART_HScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}"
+                                    Y="{Binding Path=#PART_VScrollBar.Value, Converter={x:Static gantt:DoubleNegationConverter.Default}}" />
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </Panel>
 
                     <ScrollBar
                         x:Name="PART_HScrollBar"
@@ -103,7 +112,23 @@
                         x:Name="PART_VScrollBar"
                         Grid.Row="1"
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Stretch" />
+                        VerticalAlignment="Stretch">
+                        <ScrollBar.Maximum>
+                            <MultiBinding Converter="{x:Static ava:DoubleSubtractiveConverter.Default}">
+                                <Binding Path="#PART_CanvasBody.Height" />
+                                <Binding Path="#PART_VScrollBar.Bounds.Height" />
+                            </MultiBinding>
+                        </ScrollBar.Maximum>
+                        <ScrollBar.Transitions>
+                            <Transitions>
+                                <DoubleTransition
+                                    Easing="{StaticResource QuarticEaseInOut}"
+                                    Property="Value"
+                                    Duration="0:0:0.8" />
+                            </Transitions>
+                        </ScrollBar.Transitions>
+
+                    </ScrollBar>
                 </Grid>
             </ControlTemplate>
         </Setter>

@@ -3,16 +3,22 @@ using Avalonia.Interactivity;
 using System;
 using System.Globalization;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media;
 using XieJiang.Gantt.Avalonia.Models;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Controls.Primitives;
 
 namespace XieJiang.Gantt.Avalonia.Demo;
 
 public partial class MainWindow : Window
 {
+    private ScrollViewer _treeDataGridScrollViewer;
+    private ScrollBar    _ganttControlHScrollBar;
+    private ScrollBar    _ganttControlVScrollBar;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -55,6 +61,24 @@ public partial class MainWindow : Window
                                                     Title     = "Close the refrigerator",
                                                 }
                                   });
+
+
+        for (int i = 4; i < 300; i++)
+        {
+            ganttModel.GanttTasks.Add(new MyGanttTask()
+                                      {
+                                          Id        = i,
+                                          Progress  = 0.7d,
+                                          StartDate = new DateTime(2025, 1, 1),
+                                          EndDate   = new DateTime(2025, 1, 6),
+                                          Content = new TaskContent()
+                                                    {
+                                                        HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png"))),
+                                                        Title     = "some thing else",
+                                                    }
+                                      });
+        }
+
 
         ganttModel.GanttTasks[0].AddingDependentTask(ganttModel.GanttTasks[1]);
         //ganttModel.GanttTasks[1].AddingDependentTask(ganttModel.GanttTasks[2]);
@@ -120,13 +144,36 @@ public partial class MainWindow : Window
                                };
     }
 
+
     protected override void OnLoaded(RoutedEventArgs e)
     {
         base.OnLoaded(e);
 
+        _treeDataGridScrollViewer               =  TreeDataGrid1.Scroll as ScrollViewer;
+        _treeDataGridScrollViewer.ScrollChanged += ScrollViewer1_ScrollChanged;
+
+        _ganttControlHScrollBar = GanttControl.HScrollBar;
+        _ganttControlVScrollBar = GanttControl.VScrollBar;
+        _ganttControlVScrollBar.Scroll += GanttControlVScrollBar_Scroll;
+
         GanttControl.Reload();
     }
 
+    private void GanttControlVScrollBar_Scroll(object? sender, ScrollEventArgs e)
+    {
+        _treeDataGridScrollViewer.SetCurrentValue(ScrollViewer.OffsetProperty,new Vector(_treeDataGridScrollViewer.Offset.X, e.NewValue));
+    }
+
+    private void ScrollViewer1_ScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        var temp = _ganttControlVScrollBar.Transitions;
+        _ganttControlVScrollBar.Transitions = null;
+
+        _ganttControlVScrollBar.SetCurrentValue(RangeBase.ValueProperty, _treeDataGridScrollViewer.Offset.Y);
+        _ganttControlVScrollBar.Transitions = temp;
+
+        e.Handled = true;
+    }
 
     private void GanttControl_OnDependencyLinePointerPressed(object? sender, DependencyLinePointerPressedEventArgs e)
     {

@@ -31,8 +31,9 @@ public class GanttControl : TemplatedControl
     private GanttBodyBackground? _ganttBodyBackground;
     private Grid?                _secondaryComponents;
     private Canvas?              _canvasBody;
-    private ScrollBar?           _hScrollBar;
-    private ScrollBar?           _vScrollBar;
+
+    public ScrollBar? HScrollBar { get; private set; }
+    public ScrollBar? VScrollBar { get; private set; }
 
     #endregion
 
@@ -158,25 +159,26 @@ public class GanttControl : TemplatedControl
         _ganttBodyBackground = e.NameScope.Find<GanttBodyBackground>("PART_GanttBodyBackground");
         _secondaryComponents = e.NameScope.Find<Grid>("PART_SecondaryComponents");
         _canvasBody          = e.NameScope.Find<Canvas>("PART_CanvasBody");
-        _hScrollBar          = e.NameScope.Find<ScrollBar>("PART_HScrollBar");
-        _vScrollBar          = e.NameScope.Find<ScrollBar>("PART_VScrollBar");
+        HScrollBar           = e.NameScope.Find<ScrollBar>("PART_HScrollBar");
+        VScrollBar           = e.NameScope.Find<ScrollBar>("PART_VScrollBar");
 
         if (_canvasBody is not null)
         {
             _canvasBody.PointerMoved += CanvasBody_PointerMoved;
         }
+
         if (_secondaryComponents is not null)
         {
             _secondaryComponents.PointerMoved += SecondaryComponents_PointerMoved;
         }
+
         if (_ganttBodyBackground is not null)
         {
             _ganttBodyBackground.PointerMoved += GanttBodyBackground_PointerMoved;
         }
+
         ReloadTasks();
     }
-
-
 
 
     #region TaskBarHeight
@@ -518,6 +520,8 @@ public class GanttControl : TemplatedControl
             _taskBarsDic.Add(ganttTask, taskBar);
         }
 
+        _canvasBody.Height = _ganttModel.GanttTasks.Count * RowHeight;
+
         // set parent and child
         for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
         {
@@ -536,6 +540,7 @@ public class GanttControl : TemplatedControl
                 taskBar.ChildrenTasks.Add(childTaskBar);
             }
         }
+
 
         //load lines
         LoadDependencyLines();
@@ -751,6 +756,7 @@ public class GanttControl : TemplatedControl
             }
         }
     }
+
     private void SecondaryComponents_PointerMoved(object? sender, PointerEventArgs e)
     {
         //todo 已经没用了
@@ -762,16 +768,15 @@ public class GanttControl : TemplatedControl
             }
         }
     }
+
     private void GanttBodyBackground_PointerMoved(object? sender, PointerEventArgs e)
     {
-
-
         //if (ReferenceEquals(e.Source, _secondaryComponents))
         //{
-            if (_canvasBody is not null)
-            {
-                _canvasBody.Children.Remove(_pinout);
-            }
+        if (_canvasBody is not null)
+        {
+            _canvasBody.Children.Remove(_pinout);
+        }
         //}
     }
 
@@ -1042,13 +1047,13 @@ public class GanttControl : TemplatedControl
 
     public void ScrollToNow()
     {
-        if (_hScrollBar is not null)
+        if (HScrollBar is not null)
         {
             var dateTimeNow = DateTimeNow ?? DateTime.Now;
 
-            var nowOffset = (dateTimeNow - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - _hScrollBar.Bounds.Width / 2d;
+            var nowOffset = (dateTimeNow - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - HScrollBar.Bounds.Width / 2d;
 
-            _hScrollBar.Value = nowOffset;
+            HScrollBar.Value = nowOffset;
         }
     }
 
@@ -1145,7 +1150,7 @@ public class GanttControl : TemplatedControl
     #region TaskContentTemplate
 
     public static readonly StyledProperty<IDataTemplate> TaskContentTemplateProperty =
-        AvaloniaProperty.Register<GanttControl, IDataTemplate>(nameof(TaskContentTemplate),null,true);
+        AvaloniaProperty.Register<GanttControl, IDataTemplate>(nameof(TaskContentTemplate), null, true);
 
     public IDataTemplate TaskContentTemplate
     {
@@ -1155,10 +1160,7 @@ public class GanttControl : TemplatedControl
 
     private void TaskContentTemplateChanged(AvaloniaPropertyChangedEventArgs e)
     {
-
-
     }
 
     #endregion
-
 }
