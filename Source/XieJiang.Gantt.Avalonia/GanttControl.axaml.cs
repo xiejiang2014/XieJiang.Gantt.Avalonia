@@ -175,6 +175,8 @@ public class GanttControl : TemplatedControl
 
         if (_ganttBodyBackground is not null)
         {
+            _ganttBodyBackground.PointerPressed      += GanttBodyBackground_PointerPressed;
+            _ganttBodyBackground.PointerReleased     += GanttBodyBackground_PointerReleased;
             _ganttBodyBackground.PointerMoved        += GanttBodyBackground_PointerMoved;
             _ganttBodyBackground.PointerWheelChanged += Canvas_PointerWheelChanged;
         }
@@ -773,13 +775,15 @@ public class GanttControl : TemplatedControl
 
     private void GanttBodyBackground_PointerMoved(object? sender, PointerEventArgs e)
     {
-        //if (ReferenceEquals(e.Source, _secondaryComponents))
-        //{
         if (_canvasBody is not null)
         {
             _canvasBody.Children.Remove(_pinout);
         }
-        //}
+
+        if (_isPanning)
+        {
+            Pan(e);
+        }
     }
 
     private double _pinoutOffsetX;
@@ -1071,6 +1075,7 @@ public class GanttControl : TemplatedControl
                 //HScrollBar.Value = HScrollBar.Value - e.Delta.X * 10;
             }
         }
+
         if (e.Delta.Y != 0)
         {
             if (VScrollBar != null)
@@ -1079,11 +1084,55 @@ public class GanttControl : TemplatedControl
                 //HScrollBar.Value = HScrollBar.Value - e.Delta.X * 10;
             }
         }
-
     }
 
     #endregion
 
+
+    #region Pan
+
+    private bool   _isPanning;
+    private Point? _panBasePoint;
+
+    private void GanttBodyBackground_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var cp = e.GetCurrentPoint(this);
+
+        if (cp.Properties.IsMiddleButtonPressed)
+        {
+            _panBasePoint = e.GetPosition(this);
+            Cursor        = new Cursor(StandardCursorType.SizeAll);
+            _isPanning    = true;
+        }
+    }
+
+    private void Pan(PointerEventArgs e)
+    {
+        if (_panBasePoint.HasValue)
+        {
+            var newPoint = e.GetPosition(this);
+
+            var p = newPoint - _panBasePoint.Value;
+
+            VScrollBar?.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - p.Y);
+            HScrollBar?.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - p.X);
+            _panBasePoint = newPoint;
+        }
+    }
+
+
+    private void GanttBodyBackground_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        var cp = e.GetCurrentPoint(this);
+        if (!cp.Properties.IsMiddleButtonPressed)
+        {
+            _panBasePoint = null;
+            Cursor        = null;
+            _isPanning    = false;
+        }
+    }
+
+    #endregion
 
     #region Milestone
 
