@@ -44,14 +44,25 @@ public class TaskBar : ContentControl
 
     private void TaskBar_DataContextChanged(object? sender, EventArgs e)
     {
+        if (GanttTask is not null)
+        {
+            GanttTask.PropertyChanged -= GanttTask_PropertyChanged;
+        }
+
         if (DataContext is GanttTask ganttTask)
         {
-            GanttTask = ganttTask;
+            GanttTask                 =  ganttTask;
+            GanttTask.PropertyChanged += GanttTask_PropertyChanged;
         }
         else
         {
             GanttTask = null;
         }
+    }
+
+    private void GanttTask_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        Update();
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -70,7 +81,6 @@ public class TaskBar : ContentControl
             _taskMainThumb.DragDelta     += Main_ThumbOnDragDelta;
             _taskMainThumb.DragCompleted += Main_ThumbOnDragCompleted;
         }
-
 
         if (_rThumb is not null)
         {
@@ -97,7 +107,7 @@ public class TaskBar : ContentControl
 
         Update();
     }
-
+    
 
     private void Update()
     {

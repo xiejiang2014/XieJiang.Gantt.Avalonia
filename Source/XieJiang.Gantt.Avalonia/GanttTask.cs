@@ -87,24 +87,7 @@ public class GanttTask : INotifyPropertyChanged
     }
 
     #endregion
-
-    #region Name
-
-    private string? _title;
-
-    public string? Title
-    {
-        get => _title;
-        set
-        {
-            if (value == _title) return;
-            _title = value;
-            OnPropertyChanged();
-        }
-    }
-
-    #endregion
-
+    
     #region Content
 
     private object? _content;
