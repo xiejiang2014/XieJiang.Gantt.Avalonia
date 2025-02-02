@@ -40,6 +40,19 @@
                         </Border>
                     </DataTemplate>
 
+                    <DataTemplate
+                        x:Key="TextCell"
+                        DataType="demo:MyGanttTask">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Text="{Binding Path=Content(demo:TaskContent).Title}" />
+                    </DataTemplate>
+
+                    <DataTemplate
+                        x:Key="TextEditCell"
+                        DataType="demo:MyGanttTask">
+                        <TextBox Text="{Binding Path=Content(demo:TaskContent).Title}" />
+                    </DataTemplate>
 
                     <DataTemplate
                         x:Key="ProgressCell"

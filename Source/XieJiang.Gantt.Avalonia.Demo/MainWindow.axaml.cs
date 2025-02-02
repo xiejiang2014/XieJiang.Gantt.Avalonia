@@ -27,8 +27,8 @@ public partial class MainWindow : Window
                                   {
                                       Id        = 1,
                                       Progress  = 0.5d,
-                                      StartDate = new DateTime(2024, 12, 21),
-                                      EndDate   = new DateTime(2024, 12, 23),
+                                      StartDate = new DateTime(2025, 02, 01),
+                                      EndDate   = new DateTime(2025, 02, 03),
                                       Content = new TaskContent()
                                                 {
                                                     HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/1.jpg"))),
@@ -40,26 +40,28 @@ public partial class MainWindow : Window
                                   {
                                       Id        = 2,
                                       Progress  = 0.2d,
-                                      StartDate = new DateTime(2024, 12, 23),
-                                      EndDate   = new DateTime(2024, 12, 26),
+                                      StartDate = new DateTime(2025, 02, 04),
+                                      EndDate   = new DateTime(2025, 02, 08),
                                       Content = new TaskContent()
                                                 {
                                                     HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/2.jpg"))),
                                                     Title     = "Put the elephant in the refrigerator",
-                                                }
+                                                },
+                                      Color = GanttColors.Information
                                   });
 
         ganttModel.GanttTasks.Add(new MyGanttTask()
                                   {
                                       Id        = 3,
                                       Progress  = 0.7d,
-                                      StartDate = new DateTime(2024, 12, 27),
-                                      EndDate   = new DateTime(2024, 12, 31),
+                                      StartDate = new DateTime(2025, 02, 08),
+                                      EndDate   = new DateTime(2025, 02, 11),
                                       Content = new TaskContent()
                                                 {
                                                     HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png"))),
                                                     Title     = "Close the refrigerator",
-                                                }
+                                                },
+                                      Color = GanttColors.Warning
                                   });
 
 
@@ -69,13 +71,14 @@ public partial class MainWindow : Window
                                       {
                                           Id        = i,
                                           Progress  = 0.7d,
-                                          StartDate = new DateTime(2025, 1, 1),
-                                          EndDate   = new DateTime(2025, 1, 6),
+                                          StartDate = new DateTime(2025, 02, 11),
+                                          EndDate   = new DateTime(2025, 02, 15),
                                           Content = new TaskContent()
                                                     {
                                                         HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png"))),
                                                         Title     = "some thing else",
-                                                    }
+                                                    },
+                                      Color = GanttColors.Danger
                                       });
         }
 
@@ -86,7 +89,7 @@ public partial class MainWindow : Window
 
         ganttModel.Milestones.Add(new Milestone()
                                   {
-                                      DateTime = new DateTime(2025, 1, 6, 12, 30, 0),
+                                      DateTime = new DateTime(2025, 2, 15, 12, 30, 0),
                                       Title    = "Deadline hahaha",
                                       Color    = GanttColors.Success
                                   });
@@ -110,11 +113,15 @@ public partial class MainWindow : Window
                                                                        "HeaderCell"
                                                                       ),
 
-                                       new TextColumn<MyGanttTask, string>("Title",
-                                                                           x => ((TaskContent)x.Content!).Title,
-                                                                           new GridLength(1, GridUnitType.Auto)
-                                                                          ),
+                                       //new TextColumn<MyGanttTask, string>("Title",
+                                       //                                    x => ((TaskContent)x.Content!).Title,
+                                       //                                    new GridLength(1, GridUnitType.Auto)
+                                       //                                   ),
 
+                                       new TemplateColumn<MyGanttTask>("Title",
+                                                                       "TextCell",
+                                                                       "TextEditCell"
+                                                                      ),
 
                                        new TemplateColumn<MyGanttTask>("Progress",
                                                                        "ProgressCell",
@@ -152,8 +159,8 @@ public partial class MainWindow : Window
         _treeDataGridScrollViewer               =  TreeDataGrid1.Scroll as ScrollViewer;
         _treeDataGridScrollViewer.ScrollChanged += ScrollViewer1_ScrollChanged;
 
-        _ganttControlHScrollBar = GanttControl.HScrollBar;
-        _ganttControlVScrollBar = GanttControl.VScrollBar;
+        _ganttControlHScrollBar        =  GanttControl.HScrollBar;
+        _ganttControlVScrollBar        =  GanttControl.VScrollBar;
         _ganttControlVScrollBar.Scroll += GanttControlVScrollBar_Scroll;
 
         GanttControl.Reload();
@@ -161,7 +168,7 @@ public partial class MainWindow : Window
 
     private void GanttControlVScrollBar_Scroll(object? sender, ScrollEventArgs e)
     {
-        _treeDataGridScrollViewer.SetCurrentValue(ScrollViewer.OffsetProperty,new Vector(_treeDataGridScrollViewer.Offset.X, e.NewValue));
+        _treeDataGridScrollViewer.SetCurrentValue(ScrollViewer.OffsetProperty, new Vector(_treeDataGridScrollViewer.Offset.X, e.NewValue));
     }
 
     private void ScrollViewer1_ScrollChanged(object? sender, ScrollChangedEventArgs e)
