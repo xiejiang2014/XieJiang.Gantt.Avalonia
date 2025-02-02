@@ -164,7 +164,8 @@ public class GanttControl : TemplatedControl
 
         if (_canvasBody is not null)
         {
-            _canvasBody.PointerMoved += CanvasBody_PointerMoved;
+            _canvasBody.PointerMoved        += CanvasBody_PointerMoved;
+            _canvasBody.PointerWheelChanged += Canvas_PointerWheelChanged;
         }
 
         if (_secondaryComponents is not null)
@@ -174,7 +175,8 @@ public class GanttControl : TemplatedControl
 
         if (_ganttBodyBackground is not null)
         {
-            _ganttBodyBackground.PointerMoved += GanttBodyBackground_PointerMoved;
+            _ganttBodyBackground.PointerMoved        += GanttBodyBackground_PointerMoved;
+            _ganttBodyBackground.PointerWheelChanged += Canvas_PointerWheelChanged;
         }
 
         ReloadTasks();
@@ -1053,8 +1055,31 @@ public class GanttControl : TemplatedControl
 
             var nowOffset = (dateTimeNow - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - HScrollBar.Bounds.Width / 2d;
 
-            HScrollBar.Value = nowOffset;
+            HScrollBar.SetCurrentValue(RangeBase.ValueProperty, nowOffset);
+            //HScrollBar.Value = nowOffset;
         }
+    }
+
+
+    private void Canvas_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        if (e.Delta.X != 0)
+        {
+            if (HScrollBar != null)
+            {
+                HScrollBar.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - e.Delta.X * 30);
+                //HScrollBar.Value = HScrollBar.Value - e.Delta.X * 10;
+            }
+        }
+        if (e.Delta.Y != 0)
+        {
+            if (VScrollBar != null)
+            {
+                VScrollBar.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - e.Delta.Y * 30);
+                //HScrollBar.Value = HScrollBar.Value - e.Delta.X * 10;
+            }
+        }
+
     }
 
     #endregion

@@ -78,7 +78,7 @@ public partial class MainWindow : Window
                                                         HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png"))),
                                                         Title     = "some thing else",
                                                     },
-                                      Color = GanttColors.Danger
+                                          Color = GanttColors.Danger
                                       });
         }
 
@@ -159,14 +159,14 @@ public partial class MainWindow : Window
         _treeDataGridScrollViewer               =  TreeDataGrid1.Scroll as ScrollViewer;
         _treeDataGridScrollViewer.ScrollChanged += ScrollViewer1_ScrollChanged;
 
-        _ganttControlHScrollBar        =  GanttControl.HScrollBar;
-        _ganttControlVScrollBar        =  GanttControl.VScrollBar;
-        _ganttControlVScrollBar.Scroll += GanttControlVScrollBar_Scroll;
+        _ganttControlHScrollBar              =  GanttControl.HScrollBar;
+        _ganttControlVScrollBar              =  GanttControl.VScrollBar;
+        _ganttControlVScrollBar.ValueChanged += GanttControlVScrollBar_ValueChanged;
 
         GanttControl.Reload();
     }
 
-    private void GanttControlVScrollBar_Scroll(object? sender, ScrollEventArgs e)
+    private void GanttControlVScrollBar_ValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
         _treeDataGridScrollViewer.SetCurrentValue(ScrollViewer.OffsetProperty, new Vector(_treeDataGridScrollViewer.Offset.X, e.NewValue));
     }
