@@ -65,7 +65,7 @@ public class GanttControl : TemplatedControl
         TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBar_MainDragCompleted(e));
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.TaskBar_WidthDragDelta(e));
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.TaskBar_WidthDragCompleted(e));
-        
+
         MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.MilestoneControl_HThumbDragDelta(e));
         MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragCompleted(e));
 
@@ -75,11 +75,11 @@ public class GanttControl : TemplatedControl
     public GanttControl()
     {
         DataContextChanged += GanttControl_DataContextChanged;
-        
+
         _pinout.DragStarted   += Pinout_DragStarted;
         _pinout.DragDelta     += Pinout_DragDelta;
         _pinout.DragCompleted += Pinout_DragCompleted;
-        
+
         DateModeChanged();
     }
 
@@ -140,13 +140,7 @@ public class GanttControl : TemplatedControl
 
         if (_canvasBody is not null)
         {
-            _canvasBody.PointerMoved        += CanvasBody_PointerMoved;
             _canvasBody.PointerWheelChanged += Canvas_PointerWheelChanged;
-        }
-
-        if (_secondaryComponents is not null)
-        {
-            _secondaryComponents.PointerMoved += SecondaryComponents_PointerMoved;
         }
 
         if (_ganttBodyBackground is not null)
@@ -160,6 +154,26 @@ public class GanttControl : TemplatedControl
         ReloadTasks();
     }
 
+    private void GanttBodyBackground_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        PanStart(e);
+    }
+    
+    private void GanttBodyBackground_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        HidePinout();
+        Pan(e);
+    }
+
+    private void GanttBodyBackground_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        PanEnd(e);
+    }
+
+    private void Canvas_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        PointerWheel(e);
+    }
 
     #region TaskBarHeight
 
@@ -724,41 +738,12 @@ public class GanttControl : TemplatedControl
         Canvas.SetLeft(dependencyLine, x0);
         Canvas.SetTop(dependencyLine, y0);
     }
-
-    private void CanvasBody_PointerMoved(object? sender, PointerEventArgs e)
-    {
-        //todo 已经没用了
-        if (ReferenceEquals(e.Source, _canvasBody))
-        {
-            if (_canvasBody is not null)
-            {
-                _canvasBody.Children.Remove(_pinout);
-            }
-        }
-    }
-
-    private void SecondaryComponents_PointerMoved(object? sender, PointerEventArgs e)
-    {
-        //todo 已经没用了
-        if (ReferenceEquals(e.Source, _secondaryComponents))
-        {
-            if (_canvasBody is not null)
-            {
-                _canvasBody.Children.Remove(_pinout);
-            }
-        }
-    }
-
-    private void GanttBodyBackground_PointerMoved(object? sender, PointerEventArgs e)
+    
+    private void HidePinout()
     {
         if (_canvasBody is not null)
         {
             _canvasBody.Children.Remove(_pinout);
-        }
-
-        if (_isPanning)
-        {
-            Pan(e);
         }
     }
 
@@ -1041,24 +1026,18 @@ public class GanttControl : TemplatedControl
     }
 
 
-    private void Canvas_PointerWheelChanged(object? sender, PointerWheelEventArgs e)
+
+
+    private void PointerWheel(PointerWheelEventArgs e)
     {
         if (e.Delta.X != 0)
         {
-            if (HScrollBar != null)
-            {
-                HScrollBar.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - e.Delta.X * 30);
-                //HScrollBar.Value = HScrollBar.Value - e.Delta.X * 10;
-            }
+            HScrollBar?.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - e.Delta.X * 30);
         }
 
         if (e.Delta.Y != 0)
         {
-            if (VScrollBar != null)
-            {
-                VScrollBar.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - e.Delta.Y * 30);
-                //HScrollBar.Value = HScrollBar.Value - e.Delta.X * 10;
-            }
+            VScrollBar?.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - e.Delta.Y * 30);
         }
     }
 
@@ -1069,11 +1048,9 @@ public class GanttControl : TemplatedControl
 
     private bool   _isPanning;
     private Point? _panBasePoint;
-
-    private void GanttBodyBackground_PointerPressed(object? sender, PointerPressedEventArgs e)
+    private void PanStart(PointerPressedEventArgs e)
     {
         var cp = e.GetCurrentPoint(this);
-
         if (cp.Properties.IsMiddleButtonPressed)
         {
             _panBasePoint = e.GetPosition(this);
@@ -1084,7 +1061,7 @@ public class GanttControl : TemplatedControl
 
     private void Pan(PointerEventArgs e)
     {
-        if (_panBasePoint.HasValue)
+        if (_isPanning && _panBasePoint.HasValue)
         {
             var newPoint = e.GetPosition(this);
 
@@ -1096,8 +1073,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-
-    private void GanttBodyBackground_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void PanEnd(PointerReleasedEventArgs e)
     {
         var cp = e.GetCurrentPoint(this);
         if (!cp.Properties.IsMiddleButtonPressed)
@@ -1181,7 +1157,7 @@ public class GanttControl : TemplatedControl
         _milestoneControls.Remove(milestone);
     }
 
-    private void MilestoneControl_HThumbDragDelta( RoutedEventArgs e)
+    private void MilestoneControl_HThumbDragDelta(RoutedEventArgs e)
     {
         if (e.Source is MilestoneControl { DataContext: Milestone milestone } maskMilestoneControl)
         {
