@@ -108,7 +108,8 @@
                         x:Name="PART_VScrollBar"
                         Grid.Row="1"
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Stretch">
+                        VerticalAlignment="Stretch"
+                        ViewportSize="{Binding #PanelBody.Bounds.Height}">
                         <ScrollBar.Maximum>
                             <MultiBinding Converter="{x:Static ava:DoubleSubtractiveConverter.Default}">
                                 <Binding Path="#PART_CanvasBody.Height" />
