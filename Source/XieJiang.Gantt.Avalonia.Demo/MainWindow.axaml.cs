@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using Avalonia;
@@ -18,6 +19,7 @@ public partial class MainWindow : Window
     private ScrollViewer _treeDataGridScrollViewer;
     private ScrollBar    _ganttControlHScrollBar;
     private ScrollBar    _ganttControlVScrollBar;
+
 
     public MainWindow()
     {
@@ -96,59 +98,63 @@ public partial class MainWindow : Window
 
         GanttControl.DataContext = ganttModel;
 
-        TreeDataGrid1.Source = new FlatTreeDataGridSource<MyGanttTask>(ganttModel.GanttTasks.Cast<MyGanttTask>())
-                               {
-                                   Columns =
-                                   {
-                                       new TextColumn<MyGanttTask, int>("ID",
-                                                                        x => x.Id,
-                                                                        new GridLength(1, GridUnitType.Auto),
-                                                                        new()
-                                                                        {
-                                                                            TextAlignment = TextAlignment.Center,
-                                                                        }
-                                                                       ),
+        var flatTreeDataGridSource = new FlatTreeDataGridSource<MyGanttTask>(ganttModel.GanttTasks.Cast<MyGanttTask>())
+                                     {
+                                         Columns =
+                                         {
+                                             new TextColumn<MyGanttTask, int>("ID",
+                                                                              x => x.Id,
+                                                                              new GridLength(1, GridUnitType.Auto),
+                                                                              new()
+                                                                              {
+                                                                                  TextAlignment = TextAlignment.Center,
+                                                                              }
+                                                                             ),
 
-                                       new TemplateColumn<MyGanttTask>("Header",
-                                                                       "HeaderCell"
-                                                                      ),
-
-                                       //new TextColumn<MyGanttTask, string>("Title",
-                                       //                                    x => ((TaskContent)x.Content!).Title,
-                                       //                                    new GridLength(1, GridUnitType.Auto)
-                                       //                                   ),
-
-                                       new TemplateColumn<MyGanttTask>("Title",
-                                                                       "TextCell",
-                                                                       "TextEditCell"
-                                                                      ),
-
-                                       new TemplateColumn<MyGanttTask>("Progress",
-                                                                       "ProgressCell",
-                                                                       "ProgressCellEditing"
-                                                                      ),
-
-                                       new TextColumn<MyGanttTask, DateTime>("StartDate",
-                                                                             x => x.StartDate,
-                                                                             new GridLength(1, GridUnitType.Auto),
-                                                                             new()
-                                                                             {
-                                                                                 TextAlignment = TextAlignment.Right,
-                                                                                 MaxWidth      = new GridLength(150)
-                                                                             }
+                                             new TemplateColumn<MyGanttTask>("Header",
+                                                                             "HeaderCell"
                                                                             ),
 
-                                       new TextColumn<MyGanttTask, DateTime>("EndDate",
-                                                                             x => x.EndDate,
-                                                                             new GridLength(1, GridUnitType.Auto),
-                                                                             new()
-                                                                             {
-                                                                                 TextAlignment = TextAlignment.Right,
-                                                                                 MaxWidth      = new GridLength(150)
-                                                                             }
+                                             //new TextColumn<MyGanttTask, string>("Title",
+                                             //                                    x => ((TaskContent)x.Content!).Title,
+                                             //                                    new GridLength(1, GridUnitType.Auto)
+                                             //                                   ),
+
+                                             new TemplateColumn<MyGanttTask>("Title",
+                                                                             "TextCell",
+                                                                             "TextEditCell"
                                                                             ),
-                                   }
-                               };
+
+                                             new TemplateColumn<MyGanttTask>("Progress",
+                                                                             "ProgressCell",
+                                                                             "ProgressCellEditing"
+                                                                            ),
+
+                                             new TextColumn<MyGanttTask, DateTime>("StartDate",
+                                                                                   x => x.StartDate,
+                                                                                   new GridLength(1, GridUnitType.Auto),
+                                                                                   new()
+                                                                                   {
+                                                                                       TextAlignment = TextAlignment.Right,
+                                                                                       MaxWidth      = new GridLength(150)
+                                                                                   }
+                                                                                  ),
+
+                                             new TextColumn<MyGanttTask, DateTime>("EndDate",
+                                                                                   x => x.EndDate,
+                                                                                   new GridLength(1, GridUnitType.Auto),
+                                                                                   new()
+                                                                                   {
+                                                                                       TextAlignment = TextAlignment.Right,
+                                                                                       MaxWidth      = new GridLength(150)
+                                                                                   }
+                                                                                  ),
+                                         }
+                                     };
+
+        flatTreeDataGridSource.RowSelection!.SingleSelect    =  true;
+        flatTreeDataGridSource.RowSelection.SelectionChanged += RowSelection_SelectionChanged;
+        TreeDataGrid1.Source                                 =  flatTreeDataGridSource;
     }
 
 
@@ -175,7 +181,6 @@ public partial class MainWindow : Window
     {
         var temp = _ganttControlVScrollBar.Transitions;
         _ganttControlVScrollBar.Transitions = null;
-
         _ganttControlVScrollBar.SetCurrentValue(RangeBase.ValueProperty, _treeDataGridScrollViewer.Offset.Y);
         _ganttControlVScrollBar.Transitions = temp;
 
@@ -214,5 +219,15 @@ public partial class MainWindow : Window
     private void ButtonYearly_OnClick(object? sender, RoutedEventArgs e)
     {
         GanttControl.DateMode = DateModes.Yearly;
+    }
+
+    private void RowSelection_SelectionChanged(object? sender, global::Avalonia.Controls.Selection.TreeSelectionModelSelectionChangedEventArgs<MyGanttTask> e)
+    {
+        var selectedItem = e.SelectedItems.FirstOrDefault();
+
+        if (selectedItem is GanttTask ganttTask)
+        {
+            GanttControl.ScrollToTask(ganttTask);
+        }
     }
 }

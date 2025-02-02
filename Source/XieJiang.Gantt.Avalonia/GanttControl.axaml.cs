@@ -158,7 +158,7 @@ public class GanttControl : TemplatedControl
     {
         PanStart(e);
     }
-    
+
     private void GanttBodyBackground_PointerMoved(object? sender, PointerEventArgs e)
     {
         HidePinout();
@@ -738,7 +738,7 @@ public class GanttControl : TemplatedControl
         Canvas.SetLeft(dependencyLine, x0);
         Canvas.SetTop(dependencyLine, y0);
     }
-    
+
     private void HidePinout()
     {
         if (_canvasBody is not null)
@@ -1012,21 +1012,29 @@ public class GanttControl : TemplatedControl
 
     #region Scroll
 
-    public void ScrollToNow()
+    public void ScrollToTask(GanttTask ganttTask)
     {
-        if (HScrollBar is not null)
+        if (HScrollBar is not null && _taskBarsDic.TryGetValue(ganttTask, out var taskBar))
         {
-            var dateTimeNow = DateTimeNow ?? DateTime.Now;
-
-            var nowOffset = (dateTimeNow - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - HScrollBar.Bounds.Width / 2d;
-
-            HScrollBar.SetCurrentValue(RangeBase.ValueProperty, nowOffset);
-            //HScrollBar.Value = nowOffset;
+            var nowOffset = taskBar.GetValue(Canvas.LeftProperty) - HScrollBar.Bounds.Width / 2d;
+            HScrollBar.Value = nowOffset;
         }
     }
 
+    public void ScrollToNow()
+    {
+        var dateTimeNow = DateTimeNow ?? DateTime.Now;
+        ScrollToDateTime(dateTimeNow);
+    }
 
-
+    public void ScrollToDateTime(DateTime dateTime)
+    {
+        if (HScrollBar is not null)
+        {
+            var nowOffset   = (dateTime - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - HScrollBar.Bounds.Width / 2d;
+            HScrollBar.Value = nowOffset;
+        }
+    }
 
     private void PointerWheel(PointerWheelEventArgs e)
     {
@@ -1048,6 +1056,7 @@ public class GanttControl : TemplatedControl
 
     private bool   _isPanning;
     private Point? _panBasePoint;
+
     private void PanStart(PointerPressedEventArgs e)
     {
         var cp = e.GetCurrentPoint(this);
@@ -1065,10 +1074,24 @@ public class GanttControl : TemplatedControl
         {
             var newPoint = e.GetPosition(this);
 
-            var p = newPoint - _panBasePoint.Value;
+            var p = newPoint                                                      - _panBasePoint.Value;
 
-            VScrollBar?.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - p.Y);
-            HScrollBar?.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - p.X);
+            if (VScrollBar is not null)
+            {
+                var temp = VScrollBar.Transitions;
+                VScrollBar.Transitions = null;
+                VScrollBar.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - p.Y);
+                VScrollBar.Transitions = temp;
+            }
+
+            if (HScrollBar is not null)
+            {
+                var temp = HScrollBar.Transitions;
+                HScrollBar.Transitions = null;
+                HScrollBar.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - p.X);
+                HScrollBar.Transitions = temp;
+            }
+
             _panBasePoint = newPoint;
         }
     }
