@@ -40,7 +40,6 @@ public class GanttControl : TemplatedControl
     static GanttControl()
     {
         // -----------------------------   Property.Changed:
-        //TaskBarsProperty.Changed.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBarsChanged(e));
         TaskBarHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskBarHeightChanged(e));
 
         RowHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.RowHeightChanged(e));
@@ -54,44 +53,40 @@ public class GanttControl : TemplatedControl
         DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInSeasonallyModeChanged(e));
         DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInYearlyModelChanged(e));
         DateTimeNowProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateTimeNowChanged(e));
-        //LinkLineBrushProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.LinkLineBrushChanged(e));
+
         TaskContentTemplateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskContentTemplateChanged(e));
 
         DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
 
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
-        // -----------------------------   
+        // -----------------------------   Handle events
+        TaskBar.MainDragDeltaEvent.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBar_MainDragDelta(e));
+        TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBar_MainDragCompleted(e));
+        TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.TaskBar_WidthDragDelta(e));
+        TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.TaskBar_WidthDragCompleted(e));
+        
+        MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.MilestoneControl_HThumbDragDelta(e));
+        MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragCompleted(e));
+
+        Button.ClickEvent.AddClassHandler<GanttControl>((sender, e) => sender.ButtonClicked(e));
     }
 
     public GanttControl()
     {
         DataContextChanged += GanttControl_DataContextChanged;
-
-        TaskBar.MainDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_MainDragDelta);
-        TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_MainDragCompleted);
-        TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragDelta);
-        TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>(TaskBar_WidthDragCompleted);
-
-        MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>(MilestoneControl_HThumbDragDelta);
-        MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>(MilestoneControl_HThumbDragCompleted);
-
-        Button.ClickEvent.AddClassHandler<GanttControl>(ButtonClicked);
-
+        
         _pinout.DragStarted   += Pinout_DragStarted;
         _pinout.DragDelta     += Pinout_DragDelta;
         _pinout.DragCompleted += Pinout_DragCompleted;
-
-        //PointerPressed += GanttControl_PointerPressed;
-
-
+        
         DateModeChanged();
     }
 
 
-    private void ButtonClicked(GanttControl sender, RoutedEventArgs e)
+    private void ButtonClicked(RoutedEventArgs e)
     {
-        Debug.Print($"buttonclicked sender:{sender}  e.Source:{e.Source}");
+        Debug.Print($"ButtonClicked  e.Source:{e.Source}");
 
         if (e.Source is Button button)
         {
@@ -111,25 +106,6 @@ public class GanttControl : TemplatedControl
             }
         }
     }
-
-
-    //private void GanttControl_PointerPressed(object? sender, PointerPressedEventArgs e)
-    //{
-    //    if (e.Source is IInputElement v)
-    //    {
-    //        var xxx = FindHeaderDayItem(v);
-    //    }
-    //}
-
-    //private HeaderDayItem? FindHeaderDayItem(IInputElement? inputElement)
-    //{
-    //    if (inputElement is Visual visual)
-    //    {
-    //        return visual.FindAncestorOfType<HeaderDayItem>(true);
-    //    }
-
-    //    return null;
-    //}
 
     #region DataContext
 
@@ -905,7 +881,7 @@ public class GanttControl : TemplatedControl
 
     #region drag
 
-    private void TaskBar_MainDragDelta(GanttControl arg1, RoutedEventArgs e)
+    private void TaskBar_MainDragDelta(RoutedEventArgs e)
     {
         if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
@@ -921,7 +897,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void TaskBar_MainDragCompleted(GanttControl arg1, RoutedEventArgs e)
+    private void TaskBar_MainDragCompleted(RoutedEventArgs e)
     {
         if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
@@ -950,7 +926,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void TaskBar_WidthDragDelta(GanttControl arg1, WidthDragEventArgs e)
+    private void TaskBar_WidthDragDelta(WidthDragEventArgs e)
     {
         if (e.Source is TaskBar { DataContext: GanttTask } taskBar)
         {
@@ -966,7 +942,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void TaskBar_WidthDragCompleted<TTarget>(TTarget arg1, WidthDragEventArgs e) where TTarget : Interactive
+    private void TaskBar_WidthDragCompleted(WidthDragEventArgs e)
     {
         if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
@@ -1205,7 +1181,7 @@ public class GanttControl : TemplatedControl
         _milestoneControls.Remove(milestone);
     }
 
-    private void MilestoneControl_HThumbDragDelta(GanttControl sender, RoutedEventArgs e)
+    private void MilestoneControl_HThumbDragDelta( RoutedEventArgs e)
     {
         if (e.Source is MilestoneControl { DataContext: Milestone milestone } maskMilestoneControl)
         {
@@ -1214,7 +1190,7 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void MilestoneControl_HThumbDragCompleted(GanttControl sender, RoutedEventArgs e)
+    private void MilestoneControl_HThumbDragCompleted(RoutedEventArgs e)
     {
     }
 
