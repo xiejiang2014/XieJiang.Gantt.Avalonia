@@ -6,7 +6,6 @@
 
     <Design.PreviewWith>
         <StackPanel
-            Width="400"
             Spacing="10">
             <controls:Pinout />
         </StackPanel>

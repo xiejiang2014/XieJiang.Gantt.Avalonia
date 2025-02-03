@@ -83,7 +83,7 @@ public class GanttControl : TemplatedControl
 
         DateModeChanged();
     }
-    
+
     private void ButtonClicked(RoutedEventArgs e)
     {
         Debug.Print($"ButtonClicked  e.Source:{e.Source}");
@@ -1031,7 +1031,7 @@ public class GanttControl : TemplatedControl
     {
         if (HScrollBar is not null)
         {
-            var nowOffset   = (dateTime - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - HScrollBar.Bounds.Width / 2d;
+            var nowOffset = (dateTime - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth - HScrollBar.Bounds.Width / 2d;
             HScrollBar.Value = nowOffset;
         }
     }
@@ -1074,7 +1074,7 @@ public class GanttControl : TemplatedControl
         {
             var newPoint = e.GetPosition(this);
 
-            var p = newPoint                                                      - _panBasePoint.Value;
+            var p = newPoint - _panBasePoint.Value;
 
             if (VScrollBar is not null)
             {
@@ -1137,7 +1137,7 @@ public class GanttControl : TemplatedControl
                         {
                             DateTime  = dayItem.Date.ToDateTime(TimeOnly.MinValue),
                             IsEditing = true,
-                            Title     = "New milestone"
+                            Title     = Application.Current.FindResource("STRING_NEW_MILESTONE") as string
                         };
 
         var milestoneControl = AddMilestone(milestone);

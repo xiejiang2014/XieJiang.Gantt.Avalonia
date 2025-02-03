@@ -34,4 +34,10 @@
 		<Folder Include="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\" />
 		<Folder Include="XieJiang.CommonModule\" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Themes\GanttFluentTheme.axaml.cs">
+	    <DependentUpon>GanttFluentTheme.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 </Project>

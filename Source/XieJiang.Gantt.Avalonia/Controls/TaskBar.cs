@@ -70,7 +70,7 @@ public class TaskBar : ContentControl
     {
         _backgroundBorder  = e.NameScope.Find<Border>("PART_BackgroundBorder");
         _foregroundBorder  = e.NameScope.Find<Border>("PART_ForegroundBorder");
-        _taskMainThumb         = e.NameScope.Find<Thumb>("PART_TaskMainThumb");
+        _taskMainThumb     = e.NameScope.Find<Thumb>("PART_TaskMainThumb");
         _lThumb            = e.NameScope.Find<Thumb>("PART_LThumb");
         _rThumb            = e.NameScope.Find<Thumb>("PART_RThumb");
         _progressThumb     = e.NameScope.Find<Thumb>("PART_ProgressThumb");
@@ -108,7 +108,7 @@ public class TaskBar : ContentControl
 
         Update();
     }
-    
+
 
     private void Update()
     {
@@ -137,8 +137,8 @@ public class TaskBar : ContentControl
 
     #region ParentsTasks
 
-    public HashSet<TaskBar> ParentsTasks { get; }=new();
-    
+    public HashSet<TaskBar> ParentsTasks { get; } = new();
+
     #endregion
 
     #region ChildTask

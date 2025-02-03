@@ -1,0 +1,6 @@
+<ResourceDictionary
+    x:Class="XieJiang.Gantt.Avalonia.Locale.ru_ru"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <x:String x:Key="STRING_NEW_MILESTONE">Новая веха</x:String>
+</ResourceDictionary>
