@@ -60,6 +60,7 @@ public class GanttControl : TemplatedControl
 
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
+
         // -----------------------------   Handle events
         TaskBar.MainDragDeltaEvent.AddClassHandler<GanttControl>((sender,      e) => sender.TaskBar_MainDragDelta(e));
         TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBar_MainDragCompleted(e));
@@ -82,8 +83,7 @@ public class GanttControl : TemplatedControl
 
         DateModeChanged();
     }
-
-
+    
     private void ButtonClicked(RoutedEventArgs e)
     {
         Debug.Print($"ButtonClicked  e.Source:{e.Source}");

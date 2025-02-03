@@ -1,8 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls.Models.TreeDataGrid;

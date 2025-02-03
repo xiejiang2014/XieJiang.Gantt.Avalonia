@@ -8,22 +8,22 @@ public class DependencyLinePointerPressedEventArgs : RoutedEventArgs
     public DependencyLinePointerPressedEventArgs(TaskBar parentTaskBar, TaskBar childTaskBar)
     {
         ParentTaskBar = parentTaskBar;
-        ChildTaskBar  = childTaskBar;
+        ChildTaskBar = childTaskBar;
     }
 
     public DependencyLinePointerPressedEventArgs(RoutedEvent? routedEvent, TaskBar parentTaskBar, TaskBar childTaskBar) : base(routedEvent)
     {
         ParentTaskBar = parentTaskBar;
-        ChildTaskBar  = childTaskBar;
+        ChildTaskBar = childTaskBar;
     }
 
     public DependencyLinePointerPressedEventArgs(RoutedEvent? routedEvent, object? source, TaskBar parentTaskBar, TaskBar childTaskBar) : base(routedEvent, source)
     {
         ParentTaskBar = parentTaskBar;
-        ChildTaskBar  = childTaskBar;
+        ChildTaskBar = childTaskBar;
     }
 
     public TaskBar ParentTaskBar { get; set; }
-    public TaskBar ChildTaskBar  { get; set; }
+    public TaskBar ChildTaskBar { get; set; }
 
 }
