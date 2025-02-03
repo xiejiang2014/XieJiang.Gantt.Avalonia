@@ -2,7 +2,7 @@
 
 namespace XieJiang.Gantt.Avalonia.Themes;
 
-public class GanttTheme : Styles
+public class GanttFluentTheme : Styles
 {
     //public static ThemeVariant Aquatic  => new ThemeVariant(nameof(Aquatic),  ThemeVariant.Dark);
     //public static ThemeVariant Desert   => new ThemeVariant(nameof(Desert),   ThemeVariant.Light);
@@ -20,7 +20,7 @@ public class GanttTheme : Styles
 
     //private readonly IServiceProvider? sp;
 
-    //public GanttTheme(IServiceProvider? provider = null)
+    //public GanttFluentTheme(IServiceProvider? provider = null)
     //{
     //    sp = provider;
     //    AvaloniaXamlLoader.Load(provider, this);

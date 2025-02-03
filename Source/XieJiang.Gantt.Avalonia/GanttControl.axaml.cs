@@ -1198,10 +1198,10 @@ public class GanttControl : TemplatedControl
 
     #region TaskContentTemplate
 
-    public static readonly StyledProperty<IDataTemplate> TaskContentTemplateProperty =
-        AvaloniaProperty.Register<GanttControl, IDataTemplate>(nameof(TaskContentTemplate), null, true);
+    public static readonly StyledProperty<IDataTemplate?> TaskContentTemplateProperty =
+        AvaloniaProperty.Register<GanttControl, IDataTemplate?>(nameof(TaskContentTemplate), null, true);
 
-    public IDataTemplate TaskContentTemplate
+    public IDataTemplate? TaskContentTemplate
     {
         get => GetValue(TaskContentTemplateProperty);
         set => SetValue(TaskContentTemplateProperty, value);
