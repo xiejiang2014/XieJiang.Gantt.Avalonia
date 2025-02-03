@@ -6,7 +6,6 @@
     xmlns:demo="clr-namespace:XieJiang.Gantt.Avalonia.Demo"
     xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     Title="XieJiang.Gantt.Avalonia.Demo"
     d:DesignHeight="450"
     d:DesignWidth="800"
