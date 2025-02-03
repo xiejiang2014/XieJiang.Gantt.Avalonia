@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ava="clr-namespace:XieJiang.CommonModule.Ava"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
-    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia">
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
+    xmlns:models="clr-namespace:XieJiang.Gantt.Avalonia.Models">
 
     <Design.PreviewWith>
         <controls:GanttHeader Width="800" />
@@ -67,7 +68,7 @@
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.DataTemplates>
-                            <DataTemplate DataType="gantt:MonthItem">
+                            <DataTemplate DataType="models:MonthItem">
                                 <Panel x:Name="Week">
                                     <Rectangle
                                         Width="{Binding Width}"
@@ -104,7 +105,7 @@
                             </DataTemplate>
 
 
-                            <DataTemplate DataType="gantt:YearItem">
+                            <DataTemplate DataType="models:YearItem">
                                 <Panel x:Name="Week">
                                     <Rectangle
                                         Width="{Binding Width}"
@@ -156,7 +157,7 @@
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.DataTemplates>
-                            <DataTemplate DataType="gantt:DayItem">
+                            <DataTemplate DataType="models:DayItem">
                                 <controls:HeaderDayItem x:Name="HeaderDayItem">
                                     <Rectangle
                                         Width="{Binding Width}"
@@ -202,7 +203,7 @@
 
                             </DataTemplate>
 
-                            <DataTemplate DataType="gantt:WeekItem">
+                            <DataTemplate DataType="models:WeekItem">
                                 <Panel Width="{Binding Width}">
                                     <Rectangle
                                         Height="{Binding RelativeSource={RelativeSource Self},
@@ -239,7 +240,7 @@
                             </DataTemplate>
 
 
-                            <DataTemplate DataType="gantt:MonthItem">
+                            <DataTemplate DataType="models:MonthItem">
                                 <Panel Width="{Binding Width}">
                                     <Rectangle
                                         Height="{Binding RelativeSource={RelativeSource Self},

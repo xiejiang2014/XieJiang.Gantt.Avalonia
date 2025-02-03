@@ -1,4 +1,5 @@
 using System;
+using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Demo;
 

@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace XieJiang.Gantt.Avalonia;
+namespace XieJiang.Gantt.Avalonia.Models;
 
 public class GanttTask : INotifyPropertyChanged
 {
     #region Dependencies
 
-    public FrozenSet<GanttTask> Parents  => _parents.ToFrozenSet();
+    public FrozenSet<GanttTask> Parents => _parents.ToFrozenSet();
     public FrozenSet<GanttTask> Children => _children.ToFrozenSet();
 
-    private readonly List<GanttTask> _parents  = new();
+    private readonly List<GanttTask> _parents = new();
     private readonly List<GanttTask> _children = new();
 
     public bool AddingDependentTask(GanttTask childTask)
@@ -87,7 +87,7 @@ public class GanttTask : INotifyPropertyChanged
     }
 
     #endregion
-    
+
     #region Content
 
     private object? _content;

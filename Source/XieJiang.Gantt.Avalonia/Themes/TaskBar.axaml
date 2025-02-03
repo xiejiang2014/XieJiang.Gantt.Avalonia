@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
     xmlns:gantt="clr-namespace:XieJiang.Gantt.Avalonia"
-    x:DataType="gantt:GanttTask">
+    xmlns:models="clr-namespace:XieJiang.Gantt.Avalonia.Models"
+    x:DataType="models:GanttTask">
 
     <Design.PreviewWith>
         <StackPanel Width="400">
@@ -95,7 +96,7 @@
 
         <Setter
             Property="Content"
-            Value="{Binding Path=(gantt:GanttTask).Content}" />
+            Value="{Binding Path=(models:GanttTask).Content}" />
 
         <Setter
             Property="Padding"
@@ -106,7 +107,7 @@
             Value="4" />
         <Setter
             Property="Background"
-            Value="{Binding Path=(gantt:GanttTask).Color,
+            Value="{Binding Path=(models:GanttTask).Color,
                             Converter={x:Static gantt:GanttColorToBrushConverter.Default}}" />
         <Setter
             Property="ClipToBounds"
@@ -160,7 +161,7 @@
                                 ToolTip.VerticalOffset="0">
                                 <ToolTip.Tip>
                                     <TextBlock
-                                        x:DataType="gantt:GanttTask"
+                                        x:DataType="models:GanttTask"
                                         Classes="ProgressTextBlock"
                                         Text="{Binding Path=Progress,
                                                        StringFormat={}{0:p2}}"

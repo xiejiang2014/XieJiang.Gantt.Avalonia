@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XieJiang.Gantt.Avalonia;
+namespace XieJiang.Gantt.Avalonia.Models;
 
 public class DateItem
 {
