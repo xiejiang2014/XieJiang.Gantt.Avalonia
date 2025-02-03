@@ -14,6 +14,30 @@
         </Panel>
     </Design.PreviewWith>
 
+    <ControlTheme
+        x:Key="BodyBackgroundRectangle"
+        TargetType="Rectangle">
+
+
+        <Style Selector="^.BackgroundRectangle">
+            <Setter
+                Property="Fill"
+                Value="{DynamicResource BackgroundBrush}" />
+
+            <Style Selector="^.RestDay">
+                <Setter
+                    Property="Fill"
+                    Value="{DynamicResource RestDayBackgroundBrush}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^.FirstDayOfWeek">
+            <Setter
+                Property="Fill"
+                Value="{DynamicResource DarkGridBrush}" />
+        </Style>
+
+    </ControlTheme>
 
     <ControlTheme
         x:Key="{x:Type controls:GanttBodyBackground}"
@@ -36,17 +60,17 @@
                                 <Panel>
                                     <Rectangle
                                         Width="{Binding Width}"
-                                        Fill="{Binding IsRestDay,
-                                                       Converter={StaticResource RestDayBgConverter}}" />
+                                        Classes="BackgroundRectangle"
+                                        Classes.RestDay="{Binding IsRestDay}"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
 
                                     <!--  左边线  -->
-
                                     <Rectangle
                                         Width="1"
                                         HorizontalAlignment="Left"
-                                        Fill="{Binding IsFirstDayOfWeek,
-                                                       Converter={StaticResource DarkGridConverter}}" />
+                                        Classes.FirstDayOfWeek="{Binding IsFirstDayOfWeek}"
+                                        Fill="{DynamicResource LightGridBrush}" />
                                 </Panel>
                             </DataTemplate>
 
@@ -54,7 +78,7 @@
                                 <Panel>
                                     <Rectangle
                                         Width="{Binding Width}"
-                                        Fill="White" />
+                                        Fill="{DynamicResource BackgroundBrush}" />
 
 
                                     <!--  左边线  -->
@@ -70,7 +94,7 @@
                                 <Panel>
                                     <Rectangle
                                         Width="{Binding Width}"
-                                        Fill="White" />
+                                        Fill="{DynamicResource BackgroundBrush}" />
 
                                     <!--  左边线  -->
                                     <Rectangle

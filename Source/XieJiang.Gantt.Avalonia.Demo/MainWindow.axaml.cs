@@ -9,6 +9,7 @@ using XieJiang.Gantt.Avalonia.Models;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Controls.Primitives;
+using Avalonia.Styling;
 
 namespace XieJiang.Gantt.Avalonia.Demo;
 
@@ -226,6 +227,16 @@ public partial class MainWindow : Window
         if (selectedItem is GanttTask ganttTask)
         {
             GanttControl.ScrollToTask(ganttTask);
+        }
+    }
+
+    private void ToggleButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        var app = Application.Current;
+        if (app is not null)
+        {
+            var theme = app.ActualThemeVariant;
+            app.RequestedThemeVariant = theme == ThemeVariant.Dark ? ThemeVariant.Light : ThemeVariant.Dark;
         }
     }
 }

@@ -11,9 +11,6 @@
     </Design.PreviewWith>
 
 
-
-
-
     <ControlTheme
         x:Key="GanttHeaderButton"
         TargetType="Button">
@@ -76,7 +73,8 @@
                                                          Path=(gantt:GanttControl.HeaderRow1Height)}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Fill="White" />
+                                        Classes="BackgroundRectangle"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
                                     <TextBlock
                                         Margin="4,0,0,0"
@@ -91,7 +89,7 @@
                                         Margin="0,0"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                     <!--  左边线  -->
                                     <Rectangle
@@ -100,7 +98,7 @@
                                                          Path=(gantt:GanttControl.HeaderRow1Height)}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
                                 </Panel>
                             </DataTemplate>
 
@@ -113,7 +111,8 @@
                                                          Path=(gantt:GanttControl.HeaderRow1Height)}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Fill="White" />
+                                        Classes="BackgroundRectangle"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
                                     <TextBlock
                                         Margin="4,0,0,0"
@@ -127,7 +126,7 @@
                                         Margin="0,0"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                     <!--  左边线  -->
                                     <Rectangle
@@ -136,7 +135,7 @@
                                                          Path=(gantt:GanttControl.HeaderRow1Height)}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
                                 </Panel>
                             </DataTemplate>
 
@@ -165,8 +164,9 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Fill="{Binding IsRestDay,
-                                                       Converter={StaticResource RestDayBgConverter}}" />
+                                        Classes="BackgroundRectangle"
+                                        Classes.RestDay="{Binding IsRestDay}"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
                                     <!--  左边线  -->
                                     <Rectangle
@@ -175,7 +175,7 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -190,7 +190,7 @@
                                         VerticalAlignment="Center"
                                         Classes="HeaderMilestoneButton"
                                         IsVisible="{Binding #HeaderDayItem.IsPointerOver}"
-                                        Theme="{StaticResource GanttHeaderButton}" />
+                                        Theme="{DynamicResource GanttHeaderButton}" />
 
 
                                     <!--  底边线  -->
@@ -198,7 +198,7 @@
                                         Height="1"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
                                 </controls:HeaderDayItem>
 
                             </DataTemplate>
@@ -219,7 +219,7 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -234,7 +234,7 @@
                                         Height="1"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                 </Panel>
                             </DataTemplate>
@@ -256,7 +256,7 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -271,7 +271,7 @@
                                         Height="1"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
 
                                 </Panel>
                             </DataTemplate>

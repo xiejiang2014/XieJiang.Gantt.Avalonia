@@ -151,7 +151,15 @@
 
         <StackPanel
             Grid.Row="1"
-            Orientation="Horizontal">
+            Orientation="Horizontal"
+            Spacing="20">
+            <TextBlock VerticalAlignment="Center">ThemeVariant:</TextBlock>
+            <ToggleSwitch
+                IsCheckedChanged="ToggleButton_OnIsCheckedChanged"
+                OffContent="Light"
+                OnContent="Dark" />
+
+
             <Button Click="ButtonReload_OnClick">Reload</Button>
 
 

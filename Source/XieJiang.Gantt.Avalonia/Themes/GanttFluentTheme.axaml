@@ -46,23 +46,29 @@
 
         <ResourceDictionary>
 
-            <SolidColorBrush
-                x:Key="LightGridBrush"
-                Color="#EBEBEB" />
 
-            <SolidColorBrush
-                x:Key="DarkGridBrush"
-                Color="#D6D6D6" />
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key='Light'>
+                    <SolidColorBrush x:Key='BackgroundBrush'>White</SolidColorBrush>
+                    <SolidColorBrush x:Key='RestDayBackgroundBrush'>#FAFAFA</SolidColorBrush>
+                    <SolidColorBrush x:Key='ForegroundBrush'>Black</SolidColorBrush>
+                    <SolidColorBrush x:Key='LightGridBrush'>#EBEBEB</SolidColorBrush>
+                    <SolidColorBrush x:Key="DarkGridBrush">#D6D6D6</SolidColorBrush>
+                </ResourceDictionary>
 
-            <avalonia:BoolToBrushConverter
-                x:Key="RestDayBgConverter"
-                FalseBrush="White"
-                TrueBrush="#FAFAFA" />
+                <ResourceDictionary x:Key='Dark'>
+                    <SolidColorBrush x:Key='BackgroundBrush'>Black</SolidColorBrush>
+                    <SolidColorBrush x:Key='RestDayBackgroundBrush'>#333333</SolidColorBrush>
+                    <SolidColorBrush x:Key='ForegroundBrush'>White</SolidColorBrush>
 
-            <avalonia:BoolToBrushConverter
-                x:Key="DarkGridConverter"
-                FalseBrush="#EBEBEB"
-                TrueBrush="#D6D6D6" />
+<!-- todo -->
+                    <SolidColorBrush x:Key='LightGridBrush'>#EBEBEB</SolidColorBrush>  
+                    <SolidColorBrush x:Key="DarkGridBrush">#D6D6D6</SolidColorBrush>
+
+
+                </ResourceDictionary>
+
+            </ResourceDictionary.ThemeDictionaries>
 
 
             <!--  =================================  -->
