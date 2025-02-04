@@ -1,12 +1,11 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia"
-    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls">
+    xmlns:controls="clr-namespace:XieJiang.Gantt.Avalonia.Controls"
+    xmlns:gantt="https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia">
 
     <Design.PreviewWith>
-        <StackPanel
-            Spacing="10">
+        <StackPanel Spacing="10">
             <controls:Pinout />
         </StackPanel>
     </Design.PreviewWith>
@@ -14,9 +13,6 @@
     <ControlTheme
         x:Key="{x:Type controls:Pinout}"
         TargetType="controls:Pinout">
-        <!--<Setter
-            Property="Margin"
-            Value="2,0,0,0" />-->
         <Setter Property="Template">
             <ControlTemplate>
                 <Border
@@ -28,7 +24,7 @@
                         Width="14"
                         Height="14"
                         VerticalAlignment="Center"
-                        Stroke="LightGray"
+                        Stroke="{DynamicResource PinoutBrush}"
                         StrokeThickness="3" />
                 </Border>
             </ControlTemplate>

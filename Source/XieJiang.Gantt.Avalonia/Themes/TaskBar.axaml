@@ -14,9 +14,6 @@
         </StackPanel>
     </Design.PreviewWith>
 
-
-
-
     <ControlTheme
         x:Key="TaskBarTextBlock"
         TargetType="TextBlock">
@@ -26,7 +23,6 @@
                 Value="12" />
         </Style>
     </ControlTheme>
-
 
     <ControlTheme
         x:Key="TaskBarThumbs"
@@ -214,7 +210,7 @@
                             x:Name="PART_ProgressThumb"
                             Canvas.Left="0"
                             HorizontalAlignment="Left"
-                            Background="Gray"
+                            Background="{DynamicResource ProgressThumbBrush}"
                             Classes="TaskProgressThumb"
                             Cursor="SizeWestEast"
                             IsVisible="False"

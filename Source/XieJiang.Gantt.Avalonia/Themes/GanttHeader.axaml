@@ -183,7 +183,6 @@
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         FontSize="12"
-                                        Foreground="#a6a6a6"
                                         Text="{Binding Path=Date.Day}" />
 
                                     <!--  milestone flag  -->
@@ -227,7 +226,6 @@
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         FontSize="12"
-                                        Foreground="#a6a6a6"
                                         Text="{Binding Path=Header}" />
 
 
@@ -264,7 +262,6 @@
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         FontSize="12"
-                                        Foreground="#a6a6a6"
                                         Text="{Binding Path=Header2}" />
 
 

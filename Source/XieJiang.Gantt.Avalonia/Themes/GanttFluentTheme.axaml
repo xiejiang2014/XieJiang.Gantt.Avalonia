@@ -54,6 +54,9 @@
                     <SolidColorBrush x:Key='ForegroundBrush'>Black</SolidColorBrush>
                     <SolidColorBrush x:Key='LightGridBrush'>#EBEBEB</SolidColorBrush>
                     <SolidColorBrush x:Key="DarkGridBrush">#D6D6D6</SolidColorBrush>
+                    <SolidColorBrush x:Key="BrushNowBrush" Color="DeepSkyBlue" />
+                    <SolidColorBrush x:Key="PinoutBrush" Color="LightGray" />
+                    <SolidColorBrush x:Key="ProgressThumbBrush" Color="LightGray" />
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key='Dark'>
@@ -62,6 +65,10 @@
                     <SolidColorBrush x:Key='ForegroundBrush'>White</SolidColorBrush>
                     <SolidColorBrush x:Key='LightGridBrush'>#292929</SolidColorBrush>
                     <SolidColorBrush x:Key="DarkGridBrush">#404040</SolidColorBrush>
+                    <SolidColorBrush x:Key="BrushNowBrush" Color="DeepSkyBlue" />
+                    <SolidColorBrush x:Key="PinoutBrush" Color="LightGray" />
+                    <SolidColorBrush x:Key="ProgressThumbBrush" Color="LightGray" />
+
                 </ResourceDictionary>
 
             </ResourceDictionary.ThemeDictionaries>
