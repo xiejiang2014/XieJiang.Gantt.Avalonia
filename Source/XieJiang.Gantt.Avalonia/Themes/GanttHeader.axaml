@@ -211,7 +211,8 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Fill="White" />
+                                        Classes="BackgroundRectangle"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
                                     <!--  左边线  -->
                                     <Rectangle
@@ -247,7 +248,8 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Fill="White" />
+                                        Classes="BackgroundRectangle"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
                                     <!--  左边线  -->
                                     <Rectangle

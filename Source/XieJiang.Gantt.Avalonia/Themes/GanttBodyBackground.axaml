@@ -39,7 +39,7 @@
                                         Width="{Binding Width}"
                                         Classes="BackgroundRectangle"
                                         Classes.RestDay="{Binding IsRestDay}"
-                                        Theme="{StaticResource BodyBackgroundRectangle}" />
+                                        Theme="{DynamicResource BodyBackgroundRectangle}" />
 
 
                                     <!--  左边线  -->
@@ -48,7 +48,7 @@
                                         HorizontalAlignment="Left"
                                         Classes.FirstDayOfWeek="{Binding IsFirstDayOfWeek}"
                                         Fill="{DynamicResource LightGridBrush}"
-                                        Theme="{StaticResource BodyBackgroundRectangle}" />
+                                        Theme="{DynamicResource BodyBackgroundRectangle}" />
                                 </Panel>
                             </DataTemplate>
 
@@ -64,7 +64,7 @@
                                     <Rectangle
                                         Width="1"
                                         HorizontalAlignment="Left"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
                                 </Panel>
                             </DataTemplate>
 
@@ -78,7 +78,7 @@
                                     <Rectangle
                                         Width="1"
                                         HorizontalAlignment="Left"
-                                        Fill="{StaticResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}" />
                                 </Panel>
                             </DataTemplate>
                         </ItemsControl.DataTemplates>
