@@ -10,11 +10,6 @@ namespace XieJiang.Gantt.Avalonia.Themes;
 
 public class GanttFluentTheme : Styles
 {
-    public static ThemeVariant Aquatic => new ThemeVariant(nameof(Aquatic), ThemeVariant.Dark);
-    public static ThemeVariant Desert => new ThemeVariant(nameof(Desert), ThemeVariant.Light);
-    public static ThemeVariant Dust => new ThemeVariant(nameof(Dust), ThemeVariant.Dark);
-    public static ThemeVariant NightSky => new ThemeVariant(nameof(NightSky), ThemeVariant.Dark);
-
     private static readonly Dictionary<CultureInfo, ResourceDictionary> LocaleToResource = new()
                                                                                             {
                                                                                                 { new CultureInfo("zh-cn"), new zh_cn() },
