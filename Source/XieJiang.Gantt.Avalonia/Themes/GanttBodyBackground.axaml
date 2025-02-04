@@ -14,30 +14,7 @@
         </Panel>
     </Design.PreviewWith>
 
-    <ControlTheme
-        x:Key="BodyBackgroundRectangle"
-        TargetType="Rectangle">
 
-
-        <Style Selector="^.BackgroundRectangle">
-            <Setter
-                Property="Fill"
-                Value="{DynamicResource BackgroundBrush}" />
-
-            <Style Selector="^.RestDay">
-                <Setter
-                    Property="Fill"
-                    Value="{DynamicResource RestDayBackgroundBrush}" />
-            </Style>
-        </Style>
-
-        <Style Selector="^.FirstDayOfWeek">
-            <Setter
-                Property="Fill"
-                Value="{DynamicResource DarkGridBrush}" />
-        </Style>
-
-    </ControlTheme>
 
     <ControlTheme
         x:Key="{x:Type controls:GanttBodyBackground}"
@@ -70,7 +47,8 @@
                                         Width="1"
                                         HorizontalAlignment="Left"
                                         Classes.FirstDayOfWeek="{Binding IsFirstDayOfWeek}"
-                                        Fill="{DynamicResource LightGridBrush}" />
+                                        Fill="{DynamicResource LightGridBrush}"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
                                 </Panel>
                             </DataTemplate>
 

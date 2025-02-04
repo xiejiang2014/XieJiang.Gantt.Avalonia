@@ -58,14 +58,10 @@
 
                 <ResourceDictionary x:Key='Dark'>
                     <SolidColorBrush x:Key='BackgroundBrush'>Black</SolidColorBrush>
-                    <SolidColorBrush x:Key='RestDayBackgroundBrush'>#333333</SolidColorBrush>
+                    <SolidColorBrush x:Key='RestDayBackgroundBrush'>#141414</SolidColorBrush>
                     <SolidColorBrush x:Key='ForegroundBrush'>White</SolidColorBrush>
-
-<!-- todo -->
-                    <SolidColorBrush x:Key='LightGridBrush'>#EBEBEB</SolidColorBrush>  
-                    <SolidColorBrush x:Key="DarkGridBrush">#D6D6D6</SolidColorBrush>
-
-
+                    <SolidColorBrush x:Key='LightGridBrush'>#292929</SolidColorBrush>
+                    <SolidColorBrush x:Key="DarkGridBrush">#404040</SolidColorBrush>
                 </ResourceDictionary>
 
             </ResourceDictionary.ThemeDictionaries>
@@ -109,6 +105,7 @@
                 <ResourceInclude Source="/Themes/MilestoneLine.axaml" />
                 <ResourceInclude Source="/Themes/MilestoneControl.axaml" />
                 <ResourceInclude Source="/Themes/TaskBar.axaml" />
+                <ResourceInclude Source="/Themes/Rectangle.axaml" />
                 <ResourceInclude Source="/Themes/GanttHeader.axaml" />
                 <ResourceInclude Source="/Themes/GanttBodyBackground.axaml" />
                 <ResourceInclude Source="/Themes/GanttControl.axaml" />

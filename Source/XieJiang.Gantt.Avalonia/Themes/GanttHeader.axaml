@@ -175,7 +175,9 @@
                                                          Path=(gantt:GanttControl.HeaderRow2Height)}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Fill="{DynamicResource LightGridBrush}" />
+                                        Classes.FirstDayOfWeek="{Binding IsFirstDayOfWeek}"
+                                        Fill="{DynamicResource LightGridBrush}"
+                                        Theme="{StaticResource BodyBackgroundRectangle}" />
 
                                     <TextBlock
                                         HorizontalAlignment="Center"
