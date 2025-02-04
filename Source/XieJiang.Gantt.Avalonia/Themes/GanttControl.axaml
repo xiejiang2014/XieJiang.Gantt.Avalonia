@@ -124,7 +124,6 @@
                                     Duration="0:0:0.8" />
                             </Transitions>
                         </ScrollBar.Transitions>
-
                     </ScrollBar>
                 </Grid>
             </ControlTemplate>

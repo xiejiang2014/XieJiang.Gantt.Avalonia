@@ -1,52 +1,13 @@
 <Styles
     x:Class="XieJiang.Gantt.Avalonia.Themes.GanttFluentTheme"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:XieJiang.Gantt.Avalonia">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <StyleInclude Source="/Styles/Thumb.axaml" />
-
-    <Style Selector="Line.TemporaryDependencyLine">
-        <Setter
-            Property="Stroke"
-            Value="LightGray" />
-        <Setter
-            Property="Fill"
-            Value="LightGray" />
-        <Setter
-            Property="StrokeThickness"
-            Value="2" />
-        <Setter
-            Property="StrokeDashArray"
-            Value="2,2" />
-
-        <Style Selector="^:Reject">
-            <Setter
-                Property="Stroke"
-                Value="red" />
-            <Setter
-                Property="StrokeDashArray"
-                Value="" />
-        </Style>
-
-        <Style Selector="^:Accept">
-            <Setter
-                Property="Stroke"
-                Value="LightGreen" />
-            <Setter
-                Property="Fill"
-                Value="LightGreen" />
-            <Setter
-                Property="StrokeDashArray"
-                Value="" />
-        </Style>
-    </Style>
 
     <Styles.Resources>
 
         <ResourceDictionary>
-
-
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key='Light'>
                     <SolidColorBrush x:Key='BackgroundBrush'>White</SolidColorBrush>
@@ -57,6 +18,10 @@
                     <SolidColorBrush x:Key="BrushNowBrush" Color="DeepSkyBlue" />
                     <SolidColorBrush x:Key="PinoutBrush" Color="LightGray" />
                     <SolidColorBrush x:Key="ProgressThumbBrush" Color="LightGray" />
+
+                    <SolidColorBrush x:Key="DependencyLine" Color="LightGray" />
+                    <SolidColorBrush x:Key="DependencyLineReject" Color="IndianRed" />
+                    <SolidColorBrush x:Key="DependencyLineAccept" Color="LightGreen" />
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key='Dark'>
@@ -69,10 +34,11 @@
                     <SolidColorBrush x:Key="PinoutBrush" Color="LightGray" />
                     <SolidColorBrush x:Key="ProgressThumbBrush" Color="LightGray" />
 
+                    <SolidColorBrush x:Key="DependencyLine" Color="LightGray" />
+                    <SolidColorBrush x:Key="DependencyLineReject" Color="IndianRed" />
+                    <SolidColorBrush x:Key="DependencyLineAccept" Color="LightGreen" />
                 </ResourceDictionary>
-
             </ResourceDictionary.ThemeDictionaries>
-
 
             <!--  =================================  -->
             <SolidColorBrush
@@ -107,6 +73,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Themes/Pinout.axaml" />
+                <ResourceInclude Source="/Themes/Line.axaml" />
                 <ResourceInclude Source="/Themes/DependencyLine.axaml" />
                 <ResourceInclude Source="/Themes/MarkLineToday.axaml" />
                 <ResourceInclude Source="/Themes/MilestoneLine.axaml" />

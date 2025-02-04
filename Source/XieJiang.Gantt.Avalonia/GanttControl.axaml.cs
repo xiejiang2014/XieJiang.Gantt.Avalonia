@@ -14,6 +14,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Controls;
 using XieJiang.Gantt.Avalonia.Models;
+using Avalonia.Styling;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -557,7 +558,7 @@ public class GanttControl : TemplatedControl
 
     private readonly Line _temporaryDependencyLine = new()
                                                      {
-                                                         Classes          = { "TemporaryDependencyLine" },
+                                                         Theme            = Application.Current?.FindResource("TemporaryDependencyLine") as ControlTheme,
                                                          IsHitTestVisible = false
                                                      };
 
