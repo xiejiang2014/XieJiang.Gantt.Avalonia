@@ -17,27 +17,13 @@
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.1.0" />
 		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics"
+		                  Version="$(AvaloniaVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\DoubleNegationConverter.cs" Link="XieJiang.CommonModule\DoubleNegationConverter.cs" />
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\DoubleSubtractiveConverter.cs" Link="XieJiang.CommonModule\DoubleSubtractiveConverter.cs" />
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\CollectionUtils.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\CollectionUtils.cs" />
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\IEnumerableUtils.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\IEnumerableUtils.cs" />
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\PreciselyVirtualizingStackPanel.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\PreciselyVirtualizingStackPanel.cs" />
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\RealizedStackElements.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\RealizedStackElements.cs" />
-		<Compile Include="..\..\..\xiejiang.CommonModule\AvaloniaUI\PreciselyVirtualizingStackPanel\AvaloniaPanelTest\Panel\VirtualizingSnapPointsList.cs" Link="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\VirtualizingSnapPointsList.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="XieJiang.CommonModule\PreciselyVirtualizingStackPanel\" />
-		<Folder Include="XieJiang.CommonModule\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Update="Themes\GanttFluentTheme.axaml.cs">
-	    <DependentUpon>GanttFluentTheme.axaml</DependentUpon>
-	  </Compile>
+		<Compile Update="Themes\GanttFluentTheme.axaml.cs">
+			<DependentUpon>GanttFluentTheme.axaml</DependentUpon>
+		</Compile>
 	</ItemGroup>
 </Project>
