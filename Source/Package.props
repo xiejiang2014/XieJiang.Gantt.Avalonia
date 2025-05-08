@@ -13,7 +13,7 @@
         <!--<PackageIcon>Icon.Png</PackageIcon>-->
 
         <PackageProjectUrl>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</PackageProjectUrl>
-        <AvaloniaVersion>11.2.3</AvaloniaVersion>
+        <AvaloniaVersion>11.3.0</AvaloniaVersion>
     </PropertyGroup>
 
     <ItemGroup>
