@@ -1,0 +1,15 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:XieJiang.Gantt.Avalonia.Demo"
+             xmlns:themes="clr-namespace:XieJiang.Gantt.Avalonia.Themes;assembly=XieJiang.Gantt.Avalonia"
+             x:Class="XieJiang.Gantt.Avalonia.Demo.App"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
+        <themes:GanttFluentTheme />
+    </Application.Styles>
+</Application>

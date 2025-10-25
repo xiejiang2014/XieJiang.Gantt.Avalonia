@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<AssemblyAttribute Include="Avalonia.Metadata.XmlnsDefinitionAttribute">
+			<_Parameter1>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</_Parameter1>
+			<_Parameter2>XieJiang.Gantt.Avalonia</_Parameter2>
+		</AssemblyAttribute>
+
+		<AssemblyAttribute Include="Avalonia.Metadata.XmlnsDefinitionAttribute">
+			<_Parameter1>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</_Parameter1>
+			<_Parameter2>XieJiang.Gantt.Avalonia.Controls</_Parameter2>
+		</AssemblyAttribute>
+
+		<AssemblyAttribute Include="Avalonia.Metadata.XmlnsPrefixAttribute">
+			<_Parameter1>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</_Parameter1>
+			<_Parameter2>gantt</_Parameter2>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<Title>XieJiang.Gantt.Avalonia</Title>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+	</ItemGroup>
+</Project>
