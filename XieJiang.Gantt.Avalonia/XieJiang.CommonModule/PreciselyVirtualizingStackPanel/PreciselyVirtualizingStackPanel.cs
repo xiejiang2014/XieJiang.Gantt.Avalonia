@@ -253,6 +253,9 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     /// </summary>
     public int LastRealizedIndex => _realizedElements?.LastIndex ?? -1;
 
+
+    #region 覆写 Layoutable
+
     protected override Size MeasureOverride(Size availableSize)
     {
         var items = Items;
@@ -356,6 +359,14 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         }
     }
 
+
+
+    #endregion
+
+
+    #region 覆写 Visual
+
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
@@ -367,6 +378,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         base.OnDetachedFromVisualTree(e);
         _scrollAnchorProvider = null;
     }
+    #endregion
+
+    #region 覆写 VirtualizingPanel
+
 
     protected override void OnItemsChanged(IReadOnlyList<object?> items, NotifyCollectionChangedEventArgs e)
     {
@@ -407,6 +422,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                 break;
         }
     }
+
 
     protected override void OnItemsControlChanged(ItemsControl? oldValue)
     {
@@ -502,7 +518,6 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             return c;
         return null;
     }
-
     protected override int IndexFromContainer(Control container)
     {
         if (container == _scrollToElement)
@@ -600,6 +615,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
         return null;
     }
+
+    #endregion
+
+
 
     internal IReadOnlyList<Control?> GetRealizedElements()
     {
