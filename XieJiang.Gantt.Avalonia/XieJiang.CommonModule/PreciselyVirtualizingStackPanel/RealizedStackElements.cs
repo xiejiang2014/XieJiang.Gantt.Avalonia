@@ -5,6 +5,7 @@ namespace XieJiang.CommonModule.Ava;
 
 /// <summary>
 /// 存储虚拟化面板的已实现元素状态，该虚拟化面板将其子元素排列在堆栈布局中，例如 <see cref="VirtualizingStackPanel"/>。
+/// 本类仅负责管理那些当前需要实现的元素,至于不再需要的元素从被类移除后如何重复使用的问题,本类不考虑.
 /// Stores the realized element state for a virtualizing panel that arranges its children
 /// in a stack layout, such as <see cref="VirtualizingStackPanel"/>.
 /// </summary>

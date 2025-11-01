@@ -296,7 +296,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             // - Vertical layouts: U = vertical, V = horizontal
             var viewport = CalculateMeasureViewport(orientation, items);
 
-            // 如果锚元素是否在当前已实现的元素范围之外，那么我们可以回收所有元素。 看来元素并没有循环重复使用.
+            // 如果锚元素是否在当前已实现的元素范围之外，那么我们可以回收所有元素。
             if (viewport.ViewportIsDisjunct)
                 _realizedElements.RecycleAllElements(RecycleElement);
 
