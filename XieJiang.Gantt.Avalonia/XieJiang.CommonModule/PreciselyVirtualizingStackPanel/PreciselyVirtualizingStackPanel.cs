@@ -22,11 +22,6 @@ namespace XieJiang.CommonModule.Ava;
 /// </summary>
 public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPointsInfo
 {
-    /// <summary>
-    /// Defines the <see cref="Orientation"/> property.
-    /// </summary>
-    public static readonly StyledProperty<Orientation> OrientationProperty =
-        StackPanel.OrientationProperty.AddOwner<PreciselyVirtualizingStackPanel>();
 
 
 
@@ -62,6 +57,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         EffectiveViewportChanged += OnEffectiveViewportChanged;
     }
 
+
+    #region Orientation
+
+
     /// <summary>
     /// Gets or sets the axis along which items are laid out.
     /// </summary>
@@ -76,12 +75,23 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     }
 
 
+    /// <summary>
+    /// Defines the <see cref="Orientation"/> property.
+    /// </summary>
+    public static readonly StyledProperty<Orientation> OrientationProperty =
+        StackPanel.OrientationProperty.AddOwner<PreciselyVirtualizingStackPanel>();
+    #endregion
+
+
 
     #region IScrollSnapPointsInfo
 
 
     // IScrollSnapPointsInfo接口定义了滚动容器中吸附点（Snap Points）的相关信息和行为。
     // 当容器滚动时，吸附点能确保内容在滚动停止后自动与特定位置对齐，带来更利落的交互体验。
+
+
+    #region AreHorizontalSnapPointsRegular
 
     /// <summary>
     /// 获取或设置水平方向的吸附点是否等距分布.
@@ -100,6 +110,12 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreHorizontalSnapPointsRegular));
 
 
+    #endregion
+
+
+    #region AreVerticalSnapPointsRegular
+
+
     /// <summary>
     /// 获取或设置垂直方向的吸附点是否等距分布.
     /// Gets or sets whether the vertical snap points for the <see cref="PreciselyVirtualizingStackPanel"/> are equidistant from each other.
@@ -115,6 +131,9 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     /// </summary>
     public static readonly StyledProperty<bool> AreVerticalSnapPointsRegularProperty =
         AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreVerticalSnapPointsRegular));
+
+    #endregion
+
 
     //接口 IScrollSnapPointsInfo 
     //当吸附点不规则分布时，返回指定方向上所有吸附点的距离集合。
@@ -191,6 +210,9 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         return snapPoint;
     }
 
+
+    #region HorizontalSnapPointsChanged
+
     //接口 IScrollSnapPointsInfo
     //当水平吸附点的测量信息发生变化时发生（如项目数量或大小改变）
     /// <summary>
@@ -209,6 +231,15 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         RoutedEvent.Register<PreciselyVirtualizingStackPanel, RoutedEventArgs>(
                                                                                nameof(HorizontalSnapPointsChanged),
                                                                                RoutingStrategies.Bubble);
+
+
+
+    #endregion
+
+    #region VerticalSnapPointsChanged
+
+
+
     //接口 IScrollSnapPointsInfo
     //当垂直吸附点的测量信息发生变化时发生（如项目数量或大小改变）
     /// <summary>
@@ -227,6 +258,9 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         RoutedEvent.Register<PreciselyVirtualizingStackPanel, RoutedEventArgs>(
                                                                                nameof(VerticalSnapPointsChanged),
                                                                                RoutingStrategies.Bubble);
+
+    #endregion
+
     #endregion
 
 
