@@ -15,51 +15,37 @@ using Avalonia.VisualTree;
 
 namespace XieJiang.CommonModule.Ava;
 
-
-
 /// <summary>
 /// Arranges and virtualizes content on a single line that is oriented either horizontally or vertically.
 /// </summary>
 public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPointsInfo
 {
-
-
-
-
-
     private static readonly AttachedProperty<object?> RecycleKeyProperty =
         AvaloniaProperty.RegisterAttached<PreciselyVirtualizingStackPanel, Control, object?>("RecycleKey");
 
-    private static readonly object s_itemIsItsOwnContainer = new object();
-    private readonly Action<Control, int> _recycleElement;
-    private readonly Action<Control> _recycleElementOnItemRemoved;
-    private readonly Action<Control, int, int> _updateElementIndex;
-    private int _scrollToIndex = -1;
-    private Control? _scrollToElement;
-    private bool _isInLayout;
-    private bool _isWaitingForViewportUpdate;
-    private double _lastEstimatedElementSizeU = 25; //前一次的估算值
-    private RealizedStackElements? _measureElements;
-    private RealizedStackElements? _realizedElements; //应该是当前正被使用的元素
-    private IScrollAnchorProvider? _scrollAnchorProvider;
-    private Rect _viewport;
-    private Dictionary<object, Stack<Control>>? _recyclePool;
-    private Control? _focusedElement;
-    private int _focusedIndex = -1;
-    private Control? _realizingElement;
-    private int _realizingIndex = -1;
+    private static readonly object                              s_itemIsItsOwnContainer = new();
+    private                 int                                 _scrollToIndex          = -1;
+    private                 Control?                            _scrollToElement;
+    private                 bool                                _isInLayout;
+    private                 bool                                _isWaitingForViewportUpdate;
+    private                 double                              _lastEstimatedElementSizeU = 25; //前一次的估算值
+    private                 RealizedStackElements?              _measureElements;
+    private                 RealizedStackElements?              _realizedElements; //应该是当前正被使用的元素
+    private                 IScrollAnchorProvider?              _scrollAnchorProvider;
+    private                 Rect                                _viewport;
+    private                 Dictionary<object, Stack<Control>>? _recyclePool;
+    private                 Control?                            _focusedElement;
+    private                 int                                 _focusedIndex = -1;
+    private                 Control?                            _realizingElement;
+    private                 int                                 _realizingIndex = -1;
 
     public PreciselyVirtualizingStackPanel()
     {
-        _recycleElement = RecycleElement;
-        _recycleElementOnItemRemoved = RecycleElementOnItemRemoved;
-        _updateElementIndex = UpdateElementIndex;
         EffectiveViewportChanged += OnEffectiveViewportChanged;
     }
 
 
     #region Orientation
-
 
     /// <summary>
     /// Gets or sets the axis along which items are laid out.
@@ -80,12 +66,11 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     /// </summary>
     public static readonly StyledProperty<Orientation> OrientationProperty =
         StackPanel.OrientationProperty.AddOwner<PreciselyVirtualizingStackPanel>();
+
     #endregion
 
 
-
-    #region IScrollSnapPointsInfo
-
+    #region IScrollSnapPointsInfo 接口实现
 
     // IScrollSnapPointsInfo接口定义了滚动容器中吸附点（Snap Points）的相关信息和行为。
     // 当容器滚动时，吸附点能确保内容在滚动停止后自动与特定位置对齐，带来更利落的交互体验。
@@ -109,12 +94,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     public static readonly StyledProperty<bool> AreHorizontalSnapPointsRegularProperty =
         AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreHorizontalSnapPointsRegular));
 
-
     #endregion
 
 
     #region AreVerticalSnapPointsRegular
-
 
     /// <summary>
     /// 获取或设置垂直方向的吸附点是否等距分布.
@@ -143,10 +126,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         if (_realizedElements == null)
             return new List<double>();
 
-        return new VirtualizingSnapPointsList(_realizedElements, 
-                                              ItemsControl?.ItemsSource?.Count() ?? 0, 
+        return new VirtualizingSnapPointsList(_realizedElements,
+                                              ItemsControl?.ItemsSource?.Count() ?? 0,
                                               orientation,
-                                              Orientation, 
+                                              Orientation,
                                               snapPointsAlignment,
                                               EstimateElementSizeU());
     }
@@ -232,13 +215,9 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                                                                                nameof(HorizontalSnapPointsChanged),
                                                                                RoutingStrategies.Bubble);
 
-
-
     #endregion
 
     #region VerticalSnapPointsChanged
-
-
 
     //接口 IScrollSnapPointsInfo
     //当垂直吸附点的测量信息发生变化时发生（如项目数量或大小改变）
@@ -294,7 +273,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         {
             _realizedElements?.ValidateStartU(Orientation);
             _realizedElements ??= new();
-            _measureElements ??= new();
+            _measureElements  ??= new();
 
             // We handle horizontal and vertical layouts here so X and Y are abstracted to:
             // - Horizontal layouts: U = horizontal, V = vertical
@@ -303,7 +282,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
             // If the viewport is disjunct then we can recycle everything.
             if (viewport.viewportIsDisjunct)
-                _realizedElements.RecycleAllElements(_recycleElement);
+                _realizedElements.RecycleAllElements(RecycleElement);
 
             // Do the measure, creating/recycling elements as necessary to fill the viewport. Don't
             // write to _realizedElements yet, only _measureElements.
@@ -335,7 +314,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         try
         {
             var orientation = Orientation;
-            var u = _realizedElements!.StartU;
+            var u           = _realizedElements!.StartU;
 
             for (var i = 0; i < _realizedElements.Count; ++i)
             {
@@ -345,7 +324,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                 {
                     var sizeU = _realizedElements.SizeU[i];
                     var rect = orientation == Orientation.Horizontal
-                        ? new Rect(u, 0, sizeU, finalSize.Height)
+                        ? new Rect(u, 0, sizeU,           finalSize.Height)
                         : new Rect(0, u, finalSize.Width, sizeU);
                     e.Arrange(rect);
                     _scrollAnchorProvider?.RegisterAnchorCandidate(e);
@@ -361,7 +340,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                 u = GetOrEstimateElementU(_focusedIndex);
                 var rect = orientation == Orientation.Horizontal
                     ? new Rect(u, 0, _focusedElement.DesiredSize.Width, finalSize.Height)
-                    : new Rect(0, u, finalSize.Width, _focusedElement.DesiredSize.Height);
+                    : new Rect(0, u, finalSize.Width,                   _focusedElement.DesiredSize.Height);
                 _focusedElement.Arrange(rect);
             }
 
@@ -399,13 +378,13 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                _realizedElements.ItemsInserted(e.NewStartingIndex, e.NewItems!.Count, _updateElementIndex);
+                _realizedElements.ItemsInserted(e.NewStartingIndex, e.NewItems!.Count, UpdateElementIndex);
                 break;
             case NotifyCollectionChangedAction.Remove:
-                _realizedElements.ItemsRemoved(e.OldStartingIndex, e.OldItems!.Count, _updateElementIndex, _recycleElementOnItemRemoved);
+                _realizedElements.ItemsRemoved(e.OldStartingIndex, e.OldItems!.Count, UpdateElementIndex, RecycleElementOnItemRemoved);
                 break;
             case NotifyCollectionChangedAction.Replace:
-                _realizedElements.ItemsReplaced(e.OldStartingIndex, e.OldItems!.Count, _recycleElementOnItemRemoved);
+                _realizedElements.ItemsReplaced(e.OldStartingIndex, e.OldItems!.Count, RecycleElementOnItemRemoved);
                 break;
             case NotifyCollectionChangedAction.Move:
                 if (e.OldStartingIndex < 0)
@@ -413,7 +392,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                     goto case NotifyCollectionChangedAction.Reset;
                 }
 
-                _realizedElements.ItemsRemoved(e.OldStartingIndex, e.OldItems!.Count, _updateElementIndex, _recycleElementOnItemRemoved);
+                _realizedElements.ItemsRemoved(e.OldStartingIndex, e.OldItems!.Count, UpdateElementIndex, RecycleElementOnItemRemoved);
                 var insertIndex = e.NewStartingIndex;
 
                 if (e.NewStartingIndex > e.OldStartingIndex)
@@ -421,10 +400,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                     insertIndex -= e.OldItems.Count - 1;
                 }
 
-                _realizedElements.ItemsInserted(insertIndex, e.NewItems!.Count, _updateElementIndex);
+                _realizedElements.ItemsInserted(insertIndex, e.NewItems!.Count, UpdateElementIndex);
                 break;
             case NotifyCollectionChangedAction.Reset:
-                _realizedElements.ItemsReset(_recycleElementOnItemRemoved);
+                _realizedElements.ItemsReset(RecycleElementOnItemRemoved);
                 break;
         }
     }
@@ -441,7 +420,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
     protected override IInputElement? GetControl(NavigationDirection direction, IInputElement? from, bool wrap)
     {
-        var count = Items.Count;
+        var count       = Items.Count;
         var fromControl = from as Control;
 
         if (count == 0 ||
@@ -567,13 +546,13 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             // Get the expected position of the element and put it in place.
             var anchorU = GetOrEstimateElementU(index);
             var rect = Orientation == Orientation.Horizontal
-                ? new Rect(anchorU, 0, scrollToElement.DesiredSize.Width, scrollToElement.DesiredSize.Height)
-                : new Rect(0, anchorU, scrollToElement.DesiredSize.Width, scrollToElement.DesiredSize.Height);
+                ? new Rect(anchorU, 0,       scrollToElement.DesiredSize.Width, scrollToElement.DesiredSize.Height)
+                : new Rect(0,       anchorU, scrollToElement.DesiredSize.Width, scrollToElement.DesiredSize.Height);
             scrollToElement.Arrange(rect);
 
             // Store the element and index so that they can be used in the layout pass.
             _scrollToElement = scrollToElement;
-            _scrollToIndex = index;
+            _scrollToIndex   = index;
 
             // If the item being brought into view was added since the last layout pass then
             // our bounds won't be updated, so any containing scroll viewers will not have an
@@ -615,7 +594,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             scrollToElement.BringIntoView();
 
             _scrollToElement = null;
-            _scrollToIndex = -1;
+            _scrollToIndex   = -1;
             return scrollToElement;
         }
 
@@ -644,7 +623,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         // Get or estimate the anchor element from which to start realization. If we are
         // scrolling to an element, use that as the anchor element. Otherwise, estimate the
         // anchor element based on the current viewport.
-        int anchorIndex;
+        int    anchorIndex;
         double anchorU;
 
         if (_scrollToIndex >= 0 && _scrollToElement is not null)
@@ -669,13 +648,13 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                        anchorIndex > _realizedElements.LastIndex;
 
         return new MeasureViewport
-        {
-            anchorIndex = anchorIndex,
-            anchorU = anchorU,
-            viewportUStart = viewportStart,
-            viewportUEnd = viewportEnd,
-            viewportIsDisjunct = disjunct,
-        };
+               {
+                   anchorIndex        = anchorIndex,
+                   anchorU            = anchorU,
+                   viewportUStart     = viewportStart,
+                   viewportUEnd       = viewportEnd,
+                   viewportIsDisjunct = disjunct,
+               };
     }
 
     /// <summary>
@@ -745,8 +724,8 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             return _lastEstimatedElementSizeU;
 
         var orientation = Orientation;
-        var total = 0.0; //所有 _realizedElements 元素的尺寸之和
-        var divisor = 0.0; //所有 _realizedElements 元素的数量
+        var total       = 0.0; //所有 _realizedElements 元素的尺寸之和
+        var divisor     = 0.0; //所有 _realizedElements 元素的数量
 
         // Average the desired size of the realized, measured elements.
         foreach (var element in _realizedElements.Elements)
@@ -777,10 +756,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     /// <param name="index"></param>
     /// <param name="position"></param>
     private void GetOrEstimateAnchorElementForViewport(
-        double viewportStartU,
-        double viewportEndU,
-        int itemCount,
-        out int index,
+        double     viewportStartU,
+        double     viewportEndU,
+        int        itemCount,
+        out int    index,
         out double position)
     {
         //Debug.Print($"viewportStartU:{viewportStartU:F2}   viewportEndU:{viewportEndU:F2}    itemCount:{itemCount}");
@@ -790,7 +769,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             MathUtilities.IsZero(viewportStartU) //滚动起始位置
            )
         {
-            index = 0;
+            index    = 0;
             position = 0;
 
             //Debug.Print($"MathUtilities.IsZero(viewportStartU):{MathUtilities.IsZero(viewportStartU)}");
@@ -822,10 +801,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
                 // 判断这个元素是否完全位于视口中
                 if (endU > viewportStartU &&
-                    u < viewportEndU)
+                    u    < viewportEndU)
                 {
                     //返回第一个完全位于视口中的元素的index和position
-                    index = _realizedElements.FirstIndex + i;
+                    index    = _realizedElements.FirstIndex + i;
                     position = u;
                     //Debug.Print($"检查_realizedElements 元素{i} 在视口中");
                     return;
@@ -858,7 +837,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             var startIndex = Math.Min((int)(viewportStartU / estimatedSize),
                                       itemCount - 1
                                      );
-            index = startIndex;
+            index    = startIndex;
             position = startIndex * estimatedSize;
             //Debug.Print($"index:{index}   position:{position:F2}");
         }
@@ -885,21 +864,21 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
     private void RealizeElements(
         IReadOnlyList<object?> items,
-        Size availableSize,
-        ref MeasureViewport viewport)
+        Size                   availableSize,
+        ref MeasureViewport    viewport)
     {
         Debug.Assert(_measureElements is not null);
         Debug.Assert(_realizedElements is not null);
         Debug.Assert(items.Count > 0);
 
-        var index = viewport.anchorIndex;
+        var index      = viewport.anchorIndex;
         var horizontal = Orientation == Orientation.Horizontal;
-        var u = viewport.anchorU;
+        var u          = viewport.anchorU;
 
         // If the anchor element is at the beginning of, or before, the start of the viewport
         // then we can recycle all elements before it.
         if (u <= viewport.anchorU)
-            _realizedElements.RecycleElementsBefore(viewport.anchorIndex, _recycleElement);
+            _realizedElements.RecycleElementsBefore(viewport.anchorIndex, RecycleElement);
 
         // Start at the anchor element and move forwards, realizing elements.
         do
@@ -921,20 +900,20 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
             u += sizeU;
             ++index;
-            _realizingIndex = -1;
+            _realizingIndex   = -1;
             _realizingElement = null;
         } while (u < viewport.viewportUEnd && index < items.Count);
 
         // Store the last index and end U position for the desired size calculation.
-        viewport.lastIndex = index - 1;
+        viewport.lastIndex    = index - 1;
         viewport.realizedEndU = u;
 
         // We can now recycle elements after the last element.
-        _realizedElements.RecycleElementsAfter(viewport.lastIndex, _recycleElement);
+        _realizedElements.RecycleElementsAfter(viewport.lastIndex, RecycleElement);
 
         // Next move backwards from the anchor element, realizing elements.
         index = viewport.anchorIndex - 1;
-        u = viewport.anchorU;
+        u     = viewport.anchorU;
 
         while (u > viewport.viewportUStart && index >= 0)
         {
@@ -955,7 +934,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         }
 
         // We can now recycle elements before the first element.
-        _realizedElements.RecycleElementsBefore(index + 1, _recycleElement);
+        _realizedElements.RecycleElementsBefore(index + 1, RecycleElement);
     }
 
     private Control GetOrCreateElement(IReadOnlyList<object?> items, int index)
@@ -963,11 +942,11 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         Debug.Assert(ItemContainerGenerator is not null);
 
         if ((GetRealizedElement(index) ??
-             GetRealizedElement(index, ref _focusedIndex, ref _focusedElement) ??
+             GetRealizedElement(index, ref _focusedIndex,  ref _focusedElement) ??
              GetRealizedElement(index, ref _scrollToIndex, ref _scrollToElement)) is { } realized)
             return realized;
 
-        var item = items[index];
+        var item      = items[index];
         var generator = ItemContainerGenerator!;
 
         if (generator.NeedsContainer(item, index, out var recycleKey))
@@ -987,8 +966,8 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     }
 
     private static Control? GetRealizedElement(
-        int index,
-        ref int specialIndex,
+        int          index,
+        ref int      specialIndex,
         ref Control? specialElement)
     {
         if (specialIndex == index)
@@ -996,7 +975,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             Debug.Assert(specialElement is not null);
 
             var result = specialElement;
-            specialIndex = -1;
+            specialIndex   = -1;
             specialElement = null;
             return result;
         }
@@ -1009,7 +988,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         Debug.Assert(ItemContainerGenerator is not null);
 
         var controlItem = (Control)item!;
-        var generator = ItemContainerGenerator!;
+        var generator   = ItemContainerGenerator!;
 
         if (!controlItem.IsSet(RecycleKeyProperty))
         {
@@ -1079,7 +1058,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         else if (KeyboardNavigation.GetTabOnceActiveElement(ItemsControl) == element)
         {
             _focusedElement = element;
-            _focusedIndex = index;
+            _focusedIndex   = index;
         }
         else
         {
@@ -1139,7 +1118,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             ? _viewport.Bottom
             : _viewport.Right;
 
-        _viewport = e.EffectiveViewport.Intersect(new(Bounds.Size));
+        _viewport                   = e.EffectiveViewport.Intersect(new(Bounds.Size));
         _isWaitingForViewportUpdate = false;
 
         var newViewportStart = vertical
@@ -1150,7 +1129,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             : _viewport.Right;
 
         if (!MathUtilities.AreClose(oldViewportStart, newViewportStart) ||
-            !MathUtilities.AreClose(oldViewportEnd, newViewportEnd))
+            !MathUtilities.AreClose(oldViewportEnd,   newViewportEnd))
         {
             InvalidateMeasure();
         }
@@ -1158,27 +1137,27 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
     private void OnItemsControlPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (_focusedElement is not null &&
-            e.Property == KeyboardNavigation.TabOnceActiveElementProperty &&
+        if (_focusedElement is not null                                                        &&
+            e.Property                      == KeyboardNavigation.TabOnceActiveElementProperty &&
             e.GetOldValue<IInputElement?>() == _focusedElement)
         {
             // TabOnceActiveElement has moved away from _focusedElement so we can recycle it.
             RecycleElement(_focusedElement, _focusedIndex);
             _focusedElement = null;
-            _focusedIndex = -1;
+            _focusedIndex   = -1;
         }
     }
 
 
     public struct MeasureViewport
     {
-        public int anchorIndex;
+        public int    anchorIndex;
         public double anchorU;
         public double viewportUStart;
         public double viewportUEnd;
         public double measuredV;
         public double realizedEndU;
-        public int lastIndex;
-        public bool viewportIsDisjunct;
+        public int    lastIndex;
+        public bool   viewportIsDisjunct;
     }
 }
