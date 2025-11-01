@@ -15,6 +15,8 @@ using Avalonia.VisualTree;
 
 namespace XieJiang.CommonModule.Ava;
 
+
+
 /// <summary>
 /// Arranges and virtualizes content on a single line that is oriented either horizontally or vertically.
 /// </summary>
@@ -26,33 +28,9 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     public static readonly StyledProperty<Orientation> OrientationProperty =
         StackPanel.OrientationProperty.AddOwner<PreciselyVirtualizingStackPanel>();
 
-    /// <summary>
-    /// Defines the <see cref="AreHorizontalSnapPointsRegular"/> property.
-    /// </summary>
-    public static readonly StyledProperty<bool> AreHorizontalSnapPointsRegularProperty =
-        AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreHorizontalSnapPointsRegular));
 
-    /// <summary>
-    /// Defines the <see cref="AreVerticalSnapPointsRegular"/> property.
-    /// </summary>
-    public static readonly StyledProperty<bool> AreVerticalSnapPointsRegularProperty =
-        AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreVerticalSnapPointsRegular));
 
-    /// <summary>
-    /// Defines the <see cref="HorizontalSnapPointsChanged"/> event.
-    /// </summary>
-    public static readonly RoutedEvent<RoutedEventArgs> HorizontalSnapPointsChangedEvent =
-        RoutedEvent.Register<PreciselyVirtualizingStackPanel, RoutedEventArgs>(
-                                                                       nameof(HorizontalSnapPointsChanged),
-                                                                       RoutingStrategies.Bubble);
 
-    /// <summary>
-    /// Defines the <see cref="VerticalSnapPointsChanged"/> event.
-    /// </summary>
-    public static readonly RoutedEvent<RoutedEventArgs> VerticalSnapPointsChangedEvent =
-        RoutedEvent.Register<PreciselyVirtualizingStackPanel, RoutedEventArgs>(
-                                                                       nameof(VerticalSnapPointsChanged),
-                                                                       RoutingStrategies.Bubble);
 
     private static readonly AttachedProperty<object?> RecycleKeyProperty =
         AvaloniaProperty.RegisterAttached<PreciselyVirtualizingStackPanel, Control, object?>("RecycleKey");
@@ -97,6 +75,124 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         set => SetValue(OrientationProperty, value);
     }
 
+
+
+    #region IScrollSnapPointsInfo
+
+
+    // IScrollSnapPointsInfo接口定义了滚动容器中吸附点（Snap Points）的相关信息和行为。
+    // 当容器滚动时，吸附点能确保内容在滚动停止后自动与特定位置对齐，带来更利落的交互体验。
+
+    /// <summary>
+    /// 获取或设置水平方向的吸附点是否等距分布.
+    /// Gets or sets whether the horizontal snap points for the <see cref="PreciselyVirtualizingStackPanel"/> are equidistant from each other.
+    /// </summary>
+    public bool AreHorizontalSnapPointsRegular
+    {
+        get => GetValue(AreHorizontalSnapPointsRegularProperty);
+        set => SetValue(AreHorizontalSnapPointsRegularProperty, value);
+    }
+
+    /// <summary>
+    /// Defines the <see cref="AreHorizontalSnapPointsRegular"/> property.
+    /// </summary>
+    public static readonly StyledProperty<bool> AreHorizontalSnapPointsRegularProperty =
+        AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreHorizontalSnapPointsRegular));
+
+
+    /// <summary>
+    /// 获取或设置垂直方向的吸附点是否等距分布.
+    /// Gets or sets whether the vertical snap points for the <see cref="PreciselyVirtualizingStackPanel"/> are equidistant from each other.
+    /// </summary>
+    public bool AreVerticalSnapPointsRegular
+    {
+        get => GetValue(AreVerticalSnapPointsRegularProperty);
+        set => SetValue(AreVerticalSnapPointsRegularProperty, value);
+    }
+
+    /// <summary>
+    /// Defines the <see cref="AreVerticalSnapPointsRegular"/> property.
+    /// </summary>
+    public static readonly StyledProperty<bool> AreVerticalSnapPointsRegularProperty =
+        AvaloniaProperty.Register<PreciselyVirtualizingStackPanel, bool>(nameof(AreVerticalSnapPointsRegular));
+
+    //接口 IScrollSnapPointsInfo 
+    //当吸附点不规则分布时，返回指定方向上所有吸附点的距离集合。
+    /// <inheritdoc/>
+    public IReadOnlyList<double> GetIrregularSnapPoints(Orientation orientation, SnapPointsAlignment snapPointsAlignment)
+    {
+        if (_realizedElements == null)
+            return new List<double>();
+
+        return new VirtualizingSnapPointsList(_realizedElements, 
+                                              ItemsControl?.ItemsSource?.Count() ?? 0, 
+                                              orientation,
+                                              Orientation, 
+                                              snapPointsAlignment,
+                                              EstimateElementSizeU());
+    }
+
+    //接口 IScrollSnapPointsInfo
+    //当吸附点等距分布时，返回指定方向上吸附点之间的固定距离和第一个点的偏移量。
+    /// <inheritdoc/>
+    public double GetRegularSnapPoints(Orientation orientation, SnapPointsAlignment snapPointsAlignment, out double offset)
+    {
+        offset = 0f;
+        var firstRealizedChild = _realizedElements?.Elements.FirstOrDefault();
+
+        if (firstRealizedChild == null)
+        {
+            return 0;
+        }
+
+        double snapPoint = 0;
+
+        switch (Orientation)
+        {
+            case Orientation.Horizontal:
+                if (!AreHorizontalSnapPointsRegular)
+                    throw new InvalidOperationException();
+
+                snapPoint = firstRealizedChild.Bounds.Width;
+                switch (snapPointsAlignment)
+                {
+                    case SnapPointsAlignment.Near:
+                        offset = 0;
+                        break;
+                    case SnapPointsAlignment.Center:
+                        offset = (firstRealizedChild.Bounds.Right - firstRealizedChild.Bounds.Left) / 2;
+                        break;
+                    case SnapPointsAlignment.Far:
+                        offset = firstRealizedChild.Bounds.Width;
+                        break;
+                }
+
+                break;
+            case Orientation.Vertical:
+                if (!AreVerticalSnapPointsRegular)
+                    throw new InvalidOperationException();
+                snapPoint = firstRealizedChild.Bounds.Height;
+                switch (snapPointsAlignment)
+                {
+                    case SnapPointsAlignment.Near:
+                        offset = 0;
+                        break;
+                    case SnapPointsAlignment.Center:
+                        offset = (firstRealizedChild.Bounds.Bottom - firstRealizedChild.Bounds.Top) / 2;
+                        break;
+                    case SnapPointsAlignment.Far:
+                        offset = firstRealizedChild.Bounds.Height;
+                        break;
+                }
+
+                break;
+        }
+
+        return snapPoint;
+    }
+
+    //接口 IScrollSnapPointsInfo
+    //当水平吸附点的测量信息发生变化时发生（如项目数量或大小改变）
     /// <summary>
     /// Occurs when the measurements for horizontal snap points change.
     /// </summary>
@@ -107,6 +203,15 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     }
 
     /// <summary>
+    /// Defines the <see cref="HorizontalSnapPointsChanged"/> event.
+    /// </summary>
+    public static readonly RoutedEvent<RoutedEventArgs> HorizontalSnapPointsChangedEvent =
+        RoutedEvent.Register<PreciselyVirtualizingStackPanel, RoutedEventArgs>(
+                                                                               nameof(HorizontalSnapPointsChanged),
+                                                                               RoutingStrategies.Bubble);
+    //接口 IScrollSnapPointsInfo
+    //当垂直吸附点的测量信息发生变化时发生（如项目数量或大小改变）
+    /// <summary>
     /// Occurs when the measurements for vertical snap points change.
     /// </summary>
     public event EventHandler<RoutedEventArgs>? VerticalSnapPointsChanged
@@ -116,22 +221,14 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     }
 
     /// <summary>
-    /// Gets or sets whether the horizontal snap points for the <see cref="PreciselyVirtualizingStackPanel"/> are equidistant from each other.
+    /// Defines the <see cref="VerticalSnapPointsChanged"/> event.
     /// </summary>
-    public bool AreHorizontalSnapPointsRegular
-    {
-        get => GetValue(AreHorizontalSnapPointsRegularProperty);
-        set => SetValue(AreHorizontalSnapPointsRegularProperty, value);
-    }
+    public static readonly RoutedEvent<RoutedEventArgs> VerticalSnapPointsChangedEvent =
+        RoutedEvent.Register<PreciselyVirtualizingStackPanel, RoutedEventArgs>(
+                                                                               nameof(VerticalSnapPointsChanged),
+                                                                               RoutingStrategies.Bubble);
+    #endregion
 
-    /// <summary>
-    /// Gets or sets whether the vertical snap points for the <see cref="PreciselyVirtualizingStackPanel"/> are equidistant from each other.
-    /// </summary>
-    public bool AreVerticalSnapPointsRegular
-    {
-        get => GetValue(AreVerticalSnapPointsRegularProperty);
-        set => SetValue(AreVerticalSnapPointsRegularProperty, value);
-    }
 
     /// <summary>
     /// Gets the index of the first realized element, or -1 if no elements are realized.
@@ -1038,72 +1135,6 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         }
     }
 
-    /// <inheritdoc/>
-    public IReadOnlyList<double> GetIrregularSnapPoints(Orientation orientation, SnapPointsAlignment snapPointsAlignment)
-    {
-        if (_realizedElements == null)
-            return new List<double>();
-
-        return new VirtualizingSnapPointsList(_realizedElements, ItemsControl?.ItemsSource?.Count() ?? 0, orientation, Orientation, snapPointsAlignment,
-                                              EstimateElementSizeU());
-    }
-
-    /// <inheritdoc/>
-    public double GetRegularSnapPoints(Orientation orientation, SnapPointsAlignment snapPointsAlignment, out double offset)
-    {
-        offset = 0f;
-        var firstRealizedChild = _realizedElements?.Elements.FirstOrDefault();
-
-        if (firstRealizedChild == null)
-        {
-            return 0;
-        }
-
-        double snapPoint = 0;
-
-        switch (Orientation)
-        {
-            case Orientation.Horizontal:
-                if (!AreHorizontalSnapPointsRegular)
-                    throw new InvalidOperationException();
-
-                snapPoint = firstRealizedChild.Bounds.Width;
-                switch (snapPointsAlignment)
-                {
-                    case SnapPointsAlignment.Near:
-                        offset = 0;
-                        break;
-                    case SnapPointsAlignment.Center:
-                        offset = (firstRealizedChild.Bounds.Right - firstRealizedChild.Bounds.Left) / 2;
-                        break;
-                    case SnapPointsAlignment.Far:
-                        offset = firstRealizedChild.Bounds.Width;
-                        break;
-                }
-
-                break;
-            case Orientation.Vertical:
-                if (!AreVerticalSnapPointsRegular)
-                    throw new InvalidOperationException();
-                snapPoint = firstRealizedChild.Bounds.Height;
-                switch (snapPointsAlignment)
-                {
-                    case SnapPointsAlignment.Near:
-                        offset = 0;
-                        break;
-                    case SnapPointsAlignment.Center:
-                        offset = (firstRealizedChild.Bounds.Bottom - firstRealizedChild.Bounds.Top) / 2;
-                        break;
-                    case SnapPointsAlignment.Far:
-                        offset = firstRealizedChild.Bounds.Height;
-                        break;
-                }
-
-                break;
-        }
-
-        return snapPoint;
-    }
 
     public struct MeasureViewport
     {
