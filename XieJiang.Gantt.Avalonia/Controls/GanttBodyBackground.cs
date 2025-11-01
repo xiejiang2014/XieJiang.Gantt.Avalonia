@@ -69,7 +69,7 @@ public class GanttBodyBackground : TemplatedControl
 
     private Size OnCalculateDesiredSize(PreciselyVirtualizingStackPanel sender, Orientation orientation, int itemCount, PreciselyVirtualizingStackPanel.MeasureViewport viewport)
     {
-        return new Size(Width, viewport.measuredV);
+        return new Size(Width, viewport.MeasuredV);
     }
 
     #region DateItems

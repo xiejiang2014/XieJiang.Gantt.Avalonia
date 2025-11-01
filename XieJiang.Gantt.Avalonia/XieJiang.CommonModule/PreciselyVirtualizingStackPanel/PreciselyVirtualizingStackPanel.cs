@@ -12,6 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Utilities;
 using Avalonia.VisualTree;
+using Avalonia.Reactive;
 
 namespace XieJiang.CommonModule.Ava;
 
@@ -23,21 +24,26 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     private static readonly AttachedProperty<object?> RecycleKeyProperty =
         AvaloniaProperty.RegisterAttached<PreciselyVirtualizingStackPanel, Control, object?>("RecycleKey");
 
-    private static readonly object                              s_itemIsItsOwnContainer = new();
-    private                 int                                 _scrollToIndex          = -1;
-    private                 Control?                            _scrollToElement;
-    private                 bool                                _isInLayout;
-    private                 bool                                _isWaitingForViewportUpdate;
-    private                 double                              _lastEstimatedElementSizeU = 25; //前一次的估算值
-    private                 RealizedStackElements?              _measureElements;
-    private                 RealizedStackElements?              _realizedElements; //应该是当前正被使用的元素
-    private                 IScrollAnchorProvider?              _scrollAnchorProvider;
-    private                 Rect                                _viewport;
-    private                 Dictionary<object, Stack<Control>>? _recyclePool;
-    private                 Control?                            _focusedElement;
-    private                 int                                 _focusedIndex = -1;
-    private                 Control?                            _realizingElement;
-    private                 int                                 _realizingIndex = -1;
+    private static readonly object   s_itemIsItsOwnContainer = new();
+    private                 int      _scrollToIndex          = -1;
+    private                 Control? _scrollToElement;
+
+    /// <summary>
+    /// 正在 MeasureOverride 或 ArrangeOverride
+    /// </summary>
+    private bool _isInLayout;
+
+    private bool                                _isWaitingForViewportUpdate;
+    private double                              _lastEstimatedElementSizeU = 25; //前一次的估算值
+    private RealizedStackElements?              _measureElements;
+    private RealizedStackElements?              _realizedElements; //当前已实现的的元素
+    private IScrollAnchorProvider?              _scrollAnchorProvider;
+    private Rect                                _viewport;
+    private Dictionary<object, Stack<Control>>? _recyclePool;       //回收池, 看来无用的可视元素会被放在这里,等待再次被启用
+    private Control?                            _focusedElement;
+    private int                                 _focusedIndex = -1;
+    private Control?                            _realizingElement;
+    private int                                 _realizingIndex = -1;
 
     public PreciselyVirtualizingStackPanel()
     {
@@ -258,17 +264,18 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        var items = Items;
+        var items = Items; //VirtualizingPanel.Items
 
         if (items.Count == 0)
             return default;
 
         var orientation = Orientation;
 
+        //如果要将某个 item 置于 view 中，则忽略任何布局传递，直到收到新的有效视口。
         // If we're bringing an item into view, ignore any layout passes until we receive a new
         // effective viewport.
         if (_isWaitingForViewportUpdate)
-            return EstimateDesiredSize(orientation, items.Count);
+            return EstimateDesiredSize(orientation, items.Count); //估算希望的尺寸
 
         _isInLayout = true;
 
@@ -278,15 +285,23 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             _realizedElements ??= new();
             _measureElements  ??= new();
 
+            //----提交  06ab709  https://github.com/AvaloniaUI/Avalonia/commit/06ab70928d89702b675be91f3743546a9393a1a9
+            // We need to set the lastEstimatedElementSizeU before calling CalculateDesiredSize()
+            _ = EstimateElementSizeU();
+            //----
+
+            //计算锚定对象的索引,主轴位置,视口起止点,是否在当前已实现的元素之外
             // We handle horizontal and vertical layouts here so X and Y are abstracted to:
             // - Horizontal layouts: U = horizontal, V = vertical
             // - Vertical layouts: U = vertical, V = horizontal
             var viewport = CalculateMeasureViewport(orientation, items);
 
-            // If the viewport is disjunct then we can recycle everything.
-            if (viewport.viewportIsDisjunct)
+            // 如果锚元素是否在当前已实现的元素范围之外，那么我们可以回收所有元素。 看来元素并没有循环重复使用.
+            if (viewport.ViewportIsDisjunct)
                 _realizedElements.RecycleAllElements(RecycleElement);
 
+            // 执行 measure，根据需要创建/回收元素以填充视口。
+            // 暂时不要写入 _realizedElements，只写入 _measureElements。
             // Do the measure, creating/recycling elements as necessary to fill the viewport. Don't
             // write to _realizedElements yet, only _measureElements.
             RealizeElements(items, availableSize, ref viewport);
@@ -359,13 +374,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         }
     }
 
-
-
     #endregion
 
 
     #region 覆写 Visual
-
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -378,10 +390,10 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         base.OnDetachedFromVisualTree(e);
         _scrollAnchorProvider = null;
     }
+
     #endregion
 
     #region 覆写 VirtualizingPanel
-
 
     protected override void OnItemsChanged(IReadOnlyList<object?> items, NotifyCollectionChangedEventArgs e)
     {
@@ -393,6 +405,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
+                //新添加的一定的最后一项
                 _realizedElements.ItemsInserted(e.NewStartingIndex, e.NewItems!.Count, UpdateElementIndex);
                 break;
             case NotifyCollectionChangedAction.Remove:
@@ -518,6 +531,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             return c;
         return null;
     }
+
     protected override int IndexFromContainer(Control container)
     {
         if (container == _scrollToElement)
@@ -619,19 +633,24 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     #endregion
 
 
-
     internal IReadOnlyList<Control?> GetRealizedElements()
     {
         return _realizedElements?.Elements ?? Array.Empty<Control>();
     }
 
+    /// <summary>
+    /// 确定锚定对象的索引,主轴位置,视口起止点,是否在当前已实现的元素之外, 所有的结果都放在返回的 MeasureViewport 中
+    /// </summary>
+    /// <param name="orientation"></param>
+    /// <param name="items"></param>
+    /// <returns></returns>
     private MeasureViewport CalculateMeasureViewport(Orientation orientation, IReadOnlyList<object?> items)
     {
         Debug.Assert(_realizedElements is not null);
 
         var viewport = _viewport;
 
-        // Get the viewport in the orientation direction.
+        // 视口的起止点
         var viewportStart = orientation == Orientation.Horizontal
             ? viewport.X
             : viewport.Y;
@@ -639,12 +658,15 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             ? viewport.Right
             : viewport.Bottom;
 
-        // Get or estimate the anchor element from which to start realization. If we are
-        // scrolling to an element, use that as the anchor element. Otherwise, estimate the
-        // anchor element based on the current viewport.
+
+        //------------------------
+        // 获取或估算要开始实现的锚点元素。
+        // 如果滚动到某个元素，则使用该元素作为锚点元素。
+        // 否则，根据当前视口估算锚点元素。
         int    anchorIndex;
         double anchorU;
 
+        //在指定了滚动目标时直接获取目标元素的位置作为锚点
         if (_scrollToIndex >= 0 && _scrollToElement is not null)
         {
             anchorIndex = _scrollToIndex;
@@ -654,120 +676,33 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         }
         else
         {
+            //估算哪个是锚定元素,得到它的索引和位置 结果放在  anchorIndex  和 anchorU
             GetOrEstimateAnchorElementForViewport(
                                                   viewportStart,
                                                   viewportEnd,
                                                   items.Count,
                                                   out anchorIndex,
-                                                  out anchorU);
+                                                  out anchorU
+                                                 );
         }
 
-        // Check if the anchor element is not within the currently realized elements.
+        //------------------------
+        // 检查锚元素是否在当前已实现的元素范围之外。
         var disjunct = anchorIndex < _realizedElements.FirstIndex ||
                        anchorIndex > _realizedElements.LastIndex;
 
         return new MeasureViewport
                {
-                   anchorIndex        = anchorIndex,
-                   anchorU            = anchorU,
-                   viewportUStart     = viewportStart,
-                   viewportUEnd       = viewportEnd,
-                   viewportIsDisjunct = disjunct,
+                   AnchorIndex        = anchorIndex,
+                   AnchorU            = anchorU,
+                   ViewportUStart     = viewportStart,
+                   ViewportUEnd       = viewportEnd,
+                   ViewportIsDisjunct = disjunct,
                };
     }
 
     /// <summary>
-    /// 估算所有内容展开后的尺寸
-    /// </summary>
-    /// <param name="orientation"></param>
-    /// <param name="itemCount"></param>
-    /// <param name="viewport"></param>
-    /// <returns></returns>
-    private Size CalculateDesiredSize(Orientation orientation, int itemCount, in MeasureViewport viewport)
-    {
-        if (OnCalculateDesiredSize is not null)
-        {
-            return OnCalculateDesiredSize(this, orientation, itemCount, viewport);
-        }
-        else
-        {
-            var sizeU = 0.0;
-            var sizeV = viewport.measuredV;
-
-            if (viewport.lastIndex >= 0)
-            {
-                //在视口右侧外的元素数量
-                var remaining = itemCount
-                              - viewport.lastIndex //视口内最右侧的一个元素
-                              - 1;
-
-                sizeU = viewport.realizedEndU + remaining * _lastEstimatedElementSizeU;
-            }
-
-            return orientation == Orientation.Horizontal
-                ? new(sizeU, sizeV)
-                : new(sizeV, sizeU);
-        }
-    }
-
-    public Func<PreciselyVirtualizingStackPanel, Orientation, int, MeasureViewport, Size>? OnCalculateDesiredSize { get; set; }
-
-    private Size EstimateDesiredSize(Orientation orientation, int itemCount)
-    {
-        if (_scrollToIndex >= 0 && _scrollToElement is not null)
-        {
-            // We have an element to scroll to, so we can estimate the desired size based on the
-            // element's position and the remaining elements.
-            var remaining = itemCount - _scrollToIndex - 1;
-            var u = orientation == Orientation.Horizontal
-                ? _scrollToElement.Bounds.Right
-                : _scrollToElement.Bounds.Bottom;
-            var sizeU = u + remaining * _lastEstimatedElementSizeU;
-            return orientation == Orientation.Horizontal
-                ? new(sizeU, DesiredSize.Height)
-                : new(DesiredSize.Width, sizeU);
-        }
-
-        return DesiredSize;
-    }
-
-    /// <summary>
-    /// 估算一个元素的大小,通过现有元素的总宽度/数量 计算而来.
-    /// 滚动到最右边,然后向左边滚动时被激活
-    /// 快速大范围滚动时激活
-    /// </summary>
-    /// <returns></returns>
-    internal double EstimateElementSizeU()
-    {
-        if (_realizedElements is null)
-            return _lastEstimatedElementSizeU;
-
-        var orientation = Orientation;
-        var total       = 0.0; //所有 _realizedElements 元素的尺寸之和
-        var divisor     = 0.0; //所有 _realizedElements 元素的数量
-
-        // Average the desired size of the realized, measured elements.
-        foreach (var element in _realizedElements.Elements)
-        {
-            if (element is null || !element.IsMeasureValid)
-                continue;
-            var sizeU = orientation == Orientation.Horizontal
-                ? element.DesiredSize.Width
-                : element.DesiredSize.Height;
-            total += sizeU;
-            ++divisor;
-        }
-
-        // Check we have enough information on which to base our estimate.
-        if (divisor == 0 || total == 0)
-            return _lastEstimatedElementSizeU;
-
-        // Store and return the estimate.
-        return _lastEstimatedElementSizeU = total / divisor;
-    }
-
-    /// <summary>
-    /// 
+    /// 估算哪个是锚定元素,得到它的索引和位置
     /// </summary>
     /// <param name="viewportStartU">视口的起始位置</param>
     /// <param name="viewportEndU">视口的截止位置</param>
@@ -841,17 +776,19 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             //Debug.Print($"_realizedElements.StartU is null");
         }
 
+        //如果外部提供了估算算法,那么字节调用外部算法完成估算
         if (EstimateIndexAndPosition is not null)
         {
             (index, position) = EstimateIndexAndPosition(this, viewportStartU, itemCount);
         }
-        else
+        else //外部没有提供估算的算法, 那么使用默认算法
         {
             // 我们在请求的视口中没有任何已实现的元素，或者不能依赖 StartU 是否有效。仅使用估计的元素大小来估计索引。
             // We don't have any realized elements in the requested viewport, or can't rely on
             // StartU being valid. Estimate the index using only the estimated element size.
-            var estimatedSize = EstimateElementSizeU();
+            var estimatedSize = EstimateElementSizeU(); //默认值是25
 
+            //按照每个元素都为平均尺寸来算当前应该显示的首个元素的索引
             // Estimate the element at the start of the viewport.
             var startIndex = Math.Min((int)(viewportStartU / estimatedSize),
                                       itemCount - 1
@@ -860,6 +797,102 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             position = startIndex * estimatedSize;
             //Debug.Print($"index:{index}   position:{position:F2}");
         }
+    }
+
+    /// <summary>
+    /// 估算所有内容展开后的尺寸
+    /// </summary>
+    /// <param name="orientation"></param>
+    /// <param name="itemCount"></param>
+    /// <param name="viewport"></param>
+    /// <returns></returns>
+    private Size CalculateDesiredSize(Orientation orientation, int itemCount, in MeasureViewport viewport)
+    {
+        if (OnCalculateDesiredSize is not null)
+        {
+            return OnCalculateDesiredSize(this, orientation, itemCount, viewport);
+        }
+        else
+        {
+            var sizeU = 0.0;
+            var sizeV = viewport.MeasuredV;
+
+            if (viewport.LastIndex >= 0)
+            {
+                //在视口右侧外的元素数量
+                var remaining = itemCount
+                              - viewport.LastIndex //视口内最右侧的一个元素
+                              - 1;
+
+                sizeU = viewport.RealizedEndU + remaining * _lastEstimatedElementSizeU;
+            }
+
+            return orientation == Orientation.Horizontal
+                ? new(sizeU, sizeV)
+                : new(sizeV, sizeU);
+        }
+    }
+
+    public Func<PreciselyVirtualizingStackPanel, Orientation, int, MeasureViewport, Size>? OnCalculateDesiredSize { get; set; }
+
+    /// <summary>
+    /// 估算希望的尺寸
+    /// </summary>
+    /// <param name="orientation"></param>
+    /// <param name="itemCount"></param>
+    /// <returns></returns>
+    private Size EstimateDesiredSize(Orientation orientation, int itemCount)
+    {
+        if (_scrollToIndex >= 0 && _scrollToElement is not null)
+        {
+            // We have an element to scroll to, so we can estimate the desired size based on the
+            // element's position and the remaining elements.
+            var remaining = itemCount - _scrollToIndex - 1;
+            var u = orientation == Orientation.Horizontal
+                ? _scrollToElement.Bounds.Right
+                : _scrollToElement.Bounds.Bottom;
+            var sizeU = u + remaining * _lastEstimatedElementSizeU;
+            return orientation == Orientation.Horizontal
+                ? new(sizeU, DesiredSize.Height)
+                : new(DesiredSize.Width, sizeU);
+        }
+
+        return DesiredSize;
+    }
+
+    /// <summary>
+    /// 估算一个元素的大小,通过现有元素的总宽度/数量 计算而来.
+    /// 滚动到最右边,然后向左边滚动时被激活
+    /// 快速大范围滚动时激活
+    /// </summary>
+    /// <returns></returns>
+    internal double EstimateElementSizeU()
+    {
+        if (_realizedElements is null) //没有元素,那么使用上一次的估算值,默认是25
+            return _lastEstimatedElementSizeU;
+
+        var orientation = Orientation;
+        var total       = 0.0; //所有 _realizedElements 元素的尺寸之和
+        var divisor     = 0.0; //所有 _realizedElements 元素的数量
+
+        // Average the desired size of the realized, measured elements.
+        foreach (var element in _realizedElements.Elements)
+        {
+            if (element is null || !element.IsMeasureValid)
+                continue;
+            var sizeU = orientation == Orientation.Horizontal
+                ? element.DesiredSize.Width
+                : element.DesiredSize.Height;
+            total += sizeU;
+            ++divisor;
+        }
+
+        // Check we have enough information on which to base our estimate.
+        if (divisor == 0 || total == 0)
+            return _lastEstimatedElementSizeU;
+
+        // Store and return the estimate.
+        return _lastEstimatedElementSizeU = total / divisor; //  总主轴尺寸/总元素数量  就是一个平均尺寸值
     }
 
 
@@ -881,6 +914,14 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
     }
 
 
+    #region MyRegion
+
+    /// <summary>
+    /// 实现元素
+    /// </summary>
+    /// <param name="items"></param>
+    /// <param name="availableSize">可用尺寸</param>
+    /// <param name="viewport">视口</param>
     private void RealizeElements(
         IReadOnlyList<object?> items,
         Size                   availableSize,
@@ -890,20 +931,21 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
         Debug.Assert(_realizedElements is not null);
         Debug.Assert(items.Count > 0);
 
-        var index      = viewport.anchorIndex;
+        var index      = viewport.AnchorIndex;
         var horizontal = Orientation == Orientation.Horizontal;
-        var u          = viewport.anchorU;
+        var u          = viewport.AnchorU;
 
-        // If the anchor element is at the beginning of, or before, the start of the viewport
-        // then we can recycle all elements before it.
-        if (u <= viewport.anchorU)
-            _realizedElements.RecycleElementsBefore(viewport.anchorIndex, RecycleElement);
+        //回收锚元素之前的所有元素。  例子  如果列表一直向下滚动,那么上面已经滚出屏幕范围的元素就会被回收
+        //注意这里传入了回调 RecycleElement 它会将无用的元素放入回收池等待复用
+        _realizedElements.RecycleElementsBefore(viewport.AnchorIndex, RecycleElement);
 
+
+        // 从锚点元素开始，逐步向前推进，实现各个元素。  注意这个向前指的是索引值更高的方向
         // Start at the anchor element and move forwards, realizing elements.
         do
         {
             _realizingIndex = index;
-            var e = GetOrCreateElement(items, index);
+            var e = GetOrCreateElement(items, index);//为指定的项获取或创建一个容器
             _realizingElement = e;
             e.Measure(availableSize);
 
@@ -915,26 +957,33 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
                 : e.DesiredSize.Width;
 
             _measureElements!.Add(index, e, u, sizeU);
-            viewport.measuredV = Math.Max(viewport.measuredV, sizeV);
 
+            //副轴尺寸
+            viewport.MeasuredV = Math.Max(viewport.MeasuredV, sizeV);
+
+            //主轴尺寸
             u += sizeU;
+
             ++index;
             _realizingIndex   = -1;
             _realizingElement = null;
-        } while (u < viewport.viewportUEnd && index < items.Count);
+        } while (u < viewport.ViewportUEnd && index < items.Count);//只要还没有填充满视口,且没有到达最后一项,就继续实现下一个元素
 
         // Store the last index and end U position for the desired size calculation.
-        viewport.lastIndex    = index - 1;
-        viewport.realizedEndU = u;
+        viewport.LastIndex    = index - 1;
+        viewport.RealizedEndU = u;
 
+        //回收视口结尾之外的元素
+        //注意这里传入了回调 RecycleElement 它会将无用的元素放入回收池等待复用
         // We can now recycle elements after the last element.
-        _realizedElements.RecycleElementsAfter(viewport.lastIndex, RecycleElement);
+        _realizedElements.RecycleElementsAfter(viewport.LastIndex, RecycleElement);
 
+        //接下来，从锚元素向后移动，实现各个元素。 注意这个向后只的是索引值更低的方向.
         // Next move backwards from the anchor element, realizing elements.
-        index = viewport.anchorIndex - 1;
-        u     = viewport.anchorU;
+        index = viewport.AnchorIndex - 1;
+        u     = viewport.AnchorU;
 
-        while (u > viewport.viewportUStart && index >= 0)
+        while (u > viewport.ViewportUStart && index >= 0)
         {
             var e = GetOrCreateElement(items, index);
             e.Measure(availableSize);
@@ -948,32 +997,38 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             u -= sizeU;
 
             _measureElements!.Add(index, e, u, sizeU);
-            viewport.measuredV = Math.Max(viewport.measuredV, sizeV);
+            viewport.MeasuredV = Math.Max(viewport.MeasuredV, sizeV);
             --index;
         }
 
+        // 回收,同上
         // We can now recycle elements before the first element.
         _realizedElements.RecycleElementsBefore(index + 1, RecycleElement);
     }
+
+    #endregion
 
     private Control GetOrCreateElement(IReadOnlyList<object?> items, int index)
     {
         Debug.Assert(ItemContainerGenerator is not null);
 
+        //如果存在已经实现的对象,那么直接返回
         if ((GetRealizedElement(index) ??
              GetRealizedElement(index, ref _focusedIndex,  ref _focusedElement) ??
              GetRealizedElement(index, ref _scrollToIndex, ref _scrollToElement)) is { } realized)
             return realized;
 
-        var item      = items[index];
-        var generator = ItemContainerGenerator!;
+        //到此说明要创建新的已实现对象
 
-        if (generator.NeedsContainer(item, index, out var recycleKey))
+        var item      = items[index];
+        var generator = ItemContainerGenerator!;  //VirtualizingPanel.ItemContainerGenerator
+
+        if (generator.NeedsContainer(item, index, out var recycleKey))  //判断元素是否需要一个容器, 如果需要,同时会返回一个用于查询的 key
         {
-            return GetRecycledElement(item, index, recycleKey) ??
-                   CreateElement(item, index, recycleKey);
+            return GetRecycledElement(item, index, recycleKey) ?? //尝试从回收池中找到一个可用容器
+                   CreateElement(item, index, recycleKey);        //创建新容器
         }
-        else
+        else//元素本身可以作为容器,那么就将自身作为容器
         {
             return GetItemAsOwnContainer(item, index);
         }
@@ -1030,10 +1085,14 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
         var generator = ItemContainerGenerator!;
 
+        //尝试在回收池中找到一个可用的元素
         if (_recyclePool?.TryGetValue(recycleKey, out var recyclePool) == true && recyclePool.Count > 0)
         {
             var recycled = recyclePool.Pop();
-            recycled.SetCurrentValue(IsVisibleProperty, true);
+            recycled.SetCurrentValue(IsVisibleProperty, true); //将重新启用的元素设为可见
+
+            //看起来是将重新启用的元素(recycled)与数据对象(item) 之间建立关系
+            //跟踪看了一下 是在 ItemsControl.PrepareItemContainer 中实现的,包括重设主体,建立绑定等操作
             generator.PrepareItemContainer(recycled, item, index);
             generator.ItemContainerPrepared(recycled, item, index);
             return recycled;
@@ -1170,13 +1229,39 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
     public struct MeasureViewport
     {
-        public int    anchorIndex;
-        public double anchorU;
-        public double viewportUStart;
-        public double viewportUEnd;
-        public double measuredV;
-        public double realizedEndU;
-        public int    lastIndex;
-        public bool   viewportIsDisjunct;
+        /// <summary>
+        /// 视口起始位置
+        /// </summary>
+        public double ViewportUStart;
+
+        /// <summary>
+        /// 视口截止位置
+        /// </summary>
+        public double ViewportUEnd;
+
+
+        /// <summary>
+        /// 锚元素也就是显示在视口动的首个元素的索引
+        /// </summary>
+        public int AnchorIndex;
+
+        /// <summary>
+        /// 锚元素的起始位置(在所有元素中的位置,而不是在视口中的位置)
+        /// </summary>
+        public double AnchorU;
+
+
+        public double MeasuredV;
+
+        /// <summary>
+        /// 最后一个已实现元素的主轴位置(在所有元素中的位置,而不是在视口中的位置)
+        /// </summary>
+        public double RealizedEndU;
+        public int    LastIndex;
+
+        /// <summary>
+        /// 锚元素是否在当前已实现的元素范围之外
+        /// </summary>
+        public bool ViewportIsDisjunct;
     }
 }
