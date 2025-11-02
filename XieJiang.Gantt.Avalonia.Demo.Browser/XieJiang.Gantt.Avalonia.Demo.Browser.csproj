@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Quick.AvaloniaFonts.SourceHanSansCN" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

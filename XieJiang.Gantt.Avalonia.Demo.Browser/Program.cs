@@ -7,8 +7,9 @@ using XieJiang.Gantt.Avalonia.Demo;
 internal sealed partial class Program
 {
     private static Task Main(string[] args) => BuildAvaloniaApp()
-            .WithInterFont()
-            .StartBrowserAppAsync("out");
+                                               //.WithInterFont()
+                                              .WithFont_SourceHanSansCN()
+                                              .StartBrowserAppAsync("out");
 
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>();
