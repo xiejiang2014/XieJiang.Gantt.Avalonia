@@ -10,6 +10,6 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
-        <themes:GanttFluentTheme />
+        <themes:GanttTheme />
     </Application.Styles>
 </Application>
