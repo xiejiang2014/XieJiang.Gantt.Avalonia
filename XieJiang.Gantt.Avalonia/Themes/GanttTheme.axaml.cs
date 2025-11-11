@@ -8,7 +8,7 @@ using XieJiang.Gantt.Avalonia.Locale;
 
 namespace XieJiang.Gantt.Avalonia.Themes;
 
-public class GanttFluentTheme : Styles
+public class GanttTheme : Styles
 {
     private static readonly Dictionary<CultureInfo, ResourceDictionary> LocaleToResource = new()
                                                                                             {
@@ -21,7 +21,7 @@ public class GanttFluentTheme : Styles
 
     private readonly IServiceProvider? _sp;
 
-    public GanttFluentTheme(IServiceProvider? provider = null)
+    public GanttTheme(IServiceProvider? provider = null)
     {
         _sp = provider;
         AvaloniaXamlLoader.Load(provider, this);

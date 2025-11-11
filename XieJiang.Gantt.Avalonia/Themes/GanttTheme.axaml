@@ -1,5 +1,5 @@
 <Styles
-    x:Class="XieJiang.Gantt.Avalonia.Themes.GanttFluentTheme"
+    x:Class="XieJiang.Gantt.Avalonia.Themes.GanttTheme"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
