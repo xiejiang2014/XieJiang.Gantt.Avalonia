@@ -28,9 +28,10 @@
                             CornerRadius="26"
                             UseLayoutRounding="True">
                             <Image
+                                DataContext="{Binding Path=Content}"
                                 Width="26"
                                 Height="26"
-                                Source="{Binding Path=Content(demo:TaskContent).HeaderImg}"
+                                Source="{Binding Path=(demo:TaskContent).HeaderImg}"
                                 Stretch="UniformToFill" />
                         </Border>
                     </DataTemplate>
@@ -39,14 +40,16 @@
                         x:Key="TextCell"
                         DataType="demo:MyGanttTask">
                         <TextBlock
+                            DataContext="{Binding Path=Content}"
                             VerticalAlignment="Center"
-                            Text="{Binding Path=Content(demo:TaskContent).Title}" />
+                            Text="{Binding Path=(demo:TaskContent).Title}" />
                     </DataTemplate>
 
                     <DataTemplate
                         x:Key="TextEditCell"
                         DataType="demo:MyGanttTask">
-                        <TextBox Text="{Binding Path=Content(demo:TaskContent).Title}" />
+                        <TextBox
+                            DataContext="{Binding Path=Content}" Text="{Binding Path=(demo:TaskContent).Title}" />
                     </DataTemplate>
 
                     <DataTemplate
