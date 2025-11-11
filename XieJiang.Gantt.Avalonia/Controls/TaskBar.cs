@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -269,6 +270,8 @@ public class TaskBar : ContentControl
 
     private void RThumb_DragDelta(object? sender, VectorEventArgs e)
     {
+        //Debug.Print(e.Vector.X.ToString("F4"));
+
         var newWidth = _widthDragStarted + e.Vector.X;
 
         if (newWidth <= MinWidth)
@@ -276,8 +279,7 @@ public class TaskBar : ContentControl
             newWidth = MinWidth;
         }
 
-        Width             = newWidth;
-        _widthDragStarted = Width;
+        Width = newWidth;
         Update();
 
 
@@ -359,7 +361,7 @@ public class TaskBar : ContentControl
             }
 
             Canvas.SetLeft(_progressThumb, newLeft);
-            _leftDragStarted = newLeft;
+            //_leftDragStarted = newLeft;
 
 
             if (GanttTask is not null)
