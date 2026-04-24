@@ -5,25 +5,23 @@ namespace XieJiang.Gantt.Avalonia;
 
 public class DependencyLinePointerPressedEventArgs : RoutedEventArgs
 {
-    public DependencyLinePointerPressedEventArgs(TaskBar parentTaskBar, TaskBar childTaskBar)
+    public DependencyLinePointerPressedEventArgs(DependencyLine dependencyLine)
     {
-        ParentTaskBar = parentTaskBar;
-        ChildTaskBar = childTaskBar;
+        DependencyLine = dependencyLine;
     }
 
-    public DependencyLinePointerPressedEventArgs(RoutedEvent? routedEvent, TaskBar parentTaskBar, TaskBar childTaskBar) : base(routedEvent)
+    public DependencyLinePointerPressedEventArgs(RoutedEvent? routedEvent, DependencyLine dependencyLine) : base(routedEvent)
     {
-        ParentTaskBar = parentTaskBar;
-        ChildTaskBar = childTaskBar;
+        DependencyLine = dependencyLine;
     }
 
-    public DependencyLinePointerPressedEventArgs(RoutedEvent? routedEvent, object? source, TaskBar parentTaskBar, TaskBar childTaskBar) : base(routedEvent, source)
+    public DependencyLinePointerPressedEventArgs(RoutedEvent? routedEvent, object? source, DependencyLine dependencyLine) : base(routedEvent, source)
     {
-        ParentTaskBar = parentTaskBar;
-        ChildTaskBar = childTaskBar;
+        DependencyLine = dependencyLine;
     }
 
-    public TaskBar ParentTaskBar { get; set; }
-    public TaskBar ChildTaskBar { get; set; }
+    
+
+    public DependencyLine DependencyLine { get; set; }
 
 }

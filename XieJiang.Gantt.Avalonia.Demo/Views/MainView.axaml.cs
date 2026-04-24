@@ -189,6 +189,7 @@ public partial class MainView : UserControl
 
     private void GanttControl_OnDependencyLinePointerPressed(object? sender, DependencyLinePointerPressedEventArgs e)
     {
+        GanttControl.RemoveDependencyLine(e.DependencyLine);
     }
 
     private void ButtonReload_OnClick(object? sender, RoutedEventArgs e)

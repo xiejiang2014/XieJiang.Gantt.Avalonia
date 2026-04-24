@@ -574,9 +574,9 @@ public class GanttControl : TemplatedControl
         remove => RemoveHandler(DependencyLinePointerPressedEvent, value);
     }
 
-    protected virtual void OnDependencyLinePointerPressed(TaskBar parentTaskBar, TaskBar childTaskBar)
+    protected virtual void OnDependencyLinePointerPressed(DependencyLine dependencyLine)
     {
-        var args = new DependencyLinePointerPressedEventArgs(DependencyLinePointerPressedEvent, parentTaskBar, childTaskBar);
+        var args = new DependencyLinePointerPressedEventArgs(DependencyLinePointerPressedEvent, dependencyLine);
         RaiseEvent(args);
     }
 
@@ -638,11 +638,20 @@ public class GanttControl : TemplatedControl
         _canvasBody?.Children.Add(dependencyLine);
     }
 
+    public void RemoveDependencyLine(DependencyLine dependencyLine)
+    {
+        _dependencyLinesDic.Remove(dependencyLine.ParentTaskBar);
+        dependencyLine.ParentTaskBar.ChildrenTasks.Remove(dependencyLine.ChildTaskBar);
+        dependencyLine.ChildTaskBar.ParentsTasks.Remove(dependencyLine.ParentTaskBar);
+        dependencyLine.ParentTaskBar.GanttTask?.RemoveDependentTask(dependencyLine.ChildTaskBar.GanttTask);
+        _canvasBody?.Children.Remove(dependencyLine);
+    }
+
     private void DependencyLine_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is DependencyLine dependencyLine)
         {
-            OnDependencyLinePointerPressed(dependencyLine.ParentTaskBar, dependencyLine.ChildTaskBar);
+            OnDependencyLinePointerPressed(dependencyLine);
         }
     }
 
