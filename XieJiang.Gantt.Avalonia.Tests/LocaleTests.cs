@@ -23,6 +23,32 @@ public class LocaleTests
         Assert.Equal("Нова віха", NewMilestoneText(theme));
     }
 
+    [AvaloniaTheory]
+    [InlineData("en-GB", "New milestone")]
+    [InlineData("zh-TW", "新里程碑")]
+    [InlineData("fr-FR", "New milestone")]
+    public void Locale_Matches_By_Language_And_Falls_Back_To_English(string culture, string expected)
+    {
+        var theme = new GanttTheme { Locale = new CultureInfo(culture) };
+
+        Assert.Equal(expected, NewMilestoneText(theme));
+    }
+
+    [AvaloniaFact]
+    public void Unset_Locale_Follows_Current_UI_Culture()
+    {
+        var previous = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = new CultureInfo("ja-JP");
+        try
+        {
+            Assert.Equal("新たなマイルストーン", NewMilestoneText(new GanttTheme()));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
     [AvaloniaFact]
     public void Locale_Can_Be_Changed_More_Than_Once()
     {

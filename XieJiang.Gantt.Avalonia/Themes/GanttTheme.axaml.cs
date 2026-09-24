@@ -10,15 +10,16 @@ namespace XieJiang.Gantt.Avalonia.Themes;
 
 public class GanttTheme : Styles
 {
+    // Keyed by language so regional variants (en-GB, zh-TW, ...) match too.
     // Factories rather than shared instances: a ResourceDictionary can only be merged into one owner.
-    private static readonly Dictionary<CultureInfo, Func<ResourceDictionary>> LocaleToResource = new()
-                                                                                                  {
-                                                                                                      { new CultureInfo("zh-cn"), () => new zh_cn() },
-                                                                                                      { new CultureInfo("en-us"), () => new en_us() },
-                                                                                                      { new CultureInfo("ja-jp"), () => new ja_jp() },
-                                                                                                      { new CultureInfo("uk-UA"), () => new uk_uk() },
-                                                                                                      { new CultureInfo("ru-ru"), () => new ru_ru() },
-                                                                                                  };
+    private static readonly Dictionary<string, Func<ResourceDictionary>> LanguageToResource = new()
+                                                                                             {
+                                                                                                 { "zh", () => new zh_cn() },
+                                                                                                 { "en", () => new en_us() },
+                                                                                                 { "ja", () => new ja_jp() },
+                                                                                                 { "uk", () => new uk_uk() },
+                                                                                                 { "ru", () => new ru_ru() },
+                                                                                             };
 
     private readonly IServiceProvider? _sp;
 
@@ -51,13 +52,18 @@ public class GanttTheme : Styles
         }
     }
 
+    /// <summary>
+    /// Picks the strings for <paramref name="locale"/> (the current UI culture when null), falling back to English.
+    /// </summary>
     private static ResourceDictionary TryGetLocaleResource(CultureInfo? locale)
     {
-        if (locale is not null && LocaleToResource.TryGetValue(locale, out var factory))
+        locale ??= CultureInfo.CurrentUICulture;
+
+        if (LanguageToResource.TryGetValue(locale.TwoLetterISOLanguageName, out var factory))
         {
             return factory();
         }
 
-        return LocaleToResource[new CultureInfo("zh-cn")]();
+        return LanguageToResource["en"]();
     }
 }
