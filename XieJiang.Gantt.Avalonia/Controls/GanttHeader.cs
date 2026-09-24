@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Avalonia;
@@ -229,8 +228,6 @@ public class GanttHeader : TemplatedControl
                                        CountOfDays = countOfDays
                                    };
 
-                    Debug.Print($"WeekItem {s} - {e} days:{countOfDays}  Width:{weekItem.Width}");
-
                     row2.Add(weekItem);
 
                     if (e >= endDate)
@@ -266,8 +263,6 @@ public class GanttHeader : TemplatedControl
                                    };
 
                     row1.Add(yearItem);
-
-                    Debug.Print($"YearItem {s} - {e} days:{countOfDays}  Width:{yearItem.Width}");
 
                     if (e == endDate)
                     {
@@ -313,8 +308,6 @@ public class GanttHeader : TemplatedControl
 
             yield return monthItem;
 
-
-            Debug.Print($"MonthItem {s} - {e} days:{countOfDays}");
 
             if (e == endDate)
             {

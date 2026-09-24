@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls;
@@ -1056,8 +1055,6 @@ public class GanttControl : TemplatedControl
                     classes.Set(":Reject", true);
                     classes.Set(":Accept", false);
                 }
-
-                Debug.Print($"InputHitTest:{hoveringTaskBar}({hoveringTaskBar.GanttTask.Id})");
             }
             else
             {
@@ -1113,8 +1110,6 @@ public class GanttControl : TemplatedControl
             Canvas.SetTop(_pinout, Canvas.GetTop(taskBar));
 
             _pinoutTaskBar = taskBar;
-
-            Debug.Print($"TaskBar_PointerEntered {taskBar.GanttTask?.Id}");
         }
     }
 
@@ -1201,8 +1196,6 @@ public class GanttControl : TemplatedControl
 
                     ganttTask.StartDate = temp;
                 }
-
-                Debug.Print($"Task:{ganttTask.Id} StartDate=>{ganttTask.StartDate} DateLength:{ganttTask.DateLength}");
             }
             else if (e.Edge == Edges.Right)
             {
