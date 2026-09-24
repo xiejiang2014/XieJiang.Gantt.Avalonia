@@ -120,8 +120,7 @@
                         x:Name="PART_BackgroundBorder"
                         Grid.Row="0"
                         Width="{TemplateBinding Width}"
-                        Height="{Binding RelativeSource={RelativeSource Self},
-                                         Path=(gantt:GanttControl.TaskBarHeight)}"
+                        Height="{Binding $parent[gantt:GanttControl].TaskBarHeight}"
                         Background="{TemplateBinding Background}"
                         ClipToBounds="True"
                         CornerRadius="{TemplateBinding CornerRadius}">
@@ -172,8 +171,7 @@
                                 VerticalContentAlignment="Stretch"
                                 ClipToBounds="True"
                                 Content="{TemplateBinding Content}"
-                                ContentTemplate="{Binding RelativeSource={RelativeSource Self},
-                                                          Path=(gantt:GanttControl.TaskContentTemplate)}"
+                                ContentTemplate="{Binding $parent[gantt:GanttControl].TaskContentTemplate}"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="{TemplateBinding FontSize}"
                                 FontStyle="{TemplateBinding FontStyle}"

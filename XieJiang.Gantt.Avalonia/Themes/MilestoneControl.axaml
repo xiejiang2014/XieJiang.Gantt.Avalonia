@@ -427,8 +427,7 @@
                     <Button
                         x:Name="PART_HeaderButton"
                         MinWidth="96"
-                        MaxHeight="{Binding RelativeSource={RelativeSource Self},
-                                            Path=(avalonia:GanttControl.HeaderRow1Height)}"
+                        MaxHeight="{Binding $parent[avalonia:GanttControl].HeaderRow1Height}"
                         Padding="8,4"
                         VerticalAlignment="Center"
                         Background="{Binding Path=(models:Milestone).Color,

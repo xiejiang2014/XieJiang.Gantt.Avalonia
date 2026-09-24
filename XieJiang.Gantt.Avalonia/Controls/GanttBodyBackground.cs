@@ -39,7 +39,7 @@ public class GanttBodyBackground : TemplatedControl
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
         _markLineToday    = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
 
-        ReloadMarkLineToday(_startDate, _dayWidth);
+        ReloadMarkLineToday(_startDate, _dayWidth, _dateTimeNow);
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -95,10 +95,10 @@ public class GanttBodyBackground : TemplatedControl
 
     #endregion
 
-    public void Reload(IList<DateItem>? dateItems, DateOnly startDate, double dayWidth)
+    public void Reload(IList<DateItem>? dateItems, DateOnly startDate, double dayWidth, DateTime? dateTimeNow)
     {
         ReloadGrid(dateItems);
-        ReloadMarkLineToday(startDate, dayWidth);
+        ReloadMarkLineToday(startDate, dayWidth, dateTimeNow);
     }
 
 
@@ -115,24 +115,21 @@ public class GanttBodyBackground : TemplatedControl
         }
     }
 
-    private DateOnly _startDate;
-    private double   _dayWidth;
+    private DateOnly  _startDate;
+    private double    _dayWidth;
+    private DateTime? _dateTimeNow;
 
-    public void ReloadMarkLineToday(DateOnly startDate, double dayWidth)
+    /// <param name="dateTimeNow">The time to mark; the current time when null.</param>
+    public void ReloadMarkLineToday(DateOnly startDate, double dayWidth, DateTime? dateTimeNow)
     {
         // Remember the arguments so the line can be placed once the template is applied.
-        _startDate = startDate;
-        _dayWidth  = dayWidth;
+        _startDate   = startDate;
+        _dayWidth    = dayWidth;
+        _dateTimeNow = dateTimeNow;
 
         if (_markLineToday != null)
         {
-            var dateTimeNow = GetValue(GanttControl.DateTimeNowProperty);
-            if (dateTimeNow is null)
-            {
-                dateTimeNow = DateTime.Now;
-            }
-
-            var left = (dateTimeNow.Value - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
+            var left = ((dateTimeNow ?? DateTime.Now) - startDate.ToDateTime(TimeOnly.MinValue)).TotalDays * dayWidth;
 
             _markLineToday.Margin = new Thickness(left, 0, 0, 0);
         }

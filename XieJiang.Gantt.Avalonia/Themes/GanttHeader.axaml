@@ -69,8 +69,7 @@
                                 <Panel x:Name="Week">
                                     <Rectangle
                                         Width="{Binding Width}"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow1Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow1Height}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Classes="BackgroundRectangle"
@@ -94,8 +93,7 @@
                                     <!--  左边线  -->
                                     <Rectangle
                                         Width="1"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow1Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow1Height}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
                                         Fill="{DynamicResource LightGridBrush}" />
@@ -107,8 +105,7 @@
                                 <Panel x:Name="Week">
                                     <Rectangle
                                         Width="{Binding Width}"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow1Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow1Height}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Classes="BackgroundRectangle"
@@ -131,8 +128,7 @@
                                     <!--  左边线  -->
                                     <Rectangle
                                         Width="1"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow1Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow1Height}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
                                         Fill="{DynamicResource LightGridBrush}" />
@@ -160,8 +156,7 @@
                                 <controls:HeaderDayItem x:Name="HeaderDayItem">
                                     <Rectangle
                                         Width="{Binding Width}"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow2Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Classes="BackgroundRectangle"
@@ -171,8 +166,7 @@
                                     <!--  左边线  -->
                                     <Rectangle
                                         Width="1"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow2Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
                                         Classes.FirstDayOfWeek="{Binding IsFirstDayOfWeek}"
@@ -207,8 +201,7 @@
                             <DataTemplate DataType="models:WeekItem">
                                 <Panel Width="{Binding Width}">
                                     <Rectangle
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow2Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Classes="BackgroundRectangle"
@@ -217,8 +210,7 @@
                                     <!--  左边线  -->
                                     <Rectangle
                                         Width="1"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow2Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
                                         Fill="{DynamicResource LightGridBrush}" />
@@ -244,8 +236,7 @@
                             <DataTemplate DataType="models:MonthItem">
                                 <Panel Width="{Binding Width}">
                                     <Rectangle
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow2Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Classes="BackgroundRectangle"
@@ -254,8 +245,7 @@
                                     <!--  左边线  -->
                                     <Rectangle
                                         Width="1"
-                                        Height="{Binding RelativeSource={RelativeSource Self},
-                                                         Path=(gantt:GanttControl.HeaderRow2Height)}"
+                                        Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
                                         Fill="{DynamicResource LightGridBrush}" />

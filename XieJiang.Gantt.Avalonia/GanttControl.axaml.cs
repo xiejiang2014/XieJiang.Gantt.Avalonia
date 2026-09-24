@@ -219,7 +219,7 @@ public class GanttControl : TemplatedControl
     #region TaskBarHeight
 
     public static readonly StyledProperty<double> TaskBarHeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight), 24d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(TaskBarHeight), 24d);
 
     public double TaskBarHeight
     {
@@ -237,7 +237,7 @@ public class GanttControl : TemplatedControl
     #region RowHeight
 
     public static readonly StyledProperty<double> RowHeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(RowHeight), 41d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(RowHeight), 41d);
 
     public double RowHeight
     {
@@ -255,7 +255,7 @@ public class GanttControl : TemplatedControl
     #region HeaderRow1Height
 
     public static readonly StyledProperty<double> HeaderRow1HeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow1Height), 33d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow1Height), 33d);
 
     public double HeaderRow1Height
     {
@@ -272,7 +272,7 @@ public class GanttControl : TemplatedControl
     #region HeaderRow2Height
 
     public static readonly StyledProperty<double> HeaderRow2HeightProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow2Height), 25d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(HeaderRow2Height), 25d);
 
     public double HeaderRow2Height
     {
@@ -308,7 +308,7 @@ public class GanttControl : TemplatedControl
     #region DateMode
 
     public static readonly StyledProperty<DateModes> DateModeProperty =
-        AvaloniaProperty.Register<GanttControl, DateModes>(nameof(DateMode), DateModes.Weekly, true);
+        AvaloniaProperty.Register<GanttControl, DateModes>(nameof(DateMode), DateModes.Weekly);
 
     public DateModes DateMode
     {
@@ -326,7 +326,7 @@ public class GanttControl : TemplatedControl
     #region DayWidthInWeeklyMode
 
     public static readonly StyledProperty<double> DayWidthInWeeklyModeProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInWeeklyMode), 72d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInWeeklyMode), 72d);
 
     public double DayWidthInWeeklyMode
     {
@@ -348,7 +348,7 @@ public class GanttControl : TemplatedControl
     #region DayWidthInMonthlyMode
 
     public static readonly StyledProperty<double> DayWidthInMonthlyModeProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInMonthlyMode), 36d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInMonthlyMode), 36d);
 
     public double DayWidthInMonthlyMode
     {
@@ -362,7 +362,7 @@ public class GanttControl : TemplatedControl
     #region DayWidthInSeasonlyMode
 
     public static readonly StyledProperty<double> DayWidthInSeasonallyModeProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInSeasonallyMode), 12d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInSeasonallyMode), 12d);
 
     public double DayWidthInSeasonallyMode
     {
@@ -376,7 +376,7 @@ public class GanttControl : TemplatedControl
     #region DayWidthInYearlyModel
 
     public static readonly StyledProperty<double> DayWidthInYearlyModelProperty =
-        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInYearlyModel), 4d, true);
+        AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidthInYearlyModel), 4d);
 
     public double DayWidthInYearlyModel
     {
@@ -418,7 +418,7 @@ public class GanttControl : TemplatedControl
     #region DateTimeNow
 
     public static readonly StyledProperty<DateTime?> DateTimeNowProperty =
-        AvaloniaProperty.Register<GanttControl, DateTime?>(nameof(DateTimeNow), null, true);
+        AvaloniaProperty.Register<GanttControl, DateTime?>(nameof(DateTimeNow), null);
 
     public DateTime? DateTimeNow
     {
@@ -428,7 +428,7 @@ public class GanttControl : TemplatedControl
 
     private void DateTimeNowChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth);
+        _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth, DateTimeNow);
     }
 
     // Without DateTimeNow the today line follows the clock, so it has to move while the control is shown.
@@ -452,7 +452,7 @@ public class GanttControl : TemplatedControl
     {
         if (DateTimeNow is null)
         {
-            _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth);
+            _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth, DateTimeNow);
         }
     }
 
@@ -462,7 +462,7 @@ public class GanttControl : TemplatedControl
     #region StartDate
 
     public static readonly StyledProperty<DateOnly> StartDateProperty =
-        AvaloniaProperty.Register<GanttControl, DateOnly>(nameof(StartDate), DateOnly.FromDateTime(DateTime.Today), true);
+        AvaloniaProperty.Register<GanttControl, DateOnly>(nameof(StartDate), DateOnly.FromDateTime(DateTime.Today));
 
     public DateOnly StartDate
     {
@@ -482,7 +482,7 @@ public class GanttControl : TemplatedControl
     #region EndDate
 
     public static readonly StyledProperty<DateOnly> EndDateProperty =
-        AvaloniaProperty.Register<GanttControl, DateOnly>(nameof(EndDate), DateOnly.FromDateTime(DateTime.Today), true,
+        AvaloniaProperty.Register<GanttControl, DateOnly>(nameof(EndDate), DateOnly.FromDateTime(DateTime.Today),
                                                           coerce: (sender, value) => value < sender.GetValue(StartDateProperty)
                                                               ? sender.GetValue(StartDateProperty)
                                                               : value);
@@ -517,7 +517,7 @@ public class GanttControl : TemplatedControl
         if (_ganttHeader is not null)
         {
             _ganttHeader.Reload(DateMode, StartDate, EndDate, DayWidth);
-            _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, StartDate, DayWidth);
+            _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, StartDate, DayWidth, DateTimeNow);
         }
 
         ReloadMilestones();
@@ -1289,7 +1289,7 @@ public class GanttControl : TemplatedControl
     #region TaskContentTemplate
 
     public static readonly StyledProperty<IDataTemplate?> TaskContentTemplateProperty =
-        AvaloniaProperty.Register<GanttControl, IDataTemplate?>(nameof(TaskContentTemplate), null, true);
+        AvaloniaProperty.Register<GanttControl, IDataTemplate?>(nameof(TaskContentTemplate), null);
 
     public IDataTemplate? TaskContentTemplate
     {

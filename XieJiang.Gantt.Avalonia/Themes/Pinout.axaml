@@ -17,8 +17,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Border
-                    Height="{Binding RelativeSource={RelativeSource Self},
-                                     Path=(avalonia:GanttControl.TaskBarHeight)}"
+                    Height="{Binding $parent[avalonia:GanttControl].TaskBarHeight}"
                     Padding="2,0,2,0"
                     Background="Transparent">
                     <Ellipse
