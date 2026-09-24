@@ -446,6 +446,31 @@ public class GanttControl : TemplatedControl
         _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth);
     }
 
+    // Without DateTimeNow the today line follows the clock, so it has to move while the control is shown.
+    private readonly DispatcherTimer _nowTimer = new() { Interval = TimeSpan.FromMinutes(1) };
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _nowTimer.Tick += NowTimer_Tick;
+        _nowTimer.Start();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        _nowTimer.Stop();
+        _nowTimer.Tick -= NowTimer_Tick;
+    }
+
+    private void NowTimer_Tick(object? sender, EventArgs e)
+    {
+        if (DateTimeNow is null)
+        {
+            _ganttBodyBackground?.ReloadMarkLineToday(StartDate, DayWidth);
+        }
+    }
+
     #endregion
 
 
