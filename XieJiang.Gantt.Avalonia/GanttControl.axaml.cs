@@ -1275,17 +1275,19 @@ public class GanttControl : TemplatedControl
 
     #region Pan
 
-    private bool   _isPanning;
-    private Point? _panBasePoint;
+    private bool    _isPanning;
+    private Point?  _panBasePoint;
+    private Cursor? _cursorBeforePan;
 
     private void PanStart(PointerPressedEventArgs e)
     {
         var cp = e.GetCurrentPoint(this);
         if (cp.Properties.IsMiddleButtonPressed)
         {
-            _panBasePoint = e.GetPosition(this);
-            Cursor        = new Cursor(StandardCursorType.SizeAll);
-            _isPanning    = true;
+            _panBasePoint    = e.GetPosition(this);
+            _cursorBeforePan = Cursor;
+            Cursor           = new Cursor(StandardCursorType.SizeAll);
+            _isPanning       = true;
         }
     }
 
@@ -1320,10 +1322,10 @@ public class GanttControl : TemplatedControl
     private void PanEnd(PointerReleasedEventArgs e)
     {
         var cp = e.GetCurrentPoint(this);
-        if (!cp.Properties.IsMiddleButtonPressed)
+        if (_isPanning && !cp.Properties.IsMiddleButtonPressed)
         {
             _panBasePoint = null;
-            Cursor        = null;
+            Cursor        = _cursorBeforePan;
             _isPanning    = false;
         }
     }
