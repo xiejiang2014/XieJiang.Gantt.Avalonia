@@ -6,6 +6,20 @@ namespace XieJiang.Gantt.Avalonia.Tests;
 public class DependencyLineTests
 {
     [AvaloniaFact]
+    public void Dependency_To_Task_Outside_Model_Is_Ignored()
+    {
+        var model = TestHelper.CreateModel(1);
+        model.GanttTasks[0].AddingDependentTask(new Models.GanttTask());
+        new Models.GanttTask().AddingDependentTask(model.GanttTasks[0]);
+
+        var (window, gantt, _) = TestHelper.Create(model);
+
+        Assert.Single(TestHelper.TaskBars(gantt));
+        Assert.Empty(TestHelper.DependencyLines(gantt));
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void RemoveDependencyLine_Keeps_Sibling_Lines_Of_Same_Parent()
     {
         var model = TestHelper.CreateModel(3);

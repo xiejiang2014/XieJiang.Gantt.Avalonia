@@ -510,7 +510,7 @@ public class GanttControl : TemplatedControl
 
         _canvasBody.Height = _ganttModel.GanttTasks.Count * RowHeight;
 
-        // set parent and child
+        // set parent and child, ignoring dependencies on tasks that are not in the model
         for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
         {
             var ganttTask = _ganttModel.GanttTasks[i];
@@ -518,14 +518,18 @@ public class GanttControl : TemplatedControl
 
             foreach (var ganttTaskParent in ganttTask.Parents)
             {
-                var parentTaskBar = _taskBarsDic[ganttTaskParent];
-                taskBar.ParentsTasks.Add(parentTaskBar);
+                if (_taskBarsDic.TryGetValue(ganttTaskParent, out var parentTaskBar))
+                {
+                    taskBar.ParentsTasks.Add(parentTaskBar);
+                }
             }
 
             foreach (var ganttTaskChild in ganttTask.Children)
             {
-                var childTaskBar = _taskBarsDic[ganttTaskChild];
-                taskBar.ChildrenTasks.Add(childTaskBar);
+                if (_taskBarsDic.TryGetValue(ganttTaskChild, out var childTaskBar))
+                {
+                    taskBar.ChildrenTasks.Add(childTaskBar);
+                }
             }
         }
 
