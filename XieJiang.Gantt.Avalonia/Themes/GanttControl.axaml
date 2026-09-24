@@ -110,7 +110,7 @@
                         Grid.Row="1"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Stretch"
-                        ViewportSize="{Binding #PanelBody.Bounds.Height}">
+                        ViewportSize="{Binding #PART_VScrollBar.Bounds.Height}">
                         <ScrollBar.Maximum>
                             <MultiBinding Converter="{x:Static ava:DoubleSubtractiveConverter.Default}">
                                 <Binding Path="#PART_CanvasBody.Height" />

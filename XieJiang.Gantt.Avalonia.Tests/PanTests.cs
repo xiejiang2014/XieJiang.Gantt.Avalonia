@@ -7,6 +7,17 @@ namespace XieJiang.Gantt.Avalonia.Tests;
 public class PanTests
 {
     [AvaloniaFact]
+    public void Vertical_Scroll_Range_And_Thumb_Use_The_Same_Visible_Height()
+    {
+        var (window, gantt, _) = TestHelper.Create(100);
+        var v = gantt.VScrollBar!;
+
+        Assert.Equal(v.Bounds.Height, v.ViewportSize, 3);
+        Assert.Equal(100 * gantt.RowHeight - v.Bounds.Height, v.Maximum, 3);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Wheel_Is_Handled_Only_When_The_Chart_Scrolls()
     {
         var (window, gantt, _) = TestHelper.Create(40);
