@@ -918,13 +918,25 @@ public class GanttControl : TemplatedControl
 
     private void UpdateDependencyLineGeometry(Rect parentRect, Rect childRect, int childRow, DependencyLine dependencyLine)
     {
-        var       streamGeometry = new StreamGeometry();
-        using var sgc            = streamGeometry.Open();
-
-        var down = childRect.Top > parentRect.Top + TaskBarHeight;
-
         var x0 = parentRect.Right;
         var y0 = parentRect.Top + TaskBarHeight / 2d;
+
+        var streamGeometry = new StreamGeometry();
+
+        // the context must be disposed (which finishes the geometry) before the geometry is used
+        using (var sgc = streamGeometry.Open())
+        {
+            DrawDependencyLine(sgc, parentRect, childRect, childRow, x0, y0);
+        }
+
+        dependencyLine.Data = streamGeometry;
+        Canvas.SetLeft(dependencyLine, x0);
+        Canvas.SetTop(dependencyLine, y0);
+    }
+
+    private void DrawDependencyLine(StreamGeometryContext sgc, Rect parentRect, Rect childRect, int childRow, double x0, double y0)
+    {
+        var down = childRect.Top > parentRect.Top + TaskBarHeight;
 
         if (childRect.Left >= parentRect.Right)
         {
@@ -982,12 +994,8 @@ public class GanttControl : TemplatedControl
             sgc.BeginFigure(new Point(x4, y3), true);
             sgc.LineTo(new Point(x4 - 9,  y3 + 4), false);
             sgc.LineTo(new Point(x4 - 9,  y3 - 4), false);
-            sgc.EndFigure(false);
+            sgc.EndFigure(true);
         }
-
-        dependencyLine.Data = streamGeometry;
-        Canvas.SetLeft(dependencyLine, x0);
-        Canvas.SetTop(dependencyLine, y0);
     }
 
     private void HidePinout()

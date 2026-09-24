@@ -1,5 +1,6 @@
 using System.Reflection;
 using Avalonia.Controls.Shapes;
+using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.Interactivity;
 using XieJiang.Gantt.Avalonia.Controls;
@@ -34,6 +35,23 @@ public class DependencyLineTests
 
         Assert.Single(TestHelper.TaskBars(gantt));
         Assert.Empty(TestHelper.DependencyLines(gantt));
+        window.Close();
+    }
+
+    [AvaloniaTheory]
+    [InlineData(1, 5)] // child after parent: straight line with arrow
+    [InlineData(0, 3)] // child overlapping parent: routed line with arrow
+    public void Dependency_Line_Geometry_Is_Complete(int childStartDay, int childEndDay)
+    {
+        var model = TestHelper.CreateModel(2);
+        model.GanttTasks[1].StartDate = model.GanttTasks[0].EndDate.AddDays(childStartDay - 3);
+        model.GanttTasks[1].EndDate   = model.GanttTasks[0].EndDate.AddDays(childEndDay - 3);
+        model.GanttTasks[0].AddingDependentTask(model.GanttTasks[1]);
+        var (window, gantt, _) = TestHelper.Create(model);
+
+        var geometry = (StreamGeometry)TestHelper.DependencyLines(gantt).Single().Data!;
+        Assert.True(geometry.Bounds.Width  > 0);
+        Assert.True(geometry.Bounds.Height > 0);
         window.Close();
     }
 
