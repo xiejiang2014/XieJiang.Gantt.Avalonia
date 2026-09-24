@@ -26,9 +26,11 @@ internal static class TestHelper
         return model;
     }
 
-    public static (Window window, GanttControl gantt, GanttModel model) Create(int taskCount, Action<GanttControl>? configure = null)
+    public static (Window window, GanttControl gantt, GanttModel model) Create(int taskCount, Action<GanttControl>? configure = null) =>
+        Create(CreateModel(taskCount), configure);
+
+    public static (Window window, GanttControl gantt, GanttModel model) Create(GanttModel model, Action<GanttControl>? configure = null)
     {
-        var model = CreateModel(taskCount);
         var gantt = new GanttControl
                     {
                         StartDate   = Start,

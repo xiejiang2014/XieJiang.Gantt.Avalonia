@@ -640,10 +640,23 @@ public class GanttControl : TemplatedControl
 
     public void RemoveDependencyLine(DependencyLine dependencyLine)
     {
-        _dependencyLinesDic.Remove(dependencyLine.ParentTaskBar);
+        if (_dependencyLinesDic.TryGetValue(dependencyLine.ParentTaskBar, out var subDic))
+        {
+            subDic.Remove(dependencyLine.ChildTaskBar);
+            if (subDic.Count == 0)
+            {
+                _dependencyLinesDic.Remove(dependencyLine.ParentTaskBar);
+            }
+        }
+
         dependencyLine.ParentTaskBar.ChildrenTasks.Remove(dependencyLine.ChildTaskBar);
         dependencyLine.ChildTaskBar.ParentsTasks.Remove(dependencyLine.ParentTaskBar);
-        dependencyLine.ParentTaskBar.GanttTask?.RemoveDependentTask(dependencyLine.ChildTaskBar.GanttTask);
+
+        if (dependencyLine.ParentTaskBar.GanttTask is { } parentTask && dependencyLine.ChildTaskBar.GanttTask is { } childTask)
+        {
+            parentTask.RemoveDependentTask(childTask);
+        }
+
         _canvasBody?.Children.Remove(dependencyLine);
     }
 
