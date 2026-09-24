@@ -32,6 +32,7 @@ public class MilestoneTests
 
         ClickHeaderMilestoneButton(gantt);
         Assert.Single(model.Milestones);
+        Assert.False(string.IsNullOrEmpty(model.Milestones[0].Title));
 
         gantt.Reload();
         Assert.Single(gantt.GetVisualDescendants().OfType<MilestoneControl>());

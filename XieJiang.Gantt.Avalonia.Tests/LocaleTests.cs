@@ -10,6 +10,12 @@ public class LocaleTests
         theme.TryGetResource("STRING_NEW_MILESTONE", null, out var value) ? value as string : null;
 
     [AvaloniaFact]
+    public void Default_Locale_Is_Loaded_When_Locale_Is_Never_Set()
+    {
+        Assert.NotNull(NewMilestoneText(new GanttTheme()));
+    }
+
+    [AvaloniaFact]
     public void Locale_Can_Be_Changed_More_Than_Once()
     {
         var theme = new GanttTheme { Locale = new CultureInfo("zh-cn") };

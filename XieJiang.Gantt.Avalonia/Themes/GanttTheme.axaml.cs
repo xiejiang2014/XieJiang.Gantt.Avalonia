@@ -26,6 +26,9 @@ public class GanttTheme : Styles
     {
         _sp = provider;
         AvaloniaXamlLoader.Load(provider, this);
+
+        // Load the default strings; setting Locale later replaces them.
+        Locale = null;
     }
 
     private CultureInfo?        _locale;
