@@ -66,6 +66,9 @@ public partial class MainView : UserControl
         });
 
 
+        // one bitmap shared by all generated tasks instead of decoding it for each of them
+        var otherTaskImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png")));
+
         for (int i = 4; i < 300; i++)
         {
             ganttModel.GanttTasks.Add(new MyGanttTask()
@@ -76,7 +79,7 @@ public partial class MainView : UserControl
                 EndDate = new DateTime(2025, 02, 15),
                 Content = new TaskContent()
                 {
-                    HeaderImg = new Bitmap(AssetLoader.Open(new Uri("avares://XieJiang.Gantt.Avalonia.Demo/Assets/3.png"))),
+                    HeaderImg = otherTaskImg,
                     Title = "some thing else",
                 },
                 Color = GanttColors.Danger
