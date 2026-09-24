@@ -1257,17 +1257,30 @@ public class GanttControl : TemplatedControl
         }
     }
 
+    private const double WheelStep = 30;
+
     private void PointerWheel(PointerWheelEventArgs e)
     {
-        if (e.Delta.X != 0)
+        // Only handle the wheel when something scrolled, so outer scroll viewers can take over at the edges.
+        e.Handled |= ScrollBy(HScrollBar, e.Delta.X);
+        e.Handled |= ScrollBy(VScrollBar, e.Delta.Y);
+    }
+
+    private static bool ScrollBy(ScrollBar? scrollBar, double delta)
+    {
+        if (scrollBar is null || delta == 0)
         {
-            HScrollBar?.SetCurrentValue(RangeBase.ValueProperty, HScrollBar.Value - e.Delta.X * 30);
+            return false;
         }
 
-        if (e.Delta.Y != 0)
+        var value = Math.Clamp(scrollBar.Value - delta * WheelStep, scrollBar.Minimum, scrollBar.Maximum);
+        if (value.Equals(scrollBar.Value))
         {
-            VScrollBar?.SetCurrentValue(RangeBase.ValueProperty, VScrollBar.Value - e.Delta.Y * 30);
+            return false;
         }
+
+        scrollBar.SetCurrentValue(RangeBase.ValueProperty, value);
+        return true;
     }
 
     #endregion

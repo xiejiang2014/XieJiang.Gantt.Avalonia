@@ -7,6 +7,24 @@ namespace XieJiang.Gantt.Avalonia.Tests;
 public class PanTests
 {
     [AvaloniaFact]
+    public void Wheel_Is_Handled_Only_When_The_Chart_Scrolls()
+    {
+        var (window, gantt, _) = TestHelper.Create(40);
+        gantt.VScrollBar!.Transitions = null;
+        var bubbled = 0;
+        window.AddHandler(InputElement.PointerWheelChangedEvent, (_, _) => bubbled++);
+        var point = new Point(900, 300);
+
+        window.MouseWheel(point, new Vector(0, -1)); // scroll down: the chart scrolls
+        Assert.Equal(0, bubbled);
+
+        gantt.VScrollBar.Value = 0;
+        window.MouseWheel(point, new Vector(0, 1)); // already at the top: let outer scrollers have it
+        Assert.Equal(1, bubbled);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Middle_Button_Pan_Keeps_Working_Over_Task_Bars_And_Restores_The_Cursor()
     {
         var model = TestHelper.CreateModel(40);
