@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -14,7 +13,6 @@ using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
-[TemplatePart("PART_BackgroundBorder",  typeof(Border))]
 [TemplatePart("PART_ForegroundBorder",  typeof(Border))]
 [TemplatePart("PART_LThumb",            typeof(Thumb))]
 [TemplatePart("PART_RThumb",            typeof(Thumb))]
@@ -22,7 +20,6 @@ namespace XieJiang.Gantt.Avalonia.Controls;
 [TemplatePart("PART_ProgressRectangle", typeof(Rectangle))]
 public class TaskBar : ContentControl
 {
-    private Border?    _backgroundBorder;
     private Border?    _foregroundBorder;
     private Thumb?     _taskMainThumb;
     private Thumb?     _lThumb;
@@ -31,14 +28,6 @@ public class TaskBar : ContentControl
     private Rectangle? _progressRectangle;
 
     internal GanttTask? GanttTask { get; private set; }
-
-    static TaskBar()
-    {
-        //ProgressProperty.Changed.AddClassHandler<TaskBar>((sender,  e) => sender.OnProgressChanged(e));
-        //StartDateProperty.Changed.AddClassHandler<TaskBar>((sender, e) => sender.OnStartDateChanged(e));
-        //EndDateProperty.Changed.AddClassHandler<TaskBar>((sender,   e) => sender.OnEndDateChanged(e));
-    }
-
 
     public TaskBar()
     {
@@ -90,7 +79,6 @@ public class TaskBar : ContentControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        _backgroundBorder  = e.NameScope.Find<Border>("PART_BackgroundBorder");
         _foregroundBorder  = e.NameScope.Find<Border>("PART_ForegroundBorder");
         _taskMainThumb     = e.NameScope.Find<Thumb>("PART_TaskMainThumb");
         _lThumb            = e.NameScope.Find<Thumb>("PART_LThumb");
@@ -152,8 +140,6 @@ public class TaskBar : ContentControl
             {
                 Canvas.SetLeft(_progressThumb, p);
             }
-
-            //Debug.Print("Update");
         }
     }
 
@@ -278,8 +264,6 @@ public class TaskBar : ContentControl
 
     private void RThumb_DragDelta(object? sender, VectorEventArgs e)
     {
-        //Debug.Print(e.Vector.X.ToString("F4"));
-
         var newWidth = _widthDragStarted + e.Vector.X;
 
         if (newWidth <= MinWidth)
@@ -369,7 +353,6 @@ public class TaskBar : ContentControl
             }
 
             Canvas.SetLeft(_progressThumb, newLeft);
-            //_leftDragStarted = newLeft;
 
 
             if (GanttTask is not null)

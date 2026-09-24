@@ -12,12 +12,10 @@ using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
-[TemplatePart("PART_RootPanel",     typeof(Panel))]
 [TemplatePart("PART_ItemsControl",  typeof(ItemsControl))]
 [TemplatePart("PART_MarkLineToday", typeof(MarkLineToday))]
 public class GanttBodyBackground : TemplatedControl
 {
-    private Panel?         _rootPanel;
     private ItemsControl?  _partItemsControl;
     private MarkLineToday? _markLineToday;
 
@@ -35,7 +33,6 @@ public class GanttBodyBackground : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-        _rootPanel        = e.NameScope.Find<Panel>("PART_RootPanel");
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
         _markLineToday    = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
 

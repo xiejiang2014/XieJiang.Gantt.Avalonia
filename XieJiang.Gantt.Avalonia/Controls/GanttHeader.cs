@@ -16,12 +16,10 @@ namespace XieJiang.Gantt.Avalonia.Controls;
 
 [TemplatePart("PART_ItemsControlRow1", typeof(ItemsControl))]
 [TemplatePart("PART_ItemsControlRow2", typeof(ItemsControl))]
-[TemplatePart("PART_RootGrid",         typeof(Grid))]
 public class GanttHeader : TemplatedControl
 {
     private ItemsControl? _partItemsControlRow1;
     private ItemsControl? _partItemsControlRow2;
-    private Grid?         _rootGrid;
 
     static GanttHeader()
     {
@@ -44,7 +42,6 @@ public class GanttHeader : TemplatedControl
         base.OnApplyTemplate(e);
         _partItemsControlRow1 = e.NameScope.Find<ItemsControl>("PART_ItemsControlRow1");
         _partItemsControlRow2 = e.NameScope.Find<ItemsControl>("PART_ItemsControlRow2");
-        _rootGrid             = e.NameScope.Find<Grid>("PART_RootGrid");
     }
 
 
