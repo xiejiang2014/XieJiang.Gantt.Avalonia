@@ -70,6 +70,7 @@ public class GanttControl : TemplatedControl
         TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBar_MainDragCompleted(e));
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.TaskBar_WidthDragDelta(e));
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.TaskBar_WidthDragCompleted(e));
+        TaskBar.DatesChangedEvent.AddClassHandler<GanttControl>((sender,       e) => sender.TaskBar_DatesChanged(e));
 
         MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.MilestoneControl_HThumbDragDelta(e));
         MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragCompleted(e));
@@ -539,18 +540,10 @@ public class GanttControl : TemplatedControl
         {
             var ganttTask = _ganttModel.GanttTasks[i];
 
-            var width = ganttTask.DateLength.TotalDays * DayWidth;
-
-            if (width < 20)
-            {
-                width = 20;
-            }
-
             var taskBar = new TaskBar
                           {
                               MinWidth    = 20,
                               DataContext = ganttTask,
-                              Width       = width,
                               Row         = i,
                               ZIndex      = 1
                           };
@@ -560,7 +553,7 @@ public class GanttControl : TemplatedControl
             taskBar.PointerExited  += TaskBar_PointerExited;
 
 
-            Canvas.SetLeft(taskBar, (ganttTask.StartDate      - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
+            PlaceTaskBar(taskBar, ganttTask);
             Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
             _canvasBody.Children.Add(taskBar);
             _taskBarsDic.Add(ganttTask, taskBar);
@@ -596,6 +589,37 @@ public class GanttControl : TemplatedControl
         LoadDependencyLines();
     }
 
+
+    /// <summary>
+    /// Positions and sizes the bar from the task dates. Bars never get narrower than MinWidth.
+    /// </summary>
+    private void PlaceTaskBar(TaskBar taskBar, GanttTask ganttTask)
+    {
+        taskBar.Width = Math.Max(ganttTask.DateLength.TotalDays * DayWidth, taskBar.MinWidth);
+        Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
+    }
+
+    private void TaskBar_DatesChanged(RoutedEventArgs e)
+    {
+        if (e.Source is TaskBar { GanttTask: { } ganttTask } taskBar && _taskBarsDic.ContainsKey(ganttTask))
+        {
+            RefreshTaskBar(taskBar, ganttTask);
+        }
+    }
+
+    /// <summary>
+    /// Re-places the bar from its task dates and updates everything attached to it.
+    /// </summary>
+    private void RefreshTaskBar(TaskBar taskBar, GanttTask ganttTask)
+    {
+        PlaceTaskBar(taskBar, ganttTask);
+        UpdateDependencyLine(taskBar);
+
+        if (taskBar == _pinoutTaskBar)
+        {
+            Canvas.SetLeft(_pinout, Canvas.GetLeft(taskBar) + taskBar.Width);
+        }
+    }
 
     private void TaskBar_PointerExited(object? sender, PointerEventArgs e)
     {
@@ -978,13 +1002,9 @@ public class GanttControl : TemplatedControl
 
                 ganttTask.StartDate = startDate;
                 ganttTask.EndDate   = endDate;
-                Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
 
-                l = taskBar.GetValue(Canvas.LeftProperty);
-                Canvas.SetLeft(_pinout, l + taskBar.Width);
-
-
-                UpdateDependencyLine(taskBar);
+                // snap the bar even when the rounded dates did not change
+                RefreshTaskBar(taskBar, ganttTask);
             }
         }
     }
@@ -1036,10 +1056,6 @@ public class GanttControl : TemplatedControl
                     }
 
                     ganttTask.StartDate = temp;
-
-                    taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
-
-                    Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
                 }
 
                 Debug.Print($"Task:{ganttTask.Id} StartDate=>{ganttTask.StartDate} DateLength:{ganttTask.DateLength}");
@@ -1065,24 +1081,12 @@ public class GanttControl : TemplatedControl
                     }
 
                     ganttTask.EndDate = temp;
-
-
-                    taskBar.Width = ganttTask.DateLength.TotalDays * DayWidth;
                 }
-
-                Canvas.SetLeft(_pinout, l + taskBar.Width);
             }
             //}
 
-            switch (e.Edge)
-            {
-                case Edges.Left:
-                    UpdateDependencyLine(taskBar, true, false);
-                    break;
-                case Edges.Right:
-                    UpdateDependencyLine(taskBar, false);
-                    break;
-            }
+            // snap the bar even when the rounded dates did not change
+            RefreshTaskBar(taskBar, ganttTask);
         }
     }
 

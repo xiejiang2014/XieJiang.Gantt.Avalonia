@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Controls;
 using XieJiang.Gantt.Avalonia.Models;
@@ -6,6 +7,26 @@ namespace XieJiang.Gantt.Avalonia.Tests;
 
 public class ModelSyncTests
 {
+    [AvaloniaFact]
+    public void Changing_Task_Dates_Moves_The_Bar_And_Its_Lines()
+    {
+        var model = TestHelper.CreateModel(2);
+        model.GanttTasks[0].AddingDependentTask(model.GanttTasks[1]);
+        var (window, gantt, _) = TestHelper.Create(model);
+        var bar  = TestHelper.TaskBar(gantt, model.GanttTasks[1]);
+        var line = TestHelper.DependencyLines(gantt).Single();
+        var lineBounds = line.Data!.Bounds;
+
+        model.GanttTasks[1].StartDate = new DateTime(2025, 1, 21);
+        model.GanttTasks[1].EndDate   = new DateTime(2025, 1, 31);
+        TestHelper.Layout(window);
+
+        Assert.Equal(20 * gantt.DayWidth, Canvas.GetLeft(bar), 3);
+        Assert.Equal(10 * gantt.DayWidth, bar.Width, 3);
+        Assert.NotEqual(lineBounds, line.Data!.Bounds);
+        window.Close();
+    }
+
     [AvaloniaFact]
     public void Adding_And_Removing_Tasks_Updates_The_Control()
     {

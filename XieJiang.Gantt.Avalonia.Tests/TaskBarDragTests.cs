@@ -46,6 +46,20 @@ public class TaskBarDragTests
     }
 
     [AvaloniaFact]
+    public void Daily_Width_Drag_That_Rounds_To_Same_Date_Snaps_Bar_Back()
+    {
+        var (window, gantt, model) = TestHelper.Create(1, g => g.DragUnit = DragUnits.Daily);
+        var bar   = TestHelper.TaskBar(gantt, model.GanttTasks[0]);
+        var width = bar.Width;
+
+        bar.Width = width + gantt.DayWidth * 0.2;
+        bar.RaiseEvent(new WidthDragEventArgs(TaskBar.WidthDragCompletedEvent) { Edge = Edges.Right });
+
+        Assert.Equal(width, bar.Width, 3);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Main_Thumb_Moves_Bar_By_Pointer_Distance()
     {
         var (window, bar) = CreateHovered();
