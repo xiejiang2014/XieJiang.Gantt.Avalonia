@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -10,11 +9,11 @@ public class GanttTask : INotifyPropertyChanged
 {
     #region Dependencies
 
-    public FrozenSet<GanttTask> Parents => _parents.ToFrozenSet();
-    public FrozenSet<GanttTask> Children => _children.ToFrozenSet();
+    public IReadOnlySet<GanttTask> Parents  => _parents;
+    public IReadOnlySet<GanttTask> Children => _children;
 
-    private readonly List<GanttTask> _parents = new();
-    private readonly List<GanttTask> _children = new();
+    private readonly HashSet<GanttTask> _parents  = new();
+    private readonly HashSet<GanttTask> _children = new();
 
     public bool AddingDependentTask(GanttTask childTask)
     {
@@ -60,28 +59,29 @@ public class GanttTask : INotifyPropertyChanged
         return true;
     }
 
-    public IEnumerable<GanttTask> TraversingChildren(GanttTask ganttTask)
-    {
-        foreach (var child in ganttTask.Children)
-        {
-            yield return child;
+    public IEnumerable<GanttTask> TraversingChildren(GanttTask ganttTask) => Traverse(ganttTask, t => t._children);
 
-            foreach (var childChild in TraversingChildren(child))
+    public IEnumerable<GanttTask> TraversingAncestors(GanttTask ganttTask) => Traverse(ganttTask, t => t._parents);
+
+    // Each task is visited once; walking every path would be exponential for diamond-shaped dependencies.
+    private static IEnumerable<GanttTask> Traverse(GanttTask start, Func<GanttTask, HashSet<GanttTask>> next)
+    {
+        var visited = new HashSet<GanttTask>();
+        var stack   = new Stack<GanttTask>(next(start));
+
+        while (stack.Count > 0)
+        {
+            var task = stack.Pop();
+            if (!visited.Add(task))
             {
-                yield return childChild;
+                continue;
             }
-        }
-    }
 
-    public IEnumerable<GanttTask> TraversingAncestors(GanttTask ganttTask)
-    {
-        foreach (var parent in ganttTask.Parents)
-        {
-            yield return parent;
+            yield return task;
 
-            foreach (var parentParent in TraversingAncestors(parent))
+            foreach (var t in next(task))
             {
-                yield return parentParent;
+                stack.Push(t);
             }
         }
     }
