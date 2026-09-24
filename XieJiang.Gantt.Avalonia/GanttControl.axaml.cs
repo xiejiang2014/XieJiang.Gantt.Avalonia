@@ -49,10 +49,10 @@ public class GanttControl : TemplatedControl
         HeaderRow2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow2HeightChanged(e));
 
         DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,                 e) => sender.DateModeChanged());
-        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,     e) => sender.DayWidthInWeeklyModeChanged(e));
-        DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInMonthlyModeChanged(e));
-        DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInSeasonallyModeChanged(e));
-        DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInYearlyModelChanged(e));
+        DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,     e) => sender.DayWidthInModeChanged(DateModes.Weekly));
+        DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInModeChanged(DateModes.Monthly));
+        DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInModeChanged(DateModes.Seasonally));
+        DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInModeChanged(DateModes.Yearly));
         DateTimeNowProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateTimeNowChanged(e));
 
         TaskContentTemplateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskContentTemplateChanged(e));
@@ -295,8 +295,12 @@ public class GanttControl : TemplatedControl
         set => SetValue(DayWidthInWeeklyModeProperty, value);
     }
 
-    private void DayWidthInWeeklyModeChanged(AvaloniaPropertyChangedEventArgs e)
+    private void DayWidthInModeChanged(DateModes dateMode)
     {
+        if (dateMode == DateMode)
+        {
+            Reload();
+        }
     }
 
     #endregion
@@ -313,10 +317,6 @@ public class GanttControl : TemplatedControl
         set => SetValue(DayWidthInMonthlyModeProperty, value);
     }
 
-    private void DayWidthInMonthlyModeChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
-
     #endregion
 
 
@@ -331,10 +331,6 @@ public class GanttControl : TemplatedControl
         set => SetValue(DayWidthInSeasonallyModeProperty, value);
     }
 
-    private void DayWidthInSeasonallyModeChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
-
     #endregion
 
 
@@ -347,10 +343,6 @@ public class GanttControl : TemplatedControl
     {
         get => GetValue(DayWidthInYearlyModelProperty);
         set => SetValue(DayWidthInYearlyModelProperty, value);
-    }
-
-    private void DayWidthInYearlyModelChanged(AvaloniaPropertyChangedEventArgs e)
-    {
     }
 
     #endregion
