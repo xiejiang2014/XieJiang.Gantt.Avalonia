@@ -95,26 +95,14 @@ public class GanttBodyBackground : TemplatedControl
 
     #endregion
 
-    public void Reload(IList<DateItem>? dateItems, GanttModel ganttModel)
+    public void Reload(IList<DateItem>? dateItems, DateOnly startDate, double dayWidth)
     {
-        var dateMode  = GetValue(GanttControl.DateModeProperty);
-        var startDate = GetValue(GanttControl.StartDateProperty);
-
-        var dayWidth = dateMode switch
-                       {
-                           DateModes.Weekly     => GetValue(GanttControl.DayWidthInWeeklyModeProperty),
-                           DateModes.Monthly    => GetValue(GanttControl.DayWidthInMonthlyModeProperty),
-                           DateModes.Seasonally => GetValue(GanttControl.DayWidthInSeasonallyModeProperty),
-                           DateModes.Yearly     => GetValue(GanttControl.DayWidthInYearlyModelProperty),
-                           _                    => throw new ArgumentOutOfRangeException()
-                       };
-        ReloadGrid(dateItems, dayWidth);
-
+        ReloadGrid(dateItems);
         ReloadMarkLineToday(startDate, dayWidth);
     }
 
 
-    public void ReloadGrid(IList<DateItem>? dateItems, double dayWidth)
+    public void ReloadGrid(IList<DateItem>? dateItems)
     {
         DateItems.Clear();
 

@@ -508,7 +508,7 @@ public class GanttControl : TemplatedControl
         {
             _ganttHeader?.Row1Items.Clear();
             _ganttHeader?.Row2Items.Clear();
-            _ganttBodyBackground?.ReloadGrid(null, DayWidth);
+            _ganttBodyBackground?.ReloadGrid(null);
             ReloadMilestones();
             ReloadTasks();
             return;
@@ -516,8 +516,8 @@ public class GanttControl : TemplatedControl
 
         if (_ganttHeader is not null)
         {
-            _ganttHeader.Reload(_ganttModel);
-            _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, _ganttModel);
+            _ganttHeader.Reload(DateMode, StartDate, EndDate, DayWidth);
+            _ganttBodyBackground?.Reload(_ganttHeader.Row2Items, StartDate, DayWidth);
         }
 
         ReloadMilestones();

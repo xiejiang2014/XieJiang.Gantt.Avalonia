@@ -183,23 +183,8 @@ public class GanttHeader : TemplatedControl
     #endregion
 
 
-    public void Reload(GanttModel ganttModel)
+    public void Reload(DateModes dateMode, DateOnly startDate, DateOnly endDate, double dayWidth)
     {
-        var dateMode  = GetValue(GanttControl.DateModeProperty);
-        var startDate = GetValue(GanttControl.StartDateProperty);
-        var endDate   = GetValue(GanttControl.EndDateProperty);
-
-
-        var dayWidth = dateMode switch
-                       {
-                           DateModes.Weekly     => GetValue(GanttControl.DayWidthInWeeklyModeProperty),
-                           DateModes.Monthly    => GetValue(GanttControl.DayWidthInMonthlyModeProperty),
-                           DateModes.Seasonally => GetValue(GanttControl.DayWidthInSeasonallyModeProperty),
-                           DateModes.Yearly     => GetValue(GanttControl.DayWidthInYearlyModelProperty),
-                           _                    => throw new ArgumentOutOfRangeException()
-                       };
-
-
         var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
 
         Row1Items.Clear();
