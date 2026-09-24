@@ -105,39 +105,14 @@ public class GanttHeader : TemplatedControl
         }
     }
 
-    private (int index, double position) Row1EstimateIndexAndPosition(PreciselyVirtualizingStackPanel sender, double viewportStartU, int itemCount)
-    {
-        double position = 0;
+    private DateItemOffsets? _row1Offsets;
+    private DateItemOffsets? _row2Offsets;
 
-        for (var index = 0; index < Row1Items.Count; index++)
-        {
-            if (position > viewportStartU)
-            {
-                return (index, position);
-            }
+    private (int index, double position) Row1EstimateIndexAndPosition(PreciselyVirtualizingStackPanel sender, double viewportStartU, int itemCount) =>
+        _row1Offsets?.Find(viewportStartU) ?? (0, 0);
 
-            position += Row1Items[index].Width;
-        }
-
-        return (itemCount - 1, position);
-    }
-
-    private (int index, double position) Row2EstimateIndexAndPosition(PreciselyVirtualizingStackPanel sender, double viewportStartU, int itemCount)
-    {
-        double position = 0;
-
-        for (var index = 0; index < Row2Items.Count; index++)
-        {
-            if (position > viewportStartU)
-            {
-                return (index, position);
-            }
-
-            position += Row2Items[index].Width;
-        }
-
-        return (itemCount - 1, position);
-    }
+    private (int index, double position) Row2EstimateIndexAndPosition(PreciselyVirtualizingStackPanel sender, double viewportStartU, int itemCount) =>
+        _row2Offsets?.Find(viewportStartU) ?? (0, 0);
 
     private Size OnCalculateDesiredSize(PreciselyVirtualizingStackPanel sender, Orientation orientation, int itemCount, PreciselyVirtualizingStackPanel.MeasureViewport viewport)
     {
@@ -161,6 +136,7 @@ public class GanttHeader : TemplatedControl
 
     private void Row1ItemsChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        _row1Offsets = Row1Items is null ? null : new DateItemOffsets(Row1Items);
     }
 
     #endregion
@@ -178,6 +154,7 @@ public class GanttHeader : TemplatedControl
 
     private void Row2ItemsChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        _row2Offsets = Row2Items is null ? null : new DateItemOffsets(Row2Items);
     }
 
     #endregion

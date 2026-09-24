@@ -54,22 +54,10 @@ public class GanttBodyBackground : TemplatedControl
         base.OnLoaded(e);
     }
 
-    private (int index, double position) EstimateIndexAndPosition(PreciselyVirtualizingStackPanel sender, double viewportStartU, int itemCount)
-    {
-        double position = 0;
+    private DateItemOffsets? _dateItemOffsets;
 
-        for (var index = 0; index < DateItems.Count; index++)
-        {
-            if (position > viewportStartU)
-            {
-                return (index, position);
-            }
-
-            position += DateItems[index].Width;
-        }
-
-        return (itemCount - 1, position);
-    }
+    private (int index, double position) EstimateIndexAndPosition(PreciselyVirtualizingStackPanel sender, double viewportStartU, int itemCount) =>
+        _dateItemOffsets?.Find(viewportStartU) ?? (0, 0);
 
     private Size OnCalculateDesiredSize(PreciselyVirtualizingStackPanel sender, Orientation orientation, int itemCount, PreciselyVirtualizingStackPanel.MeasureViewport viewport)
     {
@@ -91,6 +79,7 @@ public class GanttBodyBackground : TemplatedControl
 
     private void DateItemsChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        _dateItemOffsets = DateItems is null ? null : new DateItemOffsets(DateItems);
     }
 
     #endregion
