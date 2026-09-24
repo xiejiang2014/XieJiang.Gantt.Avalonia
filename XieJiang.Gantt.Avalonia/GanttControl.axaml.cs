@@ -894,10 +894,11 @@ public class GanttControl : TemplatedControl
         if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
             var l = taskBar.GetValue(Canvas.LeftProperty);
-            var w = taskBar.Width;
 
-            ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l       / DayWidth);
-            ganttTask.EndDate   = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
+            // The bar may be wider than the task (MinWidth), so keep the duration instead of deriving it from the width.
+            var dateLength = ganttTask.DateLength;
+            ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
+            ganttTask.EndDate   = ganttTask.StartDate + dateLength;
 
             Canvas.SetLeft(_pinout, l + taskBar.Width);
 
