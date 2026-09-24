@@ -9,6 +9,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
+using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
@@ -46,19 +47,39 @@ public class TaskBar : ContentControl
 
     private void TaskBar_DataContextChanged(object? sender, EventArgs e)
     {
-        if (GanttTask is not null)
+        var isAttached = this.IsAttachedToVisualTree();
+
+        if (GanttTask is not null && isAttached)
         {
             GanttTask.PropertyChanged -= GanttTask_PropertyChanged;
         }
 
-        if (DataContext is GanttTask ganttTask)
+        GanttTask = DataContext as GanttTask;
+
+        if (GanttTask is not null && isAttached)
         {
-            GanttTask                 =  ganttTask;
             GanttTask.PropertyChanged += GanttTask_PropertyChanged;
         }
-        else
+    }
+
+    // Only listen to the model while in the visual tree, so discarded bars are not kept alive by the model.
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        if (GanttTask is not null)
         {
-            GanttTask = null;
+            GanttTask.PropertyChanged += GanttTask_PropertyChanged;
+        }
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        if (GanttTask is not null)
+        {
+            GanttTask.PropertyChanged -= GanttTask_PropertyChanged;
         }
     }
 
