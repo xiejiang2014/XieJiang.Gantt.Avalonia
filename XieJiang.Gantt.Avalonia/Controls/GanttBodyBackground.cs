@@ -104,15 +104,8 @@ public class GanttBodyBackground : TemplatedControl
 
     public void ReloadGrid(IList<DateItem>? dateItems)
     {
-        DateItems.Clear();
-
-        if (dateItems is not null)
-        {
-            foreach (var t in dateItems)
-            {
-                DateItems.Add(t);
-            }
-        }
+        // assigned at once: adding the items one by one raises a notification per item
+        SetCurrentValue(DateItemsProperty, new ObservableCollection<DateItem>(dateItems ?? []));
     }
 
     private DateOnly  _startDate;

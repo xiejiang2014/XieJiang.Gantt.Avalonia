@@ -187,8 +187,9 @@ public class GanttHeader : TemplatedControl
     {
         var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
 
-        Row1Items.Clear();
-        Row2Items.Clear();
+        // Build the items first and assign them once: adding them one by one raises a notification per item.
+        var row1 = new List<DateItem>();
+        var row2 = new List<DateItem>();
 
         switch (dateMode)
         {
@@ -196,20 +197,20 @@ public class GanttHeader : TemplatedControl
             {
                 foreach (var monthItem in LoadRow1MonthItems(startDate, endDate, dayWidth))
                 {
-                    Row1Items.Add(monthItem);
+                    row1.Add(monthItem);
                 }
 
                 var s = startDate;
                 while (true)
                 {
-                    Row2Items.Add(new DayItem()
-                                  {
-                                      Date             = s,
-                                      IsFirstDayOfWeek = s.DayOfWeek == firstDayOfWeek,
-                                      IsRestDay        = s.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
-                                      Width            = dayWidth,
-                                      CountOfDays      = 1
-                                  });
+                    row2.Add(new DayItem()
+                             {
+                                 Date             = s,
+                                 IsFirstDayOfWeek = s.DayOfWeek == firstDayOfWeek,
+                                 IsRestDay        = s.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
+                                 Width            = dayWidth,
+                                 CountOfDays      = 1
+                             });
 
                     if (s >= endDate)
                     {
@@ -219,14 +220,14 @@ public class GanttHeader : TemplatedControl
                     s = s.AddDays(1);
                 }
 
-                Width = Row2Items.Sum(v => v.Width);
+                Width = row2.Sum(v => v.Width);
                 break;
             }
             case DateModes.Seasonally:
             {
                 foreach (var monthItem in LoadRow1MonthItems(startDate, endDate, dayWidth))
                 {
-                    Row1Items.Add(monthItem);
+                    row1.Add(monthItem);
                 }
 
                 var s = startDate;
@@ -253,7 +254,7 @@ public class GanttHeader : TemplatedControl
 
                     Debug.Print($"WeekItem {s} - {e} days:{countOfDays}  Width:{weekItem.Width}");
 
-                    Row2Items.Add(weekItem);
+                    row2.Add(weekItem);
 
                     if (e >= endDate)
                     {
@@ -263,7 +264,7 @@ public class GanttHeader : TemplatedControl
                     s = e.AddDays(1);
                 }
 
-                Width = Row2Items.Sum(v => v.Width);
+                Width = row2.Sum(v => v.Width);
                 break;
             }
             case DateModes.Yearly:
@@ -287,7 +288,7 @@ public class GanttHeader : TemplatedControl
                                        CountOfDays = countOfDays
                                    };
 
-                    Row1Items.Add(yearItem);
+                    row1.Add(yearItem);
 
                     Debug.Print($"YearItem {s} - {e} days:{countOfDays}  Width:{yearItem.Width}");
 
@@ -301,13 +302,16 @@ public class GanttHeader : TemplatedControl
 
                 foreach (var monthItem in LoadRow1MonthItems(startDate, endDate, dayWidth))
                 {
-                    Row2Items.Add(monthItem);
+                    row2.Add(monthItem);
                 }
 
-                Width = Row2Items.Sum(v => v.Width);
+                Width = row2.Sum(v => v.Width);
                 break;
             }
         }
+
+        SetCurrentValue(Row1ItemsProperty, new ObservableCollection<DateItem>(row1));
+        SetCurrentValue(Row2ItemsProperty, new ObservableCollection<DateItem>(row2));
     }
 
     private static IEnumerable<MonthItem> LoadRow1MonthItems(DateOnly startDate, DateOnly endDate, double dayWidth)
