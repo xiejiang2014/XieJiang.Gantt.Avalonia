@@ -152,7 +152,8 @@ public class GanttControl : TemplatedControl
             _ganttBodyBackground.PointerWheelChanged += Canvas_PointerWheelChanged;
         }
 
-        ReloadTasks();
+        // DataContext is usually set before the template is applied, when the parts did not exist yet.
+        Reload();
     }
 
     private void GanttBodyBackground_PointerPressed(object? sender, PointerPressedEventArgs e)

@@ -38,6 +38,8 @@ public class GanttBodyBackground : TemplatedControl
         _rootPanel        = e.NameScope.Find<Panel>("PART_RootPanel");
         _partItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
         _markLineToday    = e.NameScope.Find<MarkLineToday>("PART_MarkLineToday");
+
+        ReloadMarkLineToday(_startDate, _dayWidth);
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -125,8 +127,15 @@ public class GanttBodyBackground : TemplatedControl
         }
     }
 
+    private DateOnly _startDate;
+    private double   _dayWidth;
+
     public void ReloadMarkLineToday(DateOnly startDate, double dayWidth)
     {
+        // Remember the arguments so the line can be placed once the template is applied.
+        _startDate = startDate;
+        _dayWidth  = dayWidth;
+
         if (_markLineToday != null)
         {
             var dateTimeNow = GetValue(GanttControl.DateTimeNowProperty);

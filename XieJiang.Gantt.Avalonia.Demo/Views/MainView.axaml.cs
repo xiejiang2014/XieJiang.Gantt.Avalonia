@@ -168,8 +168,6 @@ public partial class MainView : UserControl
         _ganttControlHScrollBar = GanttControl.HScrollBar;
         _ganttControlVScrollBar = GanttControl.VScrollBar;
         _ganttControlVScrollBar.ValueChanged += GanttControlVScrollBar_ValueChanged;
-
-        GanttControl.Reload();
     }
 
     private void GanttControlVScrollBar_ValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
