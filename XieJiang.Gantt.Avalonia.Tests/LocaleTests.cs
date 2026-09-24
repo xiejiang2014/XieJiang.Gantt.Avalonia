@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Avalonia.Controls;
 using XieJiang.Gantt.Avalonia.Themes;
 
@@ -13,6 +13,14 @@ public class LocaleTests
     public void Default_Locale_Is_Loaded_When_Locale_Is_Never_Set()
     {
         Assert.NotNull(NewMilestoneText(new GanttTheme()));
+    }
+
+    [AvaloniaFact]
+    public void Ukrainian_Culture_Uses_Ukrainian_Strings()
+    {
+        var theme = new GanttTheme { Locale = new CultureInfo("uk-UA") };
+
+        Assert.Equal("Нова віха", NewMilestoneText(theme));
     }
 
     [AvaloniaFact]
