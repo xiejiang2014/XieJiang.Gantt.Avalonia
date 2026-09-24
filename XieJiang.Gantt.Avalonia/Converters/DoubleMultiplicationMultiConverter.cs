@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Avalonia;
 using Avalonia.Data.Converters;
 
 namespace XieJiang.Gantt.Avalonia;
@@ -12,17 +13,12 @@ public class DoubleMultiplicationMultiConverter : IMultiValueConverter
 
     public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (values.Count!=2)
-        {
-            throw new ApplicationException("Requires 2 values to perform multiplication.");
-        }
-
-        if (values[0] is double a && values[1] is double b)
+        if (values.Count == 2 && values[0] is double a && values[1] is double b)
         {
             return a * b;
         }
 
-        throw new ApplicationException("Requires 2 double values for multiplication.");
+        return AvaloniaProperty.UnsetValue;
     }
 }
 
@@ -38,7 +34,7 @@ public class DoubleMultiplicationConverter : IValueConverter
             return a * b;
         }
 
-        throw new ApplicationException("Requires 2 double values for multiplication.");
+        return AvaloniaProperty.UnsetValue;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

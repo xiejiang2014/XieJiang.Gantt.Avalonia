@@ -12,10 +12,12 @@ internal class GanttColorToBrushConverter : IValueConverter
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var key = "BrushPrimary";
-        if (value is GanttColors c)
+        if (value is not GanttColors c)
         {
-            key = c switch
+            return AvaloniaProperty.UnsetValue;
+        }
+
+        var key = c switch
                   {
                       GanttColors.Primary     => "BrushPrimary",
                       GanttColors.Secondary   => "BrushSecondary",
@@ -26,14 +28,11 @@ internal class GanttColorToBrushConverter : IValueConverter
                       GanttColors.Danger      => "BrushDanger",
                       _                       => "BrushPrimary"
                   };
-        }
 
-        if (Application.Current.TryGetResource(key, null, out var r))
-        {
-            return r;
-        }
-
-        throw new ApplicationException($"Brush '{key}' not found.");
+        // a missing brush (e.g. GanttTheme not loaded) must not crash the binding
+        return Application.Current?.TryGetResource(key, null, out var brush) == true
+            ? brush
+            : AvaloniaProperty.UnsetValue;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
