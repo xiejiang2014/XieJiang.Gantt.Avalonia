@@ -59,6 +59,25 @@ public class TaskBarDragTests
         window.Close();
     }
 
+    [AvaloniaTheory]
+    [InlineData(11.9, 0)]
+    [InlineData(12.5, 1)]
+    [InlineData(12.99, 1)]
+    public void Daily_Drag_Rounds_To_Nearest_Day(double hours, int expectedExtraDays)
+    {
+        var (window, gantt, model) = TestHelper.Create(1, g => g.DragUnit = DragUnits.Daily);
+        var task  = model.GanttTasks[0];
+        var start = task.StartDate;
+        var bar   = TestHelper.TaskBar(gantt, task);
+
+        Canvas.SetLeft(bar, Canvas.GetLeft(bar) + gantt.DayWidth * hours / 24);
+        bar.RaiseEvent(new RoutedEventArgs(TaskBar.MainDragDeltaEvent));
+        bar.RaiseEvent(new RoutedEventArgs(TaskBar.MainDragCompletedEvent));
+
+        Assert.Equal(start.AddDays(expectedExtraDays), task.StartDate);
+        window.Close();
+    }
+
     [AvaloniaFact]
     public void Main_Thumb_Moves_Bar_By_Pointer_Distance()
     {

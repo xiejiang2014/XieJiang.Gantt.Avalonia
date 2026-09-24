@@ -992,13 +992,8 @@ public class GanttControl : TemplatedControl
             {
                 var l = taskBar.GetValue(Canvas.LeftProperty);
 
-                var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
-                var time      = TimeOnly.FromDateTime(startDate);
-                startDate = time.Hour > 12
-                    ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
-                    : new DateTime(startDate.Year, startDate.Month, startDate.Day);
-
-                var endDate = startDate.Add(ganttTask.DateLength);
+                var startDate = RoundToDay(StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth));
+                var endDate   = startDate.Add(ganttTask.DateLength);
 
                 ganttTask.StartDate = startDate;
                 ganttTask.EndDate   = endDate;
@@ -1008,6 +1003,11 @@ public class GanttControl : TemplatedControl
             }
         }
     }
+
+    private static DateTime RoundToDay(DateTime dateTime) =>
+        dateTime.TimeOfDay >= TimeSpan.FromHours(12)
+            ? dateTime.Date.AddDays(1)
+            : dateTime.Date;
 
     private void TaskBar_WidthDragDelta(WidthDragEventArgs e)
     {
@@ -1043,12 +1043,7 @@ public class GanttControl : TemplatedControl
                 }
                 else if (DragUnit == DragUnits.Daily)
                 {
-                    var startDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
-                    var time      = TimeOnly.FromDateTime(startDate);
-
-                    var temp = time.Hour > 12
-                        ? new DateTime(startDate.Year, startDate.Month, startDate.Day).AddDays(1)
-                        : new DateTime(startDate.Year, startDate.Month, startDate.Day);
+                    var temp = RoundToDay(StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth));
 
                     if (ganttTask.EndDate - temp <= TimeSpan.FromDays(1))
                     {
@@ -1068,12 +1063,7 @@ public class GanttControl : TemplatedControl
                 }
                 else if (DragUnit == DragUnits.Daily)
                 {
-                    var endDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth);
-                    var time    = TimeOnly.FromDateTime(endDate);
-
-                    var temp = time.Hour > 12
-                        ? new DateTime(endDate.Year, endDate.Month, endDate.Day).AddDays(1)
-                        : new DateTime(endDate.Year, endDate.Month, endDate.Day);
+                    var temp = RoundToDay(StartDate.ToDateTime(TimeOnly.MinValue).AddDays((l + w) / DayWidth));
 
                     if (temp - ganttTask.StartDate <= TimeSpan.FromDays(1))
                     {
