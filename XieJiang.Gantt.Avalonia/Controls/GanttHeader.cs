@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -172,6 +173,8 @@ public class GanttHeader : TemplatedControl
                        };
 
 
+        var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+
         Row1Items.Clear();
         Row2Items.Clear();
 
@@ -190,7 +193,7 @@ public class GanttHeader : TemplatedControl
                     Row2Items.Add(new DayItem()
                                   {
                                       Date             = s,
-                                      IsFirstDayOfWeek = s.DayOfWeek == 0,
+                                      IsFirstDayOfWeek = s.DayOfWeek == firstDayOfWeek,
                                       IsRestDay        = s.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday,
                                       Width            = dayWidth,
                                       CountOfDays      = 1
@@ -217,11 +220,7 @@ public class GanttHeader : TemplatedControl
                 var s = startDate;
                 while (true)
                 {
-                    var dayOfWeek = (int)s.DayOfWeek - 1;
-                    if (dayOfWeek < 0)
-                    {
-                        dayOfWeek = 6;
-                    }
+                    var dayOfWeek = ((int)s.DayOfWeek - (int)firstDayOfWeek + 7) % 7;
 
                     var e = s.AddDays(6 - dayOfWeek);
 
