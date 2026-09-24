@@ -72,7 +72,6 @@
             <!--  =================================  -->
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Themes/Pinout.axaml" />
                 <ResourceInclude Source="/Themes/Line.axaml" />
                 <ResourceInclude Source="/Themes/DependencyLine.axaml" />
                 <ResourceInclude Source="/Themes/MarkLineToday.axaml" />
