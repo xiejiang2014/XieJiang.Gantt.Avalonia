@@ -26,7 +26,19 @@
 
 	<PropertyGroup>
 		<Title>XieJiang.Gantt.Avalonia</Title>
+		<Authors>xiejiang</Authors>
+		<Description>A Gantt chart control for Avalonia with task bars, dependencies, milestones and several date scales.</Description>
+		<PackageTags>avalonia;gantt;chart;control</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/xiejiang2014/XieJiang.Gantt.Avalonia.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="XieJiang.Gantt.Avalonia.Tests" />
