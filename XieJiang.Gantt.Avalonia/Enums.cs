@@ -14,11 +14,6 @@ public enum Edges
     Right
 }
 
-public enum Directions
-{
-    Up,
-    Down
-}
 
 public enum DragUnits
 {
