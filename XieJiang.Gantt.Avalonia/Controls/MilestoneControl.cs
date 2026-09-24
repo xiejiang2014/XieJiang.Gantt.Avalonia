@@ -22,23 +22,6 @@ public class MilestoneControl : TemplatedControl
     private Thumb?  _panThumb;
     private Panel?  _colorRadioButtonsStackPanel;
 
-    private Milestone? _milestone;
-
-    static MilestoneControl()
-    {
-    }
-
-    public MilestoneControl()
-    {
-    }
-
-    protected override void OnDataContextChanged(EventArgs e)
-    {
-        _milestone = DataContext as Milestone;
-
-        base.OnDataContextChanged(e);
-    }
-
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -48,12 +31,6 @@ public class MilestoneControl : TemplatedControl
         _line                        = e.NameScope.Find<Line>("PART_Line");
         _panThumb                    = e.NameScope.Find<Thumb>("PART_PanThumb");
         _colorRadioButtonsStackPanel = e.NameScope.Find<Panel>("PART_ColorRadioButtonsStackPanel");
-
-
-        if (_headerButton?.Flyout is not null)
-        {
-            _headerButton.Flyout.Opened += Flyout_Opened;
-        }
 
         if (_colorRadioButtonsStackPanel is not null)
         {
@@ -91,11 +68,6 @@ public class MilestoneControl : TemplatedControl
     {
         add => AddHandler(DeleteRequestedEvent, value);
         remove => RemoveHandler(DeleteRequestedEvent, value);
-    }
-
-    private void Flyout_Opened(object? sender, EventArgs e)
-    {
-        //_headerButton.Flyout.
     }
 
     protected override void OnSizeChanged(SizeChangedEventArgs e)
