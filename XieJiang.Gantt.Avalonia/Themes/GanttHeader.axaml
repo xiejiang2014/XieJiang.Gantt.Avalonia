@@ -153,7 +153,7 @@
 
                         <ItemsControl.DataTemplates>
                             <DataTemplate DataType="models:DayItem">
-                                <controls:HeaderDayItem x:Name="HeaderDayItem">
+                                <Panel x:Name="HeaderDayItem">
                                     <Rectangle
                                         Width="{Binding Width}"
                                         Height="{Binding $parent[gantt:GanttControl].HeaderRow2Height}"
@@ -194,7 +194,7 @@
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Bottom"
                                         Fill="{DynamicResource LightGridBrush}" />
-                                </controls:HeaderDayItem>
+                                </Panel>
 
                             </DataTemplate>
 
