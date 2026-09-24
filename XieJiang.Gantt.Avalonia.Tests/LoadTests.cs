@@ -7,6 +7,20 @@ namespace XieJiang.Gantt.Avalonia.Tests;
 public class LoadTests
 {
     [AvaloniaFact]
+    public void GanttModel_Property_Takes_Precedence_Over_DataContext()
+    {
+        var model = TestHelper.CreateModel(3);
+        var (window, gantt, _) = TestHelper.Create(1, g => g.GanttModel = model);
+
+        Assert.Equal(3, TestHelper.TaskBars(gantt).Count);
+
+        gantt.GanttModel = null;
+        TestHelper.Layout(window);
+        Assert.Single(TestHelper.TaskBars(gantt));
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Removing_The_Model_Clears_The_Control()
     {
         var model = TestHelper.CreateModel(2);

@@ -95,7 +95,7 @@ public partial class MainView : UserControl
             Color = GanttColors.Success
         });
 
-        GanttControl.DataContext = ganttModel;
+        GanttControl.GanttModel = ganttModel;
 
         var flatTreeDataGridSource = new FlatTreeDataGridSource<MyGanttTask>(ganttModel.GanttTasks.Cast<MyGanttTask>())
         {

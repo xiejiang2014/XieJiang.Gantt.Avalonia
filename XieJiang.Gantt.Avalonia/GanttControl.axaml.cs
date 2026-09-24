@@ -58,6 +58,8 @@ public class GanttControl : TemplatedControl
 
         DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
 
+        GanttModelProperty.Changed.AddClassHandler<GanttControl>((sender, _) => sender.UpdateGanttModel());
+
         StartDateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.StartDateChanged(e));
         EndDateProperty.Changed.AddClassHandler<GanttControl>((sender,   e) => sender.EndDateChanged(e));
 
@@ -75,7 +77,7 @@ public class GanttControl : TemplatedControl
 
     public GanttControl()
     {
-        DataContextChanged += GanttControl_DataContextChanged;
+        DataContextChanged += (_, _) => UpdateGanttModel();
 
         _pinout.DragStarted   += Pinout_DragStarted;
         _pinout.DragDelta     += Pinout_DragDelta;
@@ -110,13 +112,31 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    #region DataContext
+    #region GanttModel
+
+    public static readonly StyledProperty<GanttModel?> GanttModelProperty =
+        AvaloniaProperty.Register<GanttControl, GanttModel?>(nameof(GanttModel));
+
+    /// <summary>
+    /// The data shown by the control. When not set, a <see cref="Models.GanttModel"/> DataContext is used.
+    /// </summary>
+    public GanttModel? GanttModel
+    {
+        get => GetValue(GanttModelProperty);
+        set => SetValue(GanttModelProperty, value);
+    }
 
     private GanttModel? _ganttModel;
 
-    private void GanttControl_DataContextChanged(object? sender, EventArgs e)
+    private void UpdateGanttModel()
     {
-        _ganttModel = DataContext as GanttModel;
+        var ganttModel = GanttModel ?? DataContext as GanttModel;
+        if (ReferenceEquals(ganttModel, _ganttModel))
+        {
+            return;
+        }
+
+        _ganttModel = ganttModel;
         Reload();
     }
 
