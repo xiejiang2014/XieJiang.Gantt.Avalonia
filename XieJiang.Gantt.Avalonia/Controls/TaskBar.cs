@@ -86,18 +86,7 @@ public class TaskBar : ContentControl
     private void GanttTask_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         Update();
-
-        if (e.PropertyName is nameof(Models.GanttTask.StartDate) or nameof(Models.GanttTask.EndDate))
-        {
-            RaiseEvent(new RoutedEventArgs(DatesChangedEvent));
-        }
     }
-
-    /// <summary>
-    /// Raised when the dates of the task change, so the owner can re-position the bar.
-    /// </summary>
-    internal static readonly RoutedEvent<RoutedEventArgs> DatesChangedEvent =
-        RoutedEvent.Register<TaskBar, RoutedEventArgs>("DatesChanged", RoutingStrategies.Bubble);
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -168,19 +157,6 @@ public class TaskBar : ContentControl
         }
     }
 
-    #region ParentsTasks
-
-    public HashSet<TaskBar> ParentsTasks { get; } = new();
-
-    #endregion
-
-    #region ChildTask
-
-    public HashSet<TaskBar> ChildrenTasks { get; } = new();
-
-    #endregion
-
-    public int Row { get; set; }
 
     #region Drag
 

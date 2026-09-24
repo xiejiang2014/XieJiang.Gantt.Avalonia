@@ -1,9 +1,13 @@
-﻿using Path = Avalonia.Controls.Shapes.Path;
+﻿using XieJiang.Gantt.Avalonia.Models;
+using Path = Avalonia.Controls.Shapes.Path;
 
 namespace XieJiang.Gantt.Avalonia.Controls;
 
-public class DependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar) : Path
+/// <summary>
+/// The line drawn from <see cref="ParentTask"/> to <see cref="ChildTask"/>, which depends on it.
+/// </summary>
+public class DependencyLine(GanttTask parentTask, GanttTask childTask) : Path
 {
-    public TaskBar ParentTaskBar { get; set; } = parentTaskBar;
-    public TaskBar ChildTaskBar  { get; set; } = childTaskBar;
+    public GanttTask ParentTask { get; } = parentTask;
+    public GanttTask ChildTask  { get; } = childTask;
 }

@@ -46,12 +46,12 @@ public class DependencyLineTests
         var (window, gantt, _) = TestHelper.Create(model);
 
         var parentBar = TestHelper.TaskBar(gantt, model.GanttTasks[0]);
-        var line      = TestHelper.DependencyLines(gantt).Single(l => ReferenceEquals(l.ChildTaskBar.DataContext, model.GanttTasks[1]));
+        var line      = TestHelper.DependencyLines(gantt).Single(l => l.ChildTask == model.GanttTasks[1]);
 
         gantt.RemoveDependencyLine(line);
 
-        Assert.NotNull(gantt.ReadDependencyLine(parentBar, TestHelper.TaskBar(gantt, model.GanttTasks[2])));
-        Assert.Null(gantt.ReadDependencyLine(parentBar, TestHelper.TaskBar(gantt, model.GanttTasks[1])));
+        Assert.NotNull(gantt.ReadDependencyLine(model.GanttTasks[0], model.GanttTasks[2]));
+        Assert.Null(gantt.ReadDependencyLine(model.GanttTasks[0], model.GanttTasks[1]));
         Assert.DoesNotContain(model.GanttTasks[1], (IEnumerable<Models.GanttTask>)model.GanttTasks[0].Children);
 
         // dragging the parent must not throw

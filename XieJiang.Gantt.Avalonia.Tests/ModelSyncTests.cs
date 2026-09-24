@@ -17,12 +17,12 @@ public class ModelSyncTests
         var line = TestHelper.DependencyLines(gantt).Single();
         var lineBounds = line.Data!.Bounds;
 
-        model.GanttTasks[1].StartDate = new DateTime(2025, 1, 21);
-        model.GanttTasks[1].EndDate   = new DateTime(2025, 1, 31);
+        model.GanttTasks[1].StartDate = new DateTime(2025, 1, 6);
+        model.GanttTasks[1].EndDate   = new DateTime(2025, 1, 9);
         TestHelper.Layout(window);
 
-        Assert.Equal(20 * gantt.DayWidth, Canvas.GetLeft(bar), 3);
-        Assert.Equal(10 * gantt.DayWidth, bar.Width, 3);
+        Assert.Equal(5 * gantt.DayWidth, Canvas.GetLeft(bar), 3);
+        Assert.Equal(3 * gantt.DayWidth, bar.Width, 3);
         Assert.NotEqual(lineBounds, line.Data!.Bounds);
         window.Close();
     }

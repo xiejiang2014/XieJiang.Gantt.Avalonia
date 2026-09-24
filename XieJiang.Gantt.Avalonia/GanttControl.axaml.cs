@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.Metadata;
@@ -70,7 +71,7 @@ public class GanttControl : TemplatedControl
         TaskBar.MainDragCompletedEvent.AddClassHandler<GanttControl>((sender,  e) => sender.TaskBar_MainDragCompleted(e));
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.TaskBar_WidthDragDelta(e));
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.TaskBar_WidthDragCompleted(e));
-        TaskBar.DatesChangedEvent.AddClassHandler<GanttControl>((sender,       e) => sender.TaskBar_DatesChanged(e));
+
 
         MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.MilestoneControl_HThumbDragDelta(e));
         MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragCompleted(e));
@@ -181,6 +182,23 @@ public class GanttControl : TemplatedControl
         if (_canvasBody is not null)
         {
             _canvasBody.PointerWheelChanged += Canvas_PointerWheelChanged;
+        }
+
+        // the panel hosting the canvas is the visible area of the tasks
+        _viewportHost = _canvasBody?.Parent as Control;
+        if (_viewportHost is not null)
+        {
+            _viewportHost.SizeChanged += (_, _) => UpdateRealizedItems();
+        }
+
+        if (HScrollBar is not null)
+        {
+            HScrollBar.ValueChanged += (_, _) => UpdateRealizedItems();
+        }
+
+        if (VScrollBar is not null)
+        {
+            VScrollBar.ValueChanged += (_, _) => UpdateRealizedItems();
         }
 
         if (_ganttBodyBackground is not null)
@@ -439,6 +457,7 @@ public class GanttControl : TemplatedControl
         base.OnAttachedToVisualTree(e);
         _nowTimer.Tick += NowTimer_Tick;
         _nowTimer.Start();
+        ObserveTasks();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -446,6 +465,7 @@ public class GanttControl : TemplatedControl
         base.OnDetachedFromVisualTree(e);
         _nowTimer.Stop();
         _nowTimer.Tick -= NowTimer_Tick;
+        UnobserveTasks();
     }
 
     private void NowTimer_Tick(object? sender, EventArgs e)
@@ -525,7 +545,17 @@ public class GanttControl : TemplatedControl
     }
 
 
-    private readonly Dictionary<GanttTask, TaskBar> _taskBarsDic = new(1000);
+    // Only the task bars and dependency lines inside the visible area (plus a margin) exist as controls.
+    private const double MinTaskBarWidth      = 20;
+    private const double RealizationMargin    = 200;
+    private const double DependencyLineMargin = 20;
+
+    private readonly Dictionary<GanttTask, int>     _taskRows         = new();
+    private readonly Dictionary<GanttTask, TaskBar> _taskBarsDic      = new();
+    private readonly Stack<TaskBar>                 _recycledTaskBars = new();
+    private readonly List<GanttTask>                _observedTasks    = new();
+
+    private Control? _viewportHost;
 
     public void ReloadTasks()
     {
@@ -534,15 +564,18 @@ public class GanttControl : TemplatedControl
             return;
         }
 
-        _canvasBody.Children.Clear();
-
         foreach (var taskBar in _taskBarsDic.Values)
         {
-            taskBar.PointerEntered -= TaskBar_PointerEntered;
-            taskBar.PointerExited  -= TaskBar_PointerExited;
+            taskBar.DataContext = null;
+            _recycledTaskBars.Push(taskBar);
         }
 
         _taskBarsDic.Clear();
+        _dependencyLinesDic.Clear();
+        _canvasBody.Children.Clear();
+        _pinoutTaskBar = null;
+        _taskRows.Clear();
+        UnobserveTasks();
 
         if (_ganttModel is null)
         {
@@ -550,59 +583,174 @@ public class GanttControl : TemplatedControl
             return;
         }
 
-        //load taskBars
         for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
         {
-            var ganttTask = _ganttModel.GanttTasks[i];
-
-            var taskBar = new TaskBar
-                          {
-                              MinWidth    = 20,
-                              DataContext = ganttTask,
-                              Row         = i,
-                              ZIndex      = 1
-                          };
-
-
-            taskBar.PointerEntered += TaskBar_PointerEntered;
-            taskBar.PointerExited  += TaskBar_PointerExited;
-
-
-            PlaceTaskBar(taskBar, ganttTask);
-            Canvas.SetTop(taskBar, i * RowHeight + (RowHeight - TaskBarHeight) / 2d);
-            _canvasBody.Children.Add(taskBar);
-            _taskBarsDic.Add(ganttTask, taskBar);
+            _taskRows[_ganttModel.GanttTasks[i]] = i;
         }
 
         _canvasBody.Height = _ganttModel.GanttTasks.Count * RowHeight;
 
-        // set parent and child, ignoring dependencies on tasks that are not in the model
-        for (var i = 0; i < _ganttModel.GanttTasks.Count; i++)
-        {
-            var ganttTask = _ganttModel.GanttTasks[i];
-            var taskBar   = _taskBarsDic[ganttTask];
+        ObserveTasks();
+        UpdateRealizedItems();
+    }
 
-            foreach (var ganttTaskParent in ganttTask.Parents)
+    #region Task observation
+
+    // Tasks are observed while the control is in the visual tree, so tasks without a bar still move their lines
+    // and the model does not keep a detached control alive.
+    private void ObserveTasks()
+    {
+        if (_ganttModel is null || !this.IsAttachedToVisualTree())
+        {
+            return;
+        }
+
+        foreach (var ganttTask in _taskRows.Keys)
+        {
+            ganttTask.PropertyChanged += GanttTask_PropertyChanged;
+            _observedTasks.Add(ganttTask);
+        }
+    }
+
+    private void UnobserveTasks()
+    {
+        foreach (var ganttTask in _observedTasks)
+        {
+            ganttTask.PropertyChanged -= GanttTask_PropertyChanged;
+        }
+
+        _observedTasks.Clear();
+    }
+
+    private void GanttTask_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is GanttTask ganttTask && e.PropertyName is nameof(GanttTask.StartDate) or nameof(GanttTask.EndDate))
+        {
+            if (_taskBarsDic.TryGetValue(ganttTask, out var taskBar))
             {
-                if (_taskBarsDic.TryGetValue(ganttTaskParent, out var parentTaskBar))
-                {
-                    taskBar.ParentsTasks.Add(parentTaskBar);
-                }
+                RefreshTaskBar(taskBar, ganttTask);
+            }
+            else
+            {
+                UpdateDependencyLines(ganttTask);
             }
 
-            foreach (var ganttTaskChild in ganttTask.Children)
+            UpdateRealizedItems();
+        }
+    }
+
+    #endregion
+
+    #region Realization
+
+    private Rect? Viewport()
+    {
+        if (_viewportHost is null || _viewportHost.Bounds.Width <= 0 || _viewportHost.Bounds.Height <= 0)
+        {
+            return null;
+        }
+
+        return new Rect(HScrollBar?.Value ?? 0, VScrollBar?.Value ?? 0, _viewportHost.Bounds.Width, _viewportHost.Bounds.Height)
+            .Inflate(RealizationMargin);
+    }
+
+    /// <summary>
+    /// Creates bars and lines that came into view and recycles the ones that left it.
+    /// </summary>
+    private void UpdateRealizedItems()
+    {
+        if (_canvasBody is null || _ganttModel is null || Viewport() is not { } viewport)
+        {
+            return;
+        }
+
+        // bars: only the rows in view need to be checked
+        var tasks    = _ganttModel.GanttTasks;
+        var firstRow = Math.Max(0, (int)(viewport.Top / RowHeight));
+        var lastRow  = Math.Min(tasks.Count - 1, (int)(viewport.Bottom / RowHeight));
+
+        var visibleTasks = new HashSet<GanttTask>();
+        for (var row = firstRow; row <= lastRow; row++)
+        {
+            if (TaskBarRect(tasks[row]).Intersects(viewport))
             {
-                if (_taskBarsDic.TryGetValue(ganttTaskChild, out var childTaskBar))
-                {
-                    taskBar.ChildrenTasks.Add(childTaskBar);
-                }
+                visibleTasks.Add(tasks[row]);
             }
         }
 
+        // the hovered bar may be dragged, so it is never recycled
+        if (_pinoutTaskBar?.GanttTask is { } hoveredTask)
+        {
+            visibleTasks.Add(hoveredTask);
+        }
 
-        //load lines
-        LoadDependencyLines();
+        foreach (var (ganttTask, taskBar) in _taskBarsDic.ToList())
+        {
+            if (!visibleTasks.Contains(ganttTask))
+            {
+                _taskBarsDic.Remove(ganttTask);
+                _canvasBody.Children.Remove(taskBar);
+                taskBar.DataContext = null;
+                _recycledTaskBars.Push(taskBar);
+            }
+        }
+
+        foreach (var ganttTask in visibleTasks)
+        {
+            if (!_taskBarsDic.ContainsKey(ganttTask))
+            {
+                RealizeTaskBar(ganttTask);
+            }
+        }
+
+        // lines: a line can cross the view while both of its tasks are outside of it
+        foreach (var (parentTask, childTask) in Dependencies())
+        {
+            UpdateDependencyLine(parentTask, childTask, viewport);
+        }
     }
+
+    private void RealizeTaskBar(GanttTask ganttTask)
+    {
+        if (!_recycledTaskBars.TryPop(out var taskBar))
+        {
+            taskBar = new TaskBar
+                      {
+                          MinWidth = MinTaskBarWidth,
+                          ZIndex   = 1
+                      };
+
+            taskBar.PointerEntered += TaskBar_PointerEntered;
+        }
+
+        taskBar.DataContext = ganttTask;
+        PlaceTaskBar(taskBar, ganttTask);
+        Canvas.SetTop(taskBar, TaskBarTop(ganttTask));
+
+        _taskBarsDic.Add(ganttTask, taskBar);
+        _canvasBody!.Children.Add(taskBar);
+    }
+
+    private double TaskBarTop(GanttTask ganttTask) => _taskRows[ganttTask] * RowHeight + (RowHeight - TaskBarHeight) / 2d;
+
+    private double TaskBarLeft(GanttTask ganttTask) => (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth;
+
+    private static double TaskBarWidth(GanttTask ganttTask, double dayWidth) => Math.Max(ganttTask.DateLength.TotalDays * dayWidth, MinTaskBarWidth);
+
+    /// <summary>
+    /// The bounds of the bar of a task: the realized bar if there is one (it may be being dragged), otherwise computed from the dates.
+    /// </summary>
+    private Rect TaskBarRect(GanttTask ganttTask)
+    {
+        if (_taskBarsDic.TryGetValue(ganttTask, out var taskBar))
+        {
+            return new Rect(Canvas.GetLeft(taskBar), Canvas.GetTop(taskBar), taskBar.Width, TaskBarHeight);
+        }
+
+        return new Rect(TaskBarLeft(ganttTask), TaskBarTop(ganttTask), TaskBarWidth(ganttTask, DayWidth), TaskBarHeight);
+    }
+
+    #endregion
 
 
     /// <summary>
@@ -610,16 +758,8 @@ public class GanttControl : TemplatedControl
     /// </summary>
     private void PlaceTaskBar(TaskBar taskBar, GanttTask ganttTask)
     {
-        taskBar.Width = Math.Max(ganttTask.DateLength.TotalDays * DayWidth, taskBar.MinWidth);
-        Canvas.SetLeft(taskBar, (ganttTask.StartDate - StartDate.ToDateTime(TimeOnly.MinValue)).TotalDays * DayWidth);
-    }
-
-    private void TaskBar_DatesChanged(RoutedEventArgs e)
-    {
-        if (e.Source is TaskBar { GanttTask: { } ganttTask } taskBar && _taskBarsDic.ContainsKey(ganttTask))
-        {
-            RefreshTaskBar(taskBar, ganttTask);
-        }
+        taskBar.Width = TaskBarWidth(ganttTask, DayWidth);
+        Canvas.SetLeft(taskBar, TaskBarLeft(ganttTask));
     }
 
     /// <summary>
@@ -628,16 +768,12 @@ public class GanttControl : TemplatedControl
     private void RefreshTaskBar(TaskBar taskBar, GanttTask ganttTask)
     {
         PlaceTaskBar(taskBar, ganttTask);
-        UpdateDependencyLine(taskBar);
+        UpdateDependencyLines(ganttTask);
 
         if (taskBar == _pinoutTaskBar)
         {
             Canvas.SetLeft(_pinout, Canvas.GetLeft(taskBar) + taskBar.Width);
         }
-    }
-
-    private void TaskBar_PointerExited(object? sender, PointerEventArgs e)
-    {
     }
 
 
@@ -676,80 +812,36 @@ public class GanttControl : TemplatedControl
     #endregion
 
 
-    private readonly Dictionary<TaskBar, Dictionary<TaskBar, DependencyLine>> _dependencyLinesDic = new(1000);
+    // realized lines only
+    private readonly Dictionary<(GanttTask Parent, GanttTask Child), DependencyLine> _dependencyLinesDic = new();
 
-    private void SaveDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar, DependencyLine dependencyLine)
+    /// <summary>
+    /// The dependencies between tasks of the model, ignoring tasks that are not in it.
+    /// </summary>
+    private IEnumerable<(GanttTask Parent, GanttTask Child)> Dependencies()
     {
-        if (_dependencyLinesDic.TryGetValue(parentTaskBar, out var subDic))
+        foreach (var parentTask in _taskRows.Keys)
         {
-            subDic[childTaskBar] = dependencyLine;
-        }
-        else
-        {
-            subDic = new Dictionary<TaskBar, DependencyLine> { { childTaskBar, dependencyLine } };
-            _dependencyLinesDic.Add(parentTaskBar, subDic);
-        }
-    }
-
-    public DependencyLine? ReadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
-    {
-        if (_dependencyLinesDic.TryGetValue(parentTaskBar, out var dict2))
-        {
-            if (dict2.TryGetValue(childTaskBar, out var value))
-                return value;
-        }
-
-        return null;
-    }
-
-    private void LoadDependencyLines()
-    {
-        _dependencyLinesDic.Clear();
-        foreach (var parentTaskBar in _taskBarsDic.Values)
-        {
-            foreach (var childTaskBar in parentTaskBar.ChildrenTasks)
+            foreach (var childTask in parentTask.Children)
             {
-                LoadDependencyLine(parentTaskBar, childTaskBar);
+                if (_taskRows.ContainsKey(childTask))
+                {
+                    yield return (parentTask, childTask);
+                }
             }
         }
     }
 
-    private void LoadDependencyLine(TaskBar parentTaskBar, TaskBar childTaskBar)
-    {
-        var dependencyLine = new DependencyLine(parentTaskBar, childTaskBar)
-                             {
-                                 Classes = { "DependencyLine" },
-                                 ZIndex  = 0
-                             };
-
-        dependencyLine.PointerPressed += DependencyLine_PointerPressed;
-
-        //Debug.Print($"parentTaskBar:{parentTaskBar.GanttTask.Id} ->childTask:{childTaskBar.GanttTask.Id}");
-
-        SaveDependencyLine(parentTaskBar, childTaskBar, dependencyLine);
-        UpdateDependencyLine(parentTaskBar, childTaskBar, dependencyLine);
-        _canvasBody?.Children.Add(dependencyLine);
-    }
+    /// <summary>
+    /// Returns the line from <paramref name="parentTask"/> to <paramref name="childTask"/> when it is currently shown.
+    /// </summary>
+    public DependencyLine? ReadDependencyLine(GanttTask parentTask, GanttTask childTask) =>
+        _dependencyLinesDic.GetValueOrDefault((parentTask, childTask));
 
     public void RemoveDependencyLine(DependencyLine dependencyLine)
     {
-        if (_dependencyLinesDic.TryGetValue(dependencyLine.ParentTaskBar, out var subDic))
-        {
-            subDic.Remove(dependencyLine.ChildTaskBar);
-            if (subDic.Count == 0)
-            {
-                _dependencyLinesDic.Remove(dependencyLine.ParentTaskBar);
-            }
-        }
-
-        dependencyLine.ParentTaskBar.ChildrenTasks.Remove(dependencyLine.ChildTaskBar);
-        dependencyLine.ChildTaskBar.ParentsTasks.Remove(dependencyLine.ParentTaskBar);
-
-        if (dependencyLine.ParentTaskBar.GanttTask is { } parentTask && dependencyLine.ChildTaskBar.GanttTask is { } childTask)
-        {
-            parentTask.RemoveDependentTask(childTask);
-        }
-
+        dependencyLine.ParentTask.RemoveDependentTask(dependencyLine.ChildTask);
+        _dependencyLinesDic.Remove((dependencyLine.ParentTask, dependencyLine.ChildTask));
         _canvasBody?.Children.Remove(dependencyLine);
     }
 
@@ -761,40 +853,83 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void UpdateDependencyLine(TaskBar taskBar, bool parents = true, bool children = true)
+    private void UpdateDependencyLines(GanttTask ganttTask)
     {
-        if (parents)
+        if (Viewport() is not { } viewport || !_taskRows.ContainsKey(ganttTask))
         {
-            foreach (var parentTaskBar in taskBar.ParentsTasks)
+            return;
+        }
+
+        foreach (var parentTask in ganttTask.Parents)
+        {
+            if (_taskRows.ContainsKey(parentTask))
             {
-                UpdateDependencyLine(parentTaskBar, taskBar, _dependencyLinesDic[parentTaskBar][taskBar]);
+                UpdateDependencyLine(parentTask, ganttTask, viewport);
             }
         }
 
-        if (children)
+        foreach (var childTask in ganttTask.Children)
         {
-            foreach (var childTaskBar in taskBar.ChildrenTasks)
+            if (_taskRows.ContainsKey(childTask))
             {
-                var dependencyLine = _dependencyLinesDic[taskBar][childTaskBar];
-                UpdateDependencyLine(taskBar, childTaskBar, dependencyLine);
+                UpdateDependencyLine(ganttTask, childTask, viewport);
             }
         }
     }
 
-    private void UpdateDependencyLine(TaskBar parentTaskBar, TaskBar childTask, DependencyLine dependencyLine)
+    /// <summary>
+    /// Shows, updates or removes the line of a dependency depending on whether it is in view.
+    /// </summary>
+    private void UpdateDependencyLine(GanttTask parentTask, GanttTask childTask, Rect viewport)
+    {
+        var parentRect = TaskBarRect(parentTask);
+        var childRect  = TaskBarRect(childTask);
+        var inView     = parentRect.Union(childRect).Inflate(DependencyLineMargin).Intersects(viewport);
+
+        var key = (parentTask, childTask);
+        _dependencyLinesDic.TryGetValue(key, out var dependencyLine);
+
+        if (!inView)
+        {
+            if (dependencyLine is not null)
+            {
+                _dependencyLinesDic.Remove(key);
+                _canvasBody?.Children.Remove(dependencyLine);
+            }
+
+            return;
+        }
+
+        if (dependencyLine is null)
+        {
+            dependencyLine = new DependencyLine(parentTask, childTask)
+                             {
+                                 Classes = { "DependencyLine" },
+                                 ZIndex  = 0
+                             };
+
+            dependencyLine.PointerPressed += DependencyLine_PointerPressed;
+            _dependencyLinesDic.Add(key, dependencyLine);
+            _canvasBody?.Children.Add(dependencyLine);
+        }
+
+        UpdateDependencyLineGeometry(parentRect, childRect, _taskRows[childTask], dependencyLine);
+    }
+
+    private void UpdateDependencyLineGeometry(Rect parentRect, Rect childRect, int childRow, DependencyLine dependencyLine)
     {
         var       streamGeometry = new StreamGeometry();
         using var sgc            = streamGeometry.Open();
 
-        var down = Canvas.GetTop(childTask) > Canvas.GetTop(parentTaskBar) + TaskBarHeight;
+        var down = childRect.Top > parentRect.Top + TaskBarHeight;
 
-        var x0 = Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width;
-        var y0 = Canvas.GetTop(parentTaskBar)  + TaskBarHeight / 2d;
+        var x0 = parentRect.Right;
+        var y0 = parentRect.Top + TaskBarHeight / 2d;
 
-        if (Canvas.GetLeft(childTask) >= Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width)
+        if (childRect.Left >= parentRect.Right)
         {
-            var x1 = Canvas.GetLeft(childTask) - (Canvas.GetLeft(parentTaskBar) + parentTaskBar.Width) + 10;
-            var y1 = Canvas.GetTop(childTask) - Canvas.GetTop(parentTaskBar) + (down
+            var x1 = childRect.Left - parentRect.Right + 10;
+            var y1 = childRect.Top - parentRect.Top + (down
                 ? -TaskBarHeight / 2d
                 : TaskBarHeight  / 2d);
 
@@ -828,17 +963,17 @@ public class GanttControl : TemplatedControl
             sgc.LineTo(new Point(x1, 0), true);
 
             var y2 = down
-                ? childTask.Row       * RowHeight - y0
-                : (childTask.Row + 1) * RowHeight - y0;
+                ? childRow       * RowHeight - y0
+                : (childRow + 1) * RowHeight - y0;
             sgc.LineTo(new Point(x1, y2), true);
 
-            var x3 = Canvas.GetLeft(childTask) - x0 - 18;
+            var x3 = childRect.Left - x0 - 18;
             sgc.LineTo(new Point(x3, y2), true);
 
-            var y3 = Canvas.GetTop(childTask) + TaskBarHeight / 2d - y0;
+            var y3 = childRect.Top + TaskBarHeight / 2d - y0;
             sgc.LineTo(new Point(x3, y3), true);
 
-            var x4 = Canvas.GetLeft(childTask) - x0;
+            var x4 = childRect.Left - x0;
             sgc.LineTo(new Point(x4 - 3, y3), true);
             sgc.EndFigure(false);
 
@@ -861,6 +996,8 @@ public class GanttControl : TemplatedControl
         {
             _canvasBody.Children.Remove(_pinout);
         }
+
+        _pinoutTaskBar = null;
     }
 
     private double _pinoutOffsetX;
@@ -937,9 +1074,7 @@ public class GanttControl : TemplatedControl
             {
                 if (_pinoutTaskBar.GanttTask.AddingDependentTask(hoveringTaskBar.GanttTask))
                 {
-                    _pinoutTaskBar.ChildrenTasks.Add(hoveringTaskBar);
-                    hoveringTaskBar.ParentsTasks.Add(_pinoutTaskBar);
-                    LoadDependencyLine(_pinoutTaskBar, hoveringTaskBar);
+                    UpdateDependencyLines(_pinoutTaskBar.GanttTask);
                 }
             }
         }
@@ -986,13 +1121,10 @@ public class GanttControl : TemplatedControl
             var l = taskBar.GetValue(Canvas.LeftProperty);
 
             // The bar may be wider than the task (MinWidth), so keep the duration instead of deriving it from the width.
+            // Changing the dates re-places the bar, its lines and the pinout.
             var dateLength = ganttTask.DateLength;
             ganttTask.StartDate = StartDate.ToDateTime(TimeOnly.MinValue).AddDays(l / DayWidth);
             ganttTask.EndDate   = ganttTask.StartDate + dateLength;
-
-            Canvas.SetLeft(_pinout, l + taskBar.Width);
-
-            UpdateDependencyLine(taskBar);
         }
     }
 
@@ -1023,17 +1155,14 @@ public class GanttControl : TemplatedControl
 
     private void TaskBar_WidthDragDelta(WidthDragEventArgs e)
     {
-        if (e.Source is TaskBar { DataContext: GanttTask } taskBar)
+        if (e.Source is TaskBar { DataContext: GanttTask ganttTask } taskBar)
         {
             if (e.Edge == Edges.Right)
             {
                 Canvas.SetLeft(_pinout, taskBar.Bounds.Right);
-                UpdateDependencyLine(taskBar, false);
             }
-            else if (e.Edge == Edges.Left)
-            {
-                UpdateDependencyLine(taskBar, true, false);
-            }
+
+            UpdateDependencyLines(ganttTask);
         }
     }
 
@@ -1098,9 +1227,9 @@ public class GanttControl : TemplatedControl
 
     public void ScrollToTask(GanttTask ganttTask)
     {
-        if (HScrollBar is not null && _taskBarsDic.TryGetValue(ganttTask, out var taskBar))
+        if (HScrollBar is not null && _taskRows.ContainsKey(ganttTask))
         {
-            var nowOffset = taskBar.GetValue(Canvas.LeftProperty) - HScrollBar.Bounds.Width / 2d;
+            var nowOffset = TaskBarLeft(ganttTask) - HScrollBar.Bounds.Width / 2d;
             HScrollBar.Value = nowOffset;
         }
     }
