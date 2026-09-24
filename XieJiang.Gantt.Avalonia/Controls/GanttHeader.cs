@@ -32,6 +32,9 @@ public class GanttHeader : TemplatedControl
 
     public GanttHeader()
     {
+        // Collection defaults would be shared by all instances, so each instance creates its own.
+        SetCurrentValue(Row1ItemsProperty, new ObservableCollection<DateItem>());
+        SetCurrentValue(Row2ItemsProperty, new ObservableCollection<DateItem>());
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -119,7 +122,7 @@ public class GanttHeader : TemplatedControl
     #region Row1Items
 
     public static readonly StyledProperty<ObservableCollection<DateItem>> Row1ItemsProperty =
-        AvaloniaProperty.Register<GanttHeader, ObservableCollection<DateItem>>(nameof(Row1Items), new());
+        AvaloniaProperty.Register<GanttHeader, ObservableCollection<DateItem>>(nameof(Row1Items));
 
 
     public ObservableCollection<DateItem> Row1Items
@@ -137,7 +140,7 @@ public class GanttHeader : TemplatedControl
     #region Row2Items
 
     public static readonly StyledProperty<ObservableCollection<DateItem>> Row2ItemsProperty =
-        AvaloniaProperty.Register<GanttHeader, ObservableCollection<DateItem>>(nameof(Row2Items), new());
+        AvaloniaProperty.Register<GanttHeader, ObservableCollection<DateItem>>(nameof(Row2Items));
 
     public ObservableCollection<DateItem> Row2Items
     {

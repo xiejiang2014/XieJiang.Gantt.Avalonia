@@ -28,6 +28,8 @@ public class GanttBodyBackground : TemplatedControl
 
     public GanttBodyBackground()
     {
+        // Collection defaults would be shared by all instances, so each instance creates its own.
+        SetCurrentValue(DateItemsProperty, new ObservableCollection<DateItem>());
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -75,7 +77,7 @@ public class GanttBodyBackground : TemplatedControl
     #region DateItems
 
     public static readonly StyledProperty<ObservableCollection<DateItem>> DateItemsProperty =
-        AvaloniaProperty.Register<GanttBodyBackground, ObservableCollection<DateItem>>(nameof(DateItems), new());
+        AvaloniaProperty.Register<GanttBodyBackground, ObservableCollection<DateItem>>(nameof(DateItems));
 
 
     public ObservableCollection<DateItem> DateItems
