@@ -64,6 +64,15 @@ public class GanttTaskTests
         Assert.False(a.RemoveDependentTask(b));
     }
 
+    [Theory]
+    [InlineData(-0.5, 0)]
+    [InlineData(0.3, 0.3)]
+    [InlineData(1.5, 1)]
+    public void Progress_Is_Clamped_To_0_1(double value, double expected)
+    {
+        Assert.Equal(expected, new GanttTask { Progress = value }.Progress);
+    }
+
     [Fact]
     public void Traversal_Yields_Each_Task_Once()
     {

@@ -166,6 +166,7 @@ public class GanttTask : INotifyPropertyChanged
         get => _progress;
         set
         {
+            value = Math.Clamp(value, 0d, 1d);
             if (value.Equals(_progress)) return;
             _progress = value;
             OnPropertyChanged();
