@@ -39,6 +39,32 @@ public class GanttTaskTests
     }
 
     [Fact]
+    public void AddingDependentTask_Rejects_Self_Duplicate_And_Cycle()
+    {
+        var a = new GanttTask();
+        var b = new GanttTask();
+
+        Assert.True(a.AddingDependentTask(b));
+        Assert.False(a.AddingDependentTask(b));
+        Assert.False(b.AddingDependentTask(a));
+        Assert.False(a.AddingDependentTask(a));
+
+        Assert.Empty(a.Parents);
+        Assert.Empty(b.Children);
+    }
+
+    [Fact]
+    public void RemoveDependentTask_Returns_Whether_Something_Was_Removed()
+    {
+        var a = new GanttTask();
+        var b = new GanttTask();
+        a.AddingDependentTask(b);
+
+        Assert.True(a.RemoveDependentTask(b));
+        Assert.False(a.RemoveDependentTask(b));
+    }
+
+    [Fact]
     public void Traversal_Yields_Each_Task_Once()
     {
         var (top, bottom) = Diamonds(3);

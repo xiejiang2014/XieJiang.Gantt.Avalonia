@@ -15,19 +15,26 @@ public class GanttTask : INotifyPropertyChanged
     private readonly HashSet<GanttTask> _parents  = new();
     private readonly HashSet<GanttTask> _children = new();
 
+    /// <summary>
+    /// Makes <paramref name="childTask"/> depend on this task. Returns false and changes nothing when
+    /// <see cref="CanAddDependentTask"/> is false.
+    /// </summary>
     public bool AddingDependentTask(GanttTask childTask)
     {
+        if (!CanAddDependentTask(childTask))
+        {
+            return false;
+        }
+
         _children.Add(childTask);
         childTask._parents.Add(this);
-
         return true;
     }
 
     public bool RemoveDependentTask(GanttTask childTask)
     {
-        _children.Remove(childTask);
         childTask._parents.Remove(this);
-        return true;
+        return _children.Remove(childTask);
     }
 
 

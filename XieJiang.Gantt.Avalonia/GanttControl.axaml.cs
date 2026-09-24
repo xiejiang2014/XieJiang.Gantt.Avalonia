@@ -920,11 +920,8 @@ public class GanttControl : TemplatedControl
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
-                var canAdd = _pinoutTaskBar.GanttTask.CanAddDependentTask(hoveringTaskBar.GanttTask);
-
-                if (canAdd)
+                if (_pinoutTaskBar.GanttTask.AddingDependentTask(hoveringTaskBar.GanttTask))
                 {
-                    _pinoutTaskBar.GanttTask.AddingDependentTask(hoveringTaskBar.GanttTask);
                     _pinoutTaskBar.ChildrenTasks.Add(hoveringTaskBar);
                     hoveringTaskBar.ParentsTasks.Add(_pinoutTaskBar);
                     LoadDependencyLine(_pinoutTaskBar, hoveringTaskBar);
