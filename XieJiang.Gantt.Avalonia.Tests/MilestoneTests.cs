@@ -68,6 +68,22 @@ public class MilestoneTests
     }
 
     [AvaloniaFact]
+    public void User_Buttons_Inside_The_Control_Are_Not_Treated_As_Milestone_Buttons()
+    {
+        var model     = TestHelper.CreateModel(1);
+        var milestone = new Milestone { DateTime = new DateTime(2025, 1, 10) };
+        var userButton = new Button { Classes = { "MilestoneDeleteButton" }, DataContext = milestone };
+        model.Milestones.Add(milestone);
+        model.GanttTasks[0].Content = userButton;
+        var (window, _, _) = TestHelper.Create(model);
+
+        userButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+        Assert.Single(model.Milestones);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void AddMilestone_Twice_Does_Not_Throw()
     {
         var (window, gantt, _) = TestHelper.Create(1);

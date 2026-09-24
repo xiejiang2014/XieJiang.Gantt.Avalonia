@@ -33,6 +33,8 @@ public class GanttHeader : TemplatedControl
 
     public GanttHeader()
     {
+        AddHandler(Button.ClickEvent, HeaderButton_Click);
+
         // Collection defaults would be shared by all instances, so each instance creates its own.
         SetCurrentValue(Row1ItemsProperty, new ObservableCollection<DateItem>());
         SetCurrentValue(Row2ItemsProperty, new ObservableCollection<DateItem>());
@@ -55,6 +57,31 @@ public class GanttHeader : TemplatedControl
         base.OnLoaded(e);
     }
 
+
+    #region CreateMilestoneRequested
+
+    public static readonly RoutedEvent<CreateMilestoneRequestedEventArgs> CreateMilestoneRequestedEvent =
+        RoutedEvent.Register<GanttHeader, CreateMilestoneRequestedEventArgs>(nameof(CreateMilestoneRequested), RoutingStrategies.Bubble);
+
+    /// <summary>
+    /// Raised when the milestone button of a day in the header is clicked.
+    /// </summary>
+    public event EventHandler<CreateMilestoneRequestedEventArgs> CreateMilestoneRequested
+    {
+        add => AddHandler(CreateMilestoneRequestedEvent, value);
+        remove => RemoveHandler(CreateMilestoneRequestedEvent, value);
+    }
+
+    private void HeaderButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (e.Source is Button { DataContext: DayItem dayItem } button && button.Classes.Contains("HeaderMilestoneButton"))
+        {
+            e.Handled = true;
+            RaiseEvent(new CreateMilestoneRequestedEventArgs(CreateMilestoneRequestedEvent, dayItem.Date));
+        }
+    }
+
+    #endregion
 
     #region Virtualizing
 

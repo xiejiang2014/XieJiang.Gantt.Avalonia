@@ -77,9 +77,20 @@ public class MilestoneControl : TemplatedControl
 
     private void MilestoneDeleteButton_Click(object? sender, RoutedEventArgs e)
     {
-        var       args  = new RoutedEventArgs(Button.ClickEvent);
-        using var route = BuildEventRoute(Button.ClickEvent);
-        route.RaiseEvent(_milestoneDeleteButton!, args);
+        e.Handled = true;
+        RaiseEvent(new RoutedEventArgs(DeleteRequestedEvent));
+    }
+
+    public static readonly RoutedEvent<RoutedEventArgs> DeleteRequestedEvent =
+        RoutedEvent.Register<MilestoneControl, RoutedEventArgs>(nameof(DeleteRequested), RoutingStrategies.Bubble);
+
+    /// <summary>
+    /// Raised when the delete button of the milestone is clicked.
+    /// </summary>
+    public event EventHandler<RoutedEventArgs> DeleteRequested
+    {
+        add => AddHandler(DeleteRequestedEvent, value);
+        remove => RemoveHandler(DeleteRequestedEvent, value);
     }
 
     private void Flyout_Opened(object? sender, EventArgs e)

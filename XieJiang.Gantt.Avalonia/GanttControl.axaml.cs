@@ -75,7 +75,14 @@ public class GanttControl : TemplatedControl
         MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.MilestoneControl_HThumbDragDelta(e));
         MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragCompleted(e));
 
-        Button.ClickEvent.AddClassHandler<GanttControl>((sender, e) => sender.ButtonClicked(e));
+        GanttHeader.CreateMilestoneRequestedEvent.AddClassHandler<GanttControl>((sender, e) => sender.CreateNewMilestone(e.Date));
+        MilestoneControl.DeleteRequestedEvent.AddClassHandler<GanttControl>((sender, e) =>
+                                                                            {
+                                                                                if (e.Source is MilestoneControl { DataContext: Milestone milestone })
+                                                                                {
+                                                                                    sender.DeleteMilestone(milestone);
+                                                                                }
+                                                                            });
     }
 
     public GanttControl()
@@ -92,28 +99,6 @@ public class GanttControl : TemplatedControl
         DateModeChanged();
     }
 
-    private void ButtonClicked(RoutedEventArgs e)
-    {
-        Debug.Print($"ButtonClicked  e.Source:{e.Source}");
-
-        if (e.Source is Button button)
-        {
-            if (button.DataContext is DayItem dayItem)
-            {
-                if (button.Classes.Contains("HeaderMilestoneButton"))
-                {
-                    CreateNewMilestone(dayItem);
-                }
-            }
-
-            if (button.Classes.Contains("MilestoneDeleteButton") && button.DataContext is Milestone milestone)
-            {
-                Debug.Print("MilestoneDeleteButton");
-
-                DeleteMilestone(milestone);
-            }
-        }
-    }
 
     #region GanttModel
 
@@ -1230,11 +1215,11 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void CreateNewMilestone(DayItem dayItem)
+    private void CreateNewMilestone(DateOnly date)
     {
         var milestone = new Milestone()
                         {
-                            DateTime  = dayItem.Date.ToDateTime(TimeOnly.MinValue),
+                            DateTime  = date.ToDateTime(TimeOnly.MinValue),
                             IsEditing = true,
                             Title     = this.FindResource("STRING_NEW_MILESTONE") as string ?? string.Empty
                         };
