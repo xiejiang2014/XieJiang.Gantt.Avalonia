@@ -364,7 +364,7 @@ public class GanttControl : TemplatedControl
                                   DateModes.Monthly    => DayWidthInMonthlyMode,
                                   DateModes.Seasonally => DayWidthInSeasonallyMode,
                                   DateModes.Yearly     => DayWidthInYearlyModel,
-                                  _                    => DayWidth
+                                  _                    => throw new ArgumentOutOfRangeException(nameof(DateMode), DateMode, null)
                               };
 
     //public static readonly StyledProperty<double> DayWidthProperty =
