@@ -1,6 +1,9 @@
 using System.Reflection;
+using Avalonia;
 using Avalonia.Controls.Shapes;
+using Avalonia.Headless;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using Avalonia.Styling;
 using Avalonia.Interactivity;
 using XieJiang.Gantt.Avalonia.Controls;
@@ -52,6 +55,30 @@ public class DependencyLineTests
         var geometry = (StreamGeometry)TestHelper.DependencyLines(gantt).Single().Data!;
         Assert.True(geometry.Bounds.Width  > 0);
         Assert.True(geometry.Bounds.Height > 0);
+        window.Close();
+    }
+
+    [AvaloniaFact]
+    public void Line_And_Pinout_Use_Theme_Brushes()
+    {
+        var lineBrush   = new SolidColorBrush(Colors.Red);
+        var pinoutBrush = new SolidColorBrush(Colors.Blue);
+        var model       = TestHelper.CreateModel(2);
+        model.GanttTasks[0].AddingDependentTask(model.GanttTasks[1]);
+        var (window, gantt, _) = TestHelper.Create(model);
+        window.Resources["DependencyLine"] = lineBrush;
+        window.Resources["PinoutBrush"]    = pinoutBrush;
+        TestHelper.Layout(window);
+
+        var line = TestHelper.DependencyLines(gantt).Single();
+        Assert.Same(lineBrush, line.Stroke);
+        Assert.Same(lineBrush, line.Fill);
+
+        var bar = TestHelper.TaskBar(gantt, model.GanttTasks[0]);
+        window.MouseMove(bar.TranslatePoint(new Point(5, 5), window)!.Value);
+        TestHelper.Layout(window);
+        var pinoutEllipse = gantt.GetVisualDescendants().OfType<Ellipse>().Single();
+        Assert.Same(pinoutBrush, pinoutEllipse.Stroke);
         window.Close();
     }
 

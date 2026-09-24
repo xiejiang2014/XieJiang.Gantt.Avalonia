@@ -19,10 +19,10 @@
             Value="hand" />
         <Setter
             Property="Stroke"
-            Value="LightGray" />
+            Value="{DynamicResource DependencyLine}" />
         <Setter
             Property="Fill"
-            Value="LightGray" />
+            Value="{DynamicResource DependencyLine}" />
         <Setter
             Property="StrokeThickness"
             Value="2" />
