@@ -14,7 +14,6 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Controls;
 using XieJiang.Gantt.Avalonia.Models;
-using Avalonia.Styling;
 
 namespace XieJiang.Gantt.Avalonia;
 
@@ -81,6 +80,9 @@ public class GanttControl : TemplatedControl
         _pinout.DragStarted   += Pinout_DragStarted;
         _pinout.DragDelta     += Pinout_DragDelta;
         _pinout.DragCompleted += Pinout_DragCompleted;
+
+        // Resolve from this control so themes and overrides below Application are honored.
+        _temporaryDependencyLine.Bind(ThemeProperty, this.GetResourceObservable("TemporaryDependencyLine"));
 
         DateModeChanged();
     }
@@ -555,7 +557,6 @@ public class GanttControl : TemplatedControl
 
     private readonly Line _temporaryDependencyLine = new()
                                                      {
-                                                         Theme            = Application.Current?.FindResource("TemporaryDependencyLine") as ControlTheme,
                                                          IsHitTestVisible = false
                                                      };
 
@@ -1158,7 +1159,7 @@ public class GanttControl : TemplatedControl
                         {
                             DateTime  = dayItem.Date.ToDateTime(TimeOnly.MinValue),
                             IsEditing = true,
-                            Title     = Application.Current.FindResource("STRING_NEW_MILESTONE") as string
+                            Title     = this.FindResource("STRING_NEW_MILESTONE") as string ?? string.Empty
                         };
 
         _ganttModel?.Milestones.Add(milestone);

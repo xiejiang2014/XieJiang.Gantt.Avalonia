@@ -1,3 +1,6 @@
+using System.Reflection;
+using Avalonia.Controls.Shapes;
+using Avalonia.Styling;
 using Avalonia.Interactivity;
 using XieJiang.Gantt.Avalonia.Controls;
 
@@ -5,6 +8,21 @@ namespace XieJiang.Gantt.Avalonia.Tests;
 
 public class DependencyLineTests
 {
+    [AvaloniaFact]
+    public void Temporary_Line_Theme_Is_Resolved_From_The_Control()
+    {
+        var theme = new ControlTheme(typeof(Line));
+        var (window, gantt, _) = TestHelper.Create(1);
+        window.Resources["TemporaryDependencyLine"] = theme;
+        TestHelper.Layout(window);
+
+        var line = (Line)typeof(GanttControl)
+                                                  .GetField("_temporaryDependencyLine", BindingFlags.Instance | BindingFlags.NonPublic)!
+                                                  .GetValue(gantt)!;
+        Assert.Same(theme, line.Theme);
+        window.Close();
+    }
+
     [AvaloniaFact]
     public void Dependency_To_Task_Outside_Model_Is_Ignored()
     {

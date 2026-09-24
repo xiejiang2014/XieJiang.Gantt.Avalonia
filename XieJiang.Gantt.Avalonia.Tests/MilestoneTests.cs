@@ -40,6 +40,18 @@ public class MilestoneTests
     }
 
     [AvaloniaFact]
+    public void New_Milestone_Title_Is_Resolved_From_The_Control_Not_Only_The_Application()
+    {
+        var (window, gantt, model) = TestHelper.Create(1);
+        window.Resources["STRING_NEW_MILESTONE"] = "window scoped";
+
+        ClickHeaderMilestoneButton(gantt);
+
+        Assert.Equal("window scoped", model.Milestones[0].Title);
+        window.Close();
+    }
+
+    [AvaloniaFact]
     public void Deleted_Milestone_Is_Removed_From_Model_And_Stays_Deleted_After_Reload()
     {
         var model = TestHelper.CreateModel(1);
