@@ -11,17 +11,6 @@ public class GanttModel : INotifyPropertyChanged
 
     public ObservableCollection<Milestone> Milestones { get; } = new();
 
-    public GanttModel()
-    {
-        GanttTasks.CollectionChanged += GanttTasks_CollectionChanged;
-    }
-
-    private void GanttTasks_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-
-
-    }
-
     #region OnPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
