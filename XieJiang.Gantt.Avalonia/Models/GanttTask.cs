@@ -31,12 +31,19 @@ public class GanttTask : INotifyPropertyChanged
     }
 
 
-    public bool CircularDependencyCheck(GanttTask childTask)
-    {
-        return CircularDependencyCheck(this, childTask);
-    }
+    /// <summary>
+    /// Returns true when <paramref name="childTask"/> can depend on this task, i.e. it is not this task,
+    /// not already a child and would not create a circular dependency.
+    /// </summary>
+    public bool CanAddDependentTask(GanttTask childTask) => CanAddDependency(this, childTask);
 
-    public bool CircularDependencyCheck(GanttTask parentTask, GanttTask childTask)
+    [Obsolete("Use CanAddDependentTask. Returns true when the dependency can be added.")]
+    public bool CircularDependencyCheck(GanttTask childTask) => CanAddDependency(this, childTask);
+
+    [Obsolete("Use parentTask.CanAddDependentTask(childTask).")]
+    public bool CircularDependencyCheck(GanttTask parentTask, GanttTask childTask) => CanAddDependency(parentTask, childTask);
+
+    private static bool CanAddDependency(GanttTask parentTask, GanttTask childTask)
     {
         if (ReferenceEquals(parentTask, childTask))
         {
@@ -48,7 +55,7 @@ public class GanttTask : INotifyPropertyChanged
             return false;
         }
 
-        foreach (var ancestor in TraversingAncestors(parentTask))
+        foreach (var ancestor in Traverse(parentTask, t => t._parents))
         {
             if (ReferenceEquals(ancestor, childTask))
             {

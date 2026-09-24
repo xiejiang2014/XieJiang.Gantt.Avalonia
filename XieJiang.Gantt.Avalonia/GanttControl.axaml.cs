@@ -884,7 +884,7 @@ public class GanttControl : TemplatedControl
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
-                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask);
+                var canAdd = _pinoutTaskBar.GanttTask.CanAddDependentTask(hoveringTaskBar.GanttTask);
 
                 if (canAdd)
                 {
@@ -920,7 +920,7 @@ public class GanttControl : TemplatedControl
 
             if (hoveringTaskBar?.GanttTask is not null && _pinoutTaskBar?.GanttTask is not null)
             {
-                var canAdd = _pinoutTaskBar.GanttTask.CircularDependencyCheck(hoveringTaskBar.GanttTask);
+                var canAdd = _pinoutTaskBar.GanttTask.CanAddDependentTask(hoveringTaskBar.GanttTask);
 
                 if (canAdd)
                 {

@@ -31,8 +31,8 @@ public class GanttTaskTests
         var (top, bottom) = Diamonds(20);
 
         var sw = Stopwatch.StartNew();
-        Assert.False(bottom.CircularDependencyCheck(top));
-        Assert.True(bottom.CircularDependencyCheck(new GanttTask())); // walks all ancestors
+        Assert.False(bottom.CanAddDependentTask(top));
+        Assert.True(bottom.CanAddDependentTask(new GanttTask())); // walks all ancestors
         sw.Stop();
 
         Assert.True(sw.ElapsedMilliseconds < 500, $"took {sw.ElapsedMilliseconds} ms");
