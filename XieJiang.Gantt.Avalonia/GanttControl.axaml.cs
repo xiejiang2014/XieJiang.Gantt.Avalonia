@@ -46,19 +46,12 @@ public class GanttControl : TemplatedControl
 
         RowHeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.RowHeightChanged(e));
 
-        HeaderRow1HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow1HeightChanged(e));
-        HeaderRow2HeightProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.HeaderRow2HeightChanged(e));
-
         DateModeProperty.Changed.AddClassHandler<GanttControl>((sender,                 e) => sender.DateModeChanged());
         DayWidthInWeeklyModeProperty.Changed.AddClassHandler<GanttControl>((sender,     e) => sender.DayWidthInModeChanged(DateModes.Weekly));
         DayWidthInMonthlyModeProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInModeChanged(DateModes.Monthly));
         DayWidthInSeasonallyModeProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DayWidthInModeChanged(DateModes.Seasonally));
         DayWidthInYearlyModelProperty.Changed.AddClassHandler<GanttControl>((sender,    e) => sender.DayWidthInModeChanged(DateModes.Yearly));
         DateTimeNowProperty.Changed.AddClassHandler<GanttControl>((sender,              e) => sender.DateTimeNowChanged(e));
-
-        TaskContentTemplateProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.TaskContentTemplateChanged(e));
-
-        DragUnitProperty.Changed.AddClassHandler<GanttControl>((sender, e) => sender.DragUnitChanged(e));
 
         GanttModelProperty.Changed.AddClassHandler<GanttControl>((sender, _) => sender.UpdateGanttModel());
 
@@ -71,9 +64,7 @@ public class GanttControl : TemplatedControl
         TaskBar.WidthDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.TaskBar_WidthDragDelta(e));
         TaskBar.WidthDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.TaskBar_WidthDragCompleted(e));
 
-
-        MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender,     e) => sender.MilestoneControl_HThumbDragDelta(e));
-        MilestoneControl.HThumbDragCompletedEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragCompleted(e));
+        MilestoneControl.HThumbDragDeltaEvent.AddClassHandler<GanttControl>((sender, e) => sender.MilestoneControl_HThumbDragDelta(e));
 
         GanttHeader.CreateMilestoneRequestedEvent.AddClassHandler<GanttControl>((sender, e) => sender.CreateNewMilestone(e.Date));
         MilestoneControl.DeleteRequestedEvent.AddClassHandler<GanttControl>((sender, e) =>
@@ -280,10 +271,6 @@ public class GanttControl : TemplatedControl
         set => SetValue(HeaderRow1HeightProperty, value);
     }
 
-    private void HeaderRow1HeightChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-    }
-
     #endregion
 
     #region HeaderRow2Height
@@ -295,10 +282,6 @@ public class GanttControl : TemplatedControl
     {
         get => GetValue(HeaderRow2HeightProperty);
         set => SetValue(HeaderRow2HeightProperty, value);
-    }
-
-    private void HeaderRow2HeightChanged(AvaloniaPropertyChangedEventArgs e)
-    {
     }
 
     #endregion
@@ -313,10 +296,6 @@ public class GanttControl : TemplatedControl
     {
         get => GetValue(DragUnitProperty);
         set => SetValue(DragUnitProperty, value);
-    }
-
-    private void DragUnitChanged(AvaloniaPropertyChangedEventArgs e)
-    {
     }
 
     #endregion
@@ -414,20 +393,6 @@ public class GanttControl : TemplatedControl
                                   DateModes.Yearly     => DayWidthInYearlyModel,
                                   _                    => throw new ArgumentOutOfRangeException(nameof(DateMode), DateMode, null)
                               };
-
-    //public static readonly StyledProperty<double> DayWidthProperty =
-    //    AvaloniaProperty.Register<GanttControl, double>(nameof(DayWidth), 72d, true);
-
-    //public double DayWidth
-    //{
-    //    get => GetValue(DayWidthProperty);
-    //    private set => SetValue(DayWidthProperty, value);
-    //}
-
-    //private void DayWidthChanged(AvaloniaPropertyChangedEventArgs e)
-    //{
-    //    ReloadTasks();
-    //}
 
     #endregion
 
@@ -1423,10 +1388,6 @@ public class GanttControl : TemplatedControl
         }
     }
 
-    private void MilestoneControl_HThumbDragCompleted(RoutedEventArgs e)
-    {
-    }
-
     #endregion
 
 
@@ -1439,10 +1400,6 @@ public class GanttControl : TemplatedControl
     {
         get => GetValue(TaskContentTemplateProperty);
         set => SetValue(TaskContentTemplateProperty, value);
-    }
-
-    private void TaskContentTemplateChanged(AvaloniaPropertyChangedEventArgs e)
-    {
     }
 
     #endregion
