@@ -116,15 +116,8 @@ public class GanttControl : TemplatedControl
 
     private void GanttControl_DataContextChanged(object? sender, EventArgs e)
     {
-        if (DataContext is GanttModel ganttModel)
-        {
-            _ganttModel = ganttModel;
-            Reload();
-        }
-        else
-        {
-            _ganttModel = null;
-        }
+        _ganttModel = DataContext as GanttModel;
+        Reload();
     }
 
     #endregion
@@ -439,7 +432,11 @@ public class GanttControl : TemplatedControl
     {
         if (_ganttModel is null)
         {
-            //todo clear
+            _ganttHeader?.Row1Items.Clear();
+            _ganttHeader?.Row2Items.Clear();
+            _ganttBodyBackground?.ReloadGrid(null, DayWidth);
+            ReloadMilestones();
+            ReloadTasks();
             return;
         }
 
@@ -475,6 +472,7 @@ public class GanttControl : TemplatedControl
 
         if (_ganttModel is null)
         {
+            _canvasBody.Height = 0;
             return;
         }
 
@@ -1137,7 +1135,7 @@ public class GanttControl : TemplatedControl
 
     public void ReloadMilestones()
     {
-        if (_secondaryComponents is not null && _ganttModel is not null)
+        if (_secondaryComponents is not null)
         {
             foreach (var milestoneControl in _milestoneControls.Values)
             {
@@ -1146,7 +1144,7 @@ public class GanttControl : TemplatedControl
 
             _milestoneControls.Clear();
 
-            foreach (var milestone in _ganttModel.Milestones)
+            foreach (var milestone in _ganttModel?.Milestones ?? [])
             {
                 AddMilestone(milestone);
             }
