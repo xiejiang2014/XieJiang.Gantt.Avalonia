@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.Metadata;
@@ -11,6 +12,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using XieJiang.Gantt.Avalonia.Controls;
 using XieJiang.Gantt.Avalonia.Models;
@@ -136,8 +138,44 @@ public class GanttControl : TemplatedControl
             return;
         }
 
+        if (_ganttModel is not null)
+        {
+            _ganttModel.GanttTasks.CollectionChanged -= GanttTasks_CollectionChanged;
+            _ganttModel.Milestones.CollectionChanged -= Milestones_CollectionChanged;
+        }
+
         _ganttModel = ganttModel;
+
+        if (_ganttModel is not null)
+        {
+            _ganttModel.GanttTasks.CollectionChanged += GanttTasks_CollectionChanged;
+            _ganttModel.Milestones.CollectionChanged += Milestones_CollectionChanged;
+        }
+
         Reload();
+    }
+
+    private bool _isReloadTasksPending;
+
+    private void GanttTasks_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // Coalesce: adding many tasks one by one must not rebuild all bars for every item.
+        if (_isReloadTasksPending)
+        {
+            return;
+        }
+
+        _isReloadTasksPending = true;
+        Dispatcher.UIThread.Post(() =>
+                                 {
+                                     _isReloadTasksPending = false;
+                                     ReloadTasks();
+                                 });
+    }
+
+    private void Milestones_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        ReloadMilestones();
     }
 
     #endregion
