@@ -462,6 +462,8 @@ public class GanttControl : TemplatedControl
 
     private void StartDateChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        // EndDate keeps its requested value and is only coerced, so re-evaluate it against the new StartDate.
+        CoerceValue(EndDateProperty);
         Reload();
     }
 
@@ -470,7 +472,10 @@ public class GanttControl : TemplatedControl
     #region EndDate
 
     public static readonly StyledProperty<DateOnly> EndDateProperty =
-        AvaloniaProperty.Register<GanttControl, DateOnly>(nameof(EndDate), DateOnly.FromDateTime(DateTime.Today), true);
+        AvaloniaProperty.Register<GanttControl, DateOnly>(nameof(EndDate), DateOnly.FromDateTime(DateTime.Today), true,
+                                                          coerce: (sender, value) => value < sender.GetValue(StartDateProperty)
+                                                              ? sender.GetValue(StartDateProperty)
+                                                              : value);
 
     public DateOnly EndDate
     {
