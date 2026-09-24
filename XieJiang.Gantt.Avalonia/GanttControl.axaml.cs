@@ -1365,7 +1365,6 @@ public class GanttControl : TemplatedControl
         var milestone = new Milestone()
                         {
                             DateTime  = date.ToDateTime(TimeOnly.MinValue),
-                            IsEditing = true,
                             Title     = this.FindResource("STRING_NEW_MILESTONE") as string ?? string.Empty
                         };
 

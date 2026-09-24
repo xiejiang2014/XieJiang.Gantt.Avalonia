@@ -7,8 +7,6 @@ namespace XieJiang.Gantt.Avalonia.Models;
 
 public class Milestone : INotifyPropertyChanged
 {
-    internal bool IsEditing { get; set; }
-
     #region DateTime
 
     private DateTime _dateTime;
