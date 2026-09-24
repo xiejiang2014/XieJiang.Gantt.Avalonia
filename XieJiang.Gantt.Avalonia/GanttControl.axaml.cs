@@ -103,7 +103,7 @@ public class GanttControl : TemplatedControl
             {
                 Debug.Print("MilestoneDeleteButton");
 
-                DeleteNewMilestone(milestone);
+                DeleteMilestone(milestone);
             }
         }
     }
@@ -1165,6 +1165,7 @@ public class GanttControl : TemplatedControl
                             Title     = Application.Current.FindResource("STRING_NEW_MILESTONE") as string
                         };
 
+        _ganttModel?.Milestones.Add(milestone);
         var milestoneControl = AddMilestone(milestone);
 
         milestoneControl?.ApplyTemplate();
@@ -1173,6 +1174,11 @@ public class GanttControl : TemplatedControl
 
     public MilestoneControl? AddMilestone(Milestone milestone)
     {
+        if (_milestoneControls.TryGetValue(milestone, out var existing))
+        {
+            return existing;
+        }
+
         if (_secondaryComponents is not null)
         {
             var milestoneControl = new MilestoneControl()
@@ -1195,14 +1201,14 @@ public class GanttControl : TemplatedControl
     }
 
 
-    private void DeleteNewMilestone(Milestone milestone)
+    private void DeleteMilestone(Milestone milestone)
     {
-        if (_secondaryComponents is not null)
-        {
-            _secondaryComponents.Children.Remove(_milestoneControls[milestone]);
-        }
+        _ganttModel?.Milestones.Remove(milestone);
 
-        _milestoneControls.Remove(milestone);
+        if (_milestoneControls.Remove(milestone, out var milestoneControl))
+        {
+            _secondaryComponents?.Children.Remove(milestoneControl);
+        }
     }
 
     private void MilestoneControl_HThumbDragDelta(RoutedEventArgs e)
