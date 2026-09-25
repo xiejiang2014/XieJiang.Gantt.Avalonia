@@ -1,23 +1,24 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Avalonia;
-using Avalonia.Media;
 using XieJiang.Gantt.Avalonia.Models;
 
 namespace XieJiang.Gantt.Avalonia.Demo.Views;
 
 public partial class MainView : UserControl
 {
-    private ScrollViewer _treeDataGridScrollViewer;
-    private ScrollBar    _ganttControlHScrollBar;
-    private ScrollBar    _ganttControlVScrollBar;
+    private ScrollBar _dataGridVScrollBar;
+    private ScrollBar _ganttControlHScrollBar;
+    private ScrollBar _ganttControlVScrollBar;
 
     public MainView()
     {
@@ -100,63 +101,7 @@ public partial class MainView : UserControl
 
         GanttControl.GanttModel = ganttModel;
 
-        var flatTreeDataGridSource = new FlatTreeDataGridSource<MyGanttTask>(ganttModel.GanttTasks.Cast<MyGanttTask>())
-        {
-            Columns =
-                                         {
-                                             new TextColumn<MyGanttTask, int>("ID",
-                                                                              x => x.Id,
-                                                                              new GridLength(1, GridUnitType.Auto),
-                                                                              new()
-                                                                              {
-                                                                                  TextAlignment = TextAlignment.Center,
-                                                                              }
-                                                                             ),
-
-                                             new TemplateColumn<MyGanttTask>("Header",
-                                                                             "HeaderCell"
-                                                                            ),
-
-                                             //new TextColumn<MyGanttTask, string>("Title",
-                                             //                                    x => ((TaskContent)x.Content!).Title,
-                                             //                                    new GridLength(1, GridUnitType.Auto)
-                                             //                                   ),
-
-                                             new TemplateColumn<MyGanttTask>("Title",
-                                                                             "TextCell",
-                                                                             "TextEditCell"
-                                                                            ),
-
-                                             new TemplateColumn<MyGanttTask>("Progress",
-                                                                             "ProgressCell",
-                                                                             "ProgressCellEditing"
-                                                                            ),
-
-                                             new TextColumn<MyGanttTask, DateTime>("StartDate",
-                                                                                   x => x.StartDate,
-                                                                                   new GridLength(1, GridUnitType.Auto),
-                                                                                   new()
-                                                                                   {
-                                                                                       TextAlignment = TextAlignment.Right,
-                                                                                       MaxWidth      = new GridLength(150)
-                                                                                   }
-                                                                                  ),
-
-                                             new TextColumn<MyGanttTask, DateTime>("EndDate",
-                                                                                   x => x.EndDate,
-                                                                                   new GridLength(1, GridUnitType.Auto),
-                                                                                   new()
-                                                                                   {
-                                                                                       TextAlignment = TextAlignment.Right,
-                                                                                       MaxWidth      = new GridLength(150)
-                                                                                   }
-                                                                                  ),
-                                         }
-        };
-
-        flatTreeDataGridSource.RowSelection!.SingleSelect    =  true;
-        flatTreeDataGridSource.RowSelection.SelectionChanged += RowSelection_SelectionChanged;
-        TreeDataGrid1.Source                                 =  flatTreeDataGridSource;
+        DataGrid1.ItemsSource = ganttModel.GanttTasks;
     }
 
 
@@ -165,27 +110,47 @@ public partial class MainView : UserControl
     {
         base.OnLoaded(e);
 
-        _treeDataGridScrollViewer = TreeDataGrid1.Scroll as ScrollViewer;
-        _treeDataGridScrollViewer.ScrollChanged += ScrollViewer1_ScrollChanged;
+        // DataGrid has no public offset API; it scrolls through its vertical scroll bar part.
+        _dataGridVScrollBar = DataGrid1.GetVisualDescendants().OfType<ScrollBar>().First(s => s.Name == "PART_VerticalScrollbar");
+        _dataGridVScrollBar.ValueChanged += DataGridVScrollBar_ValueChanged;
 
         _ganttControlHScrollBar = GanttControl.HScrollBar;
         _ganttControlVScrollBar = GanttControl.VScrollBar;
         _ganttControlVScrollBar.ValueChanged += GanttControlVScrollBar_ValueChanged;
     }
 
+    // DataGrid only follows its scroll bar when the user drags it and has no public offset API, so do what its
+    // Scroll handler does. DynamicDependency keeps the method when trimming (AOT).
+    private static readonly MethodInfo? DataGridProcessVerticalScroll =
+        typeof(DataGrid).GetMethod("ProcessVerticalScroll", BindingFlags.Instance | BindingFlags.NonPublic);
+
+    [DynamicDependency("ProcessVerticalScroll", typeof(DataGrid))]
     private void GanttControlVScrollBar_ValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
-        _treeDataGridScrollViewer.SetCurrentValue(ScrollViewer.OffsetProperty, new Vector(_treeDataGridScrollViewer.Offset.X, e.NewValue));
+        if (_dataGridVScrollBar.Value.Equals(e.NewValue))
+        {
+            return;
+        }
+
+        if (DataGridProcessVerticalScroll is not null)
+        {
+            _dataGridVScrollBar.SetCurrentValue(RangeBase.ValueProperty, e.NewValue);
+            DataGridProcessVerticalScroll.Invoke(DataGrid1, [ScrollEventType.ThumbTrack]);
+        }
+        else if (DataGrid1.ItemsSource is System.Collections.IList { Count: > 0 } items)
+        {
+            // fallback: row precision only
+            var row = (int)Math.Clamp(e.NewValue / GanttControl.RowHeight, 0, items.Count - 1);
+            DataGrid1.ScrollIntoView(items[row], null);
+        }
     }
 
-    private void ScrollViewer1_ScrollChanged(object? sender, ScrollChangedEventArgs e)
+    private void DataGridVScrollBar_ValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
         var temp = _ganttControlVScrollBar.Transitions;
         _ganttControlVScrollBar.Transitions = null;
-        _ganttControlVScrollBar.SetCurrentValue(RangeBase.ValueProperty, _treeDataGridScrollViewer.Offset.Y);
+        _ganttControlVScrollBar.SetCurrentValue(RangeBase.ValueProperty, e.NewValue);
         _ganttControlVScrollBar.Transitions = temp;
-
-        e.Handled = true;
     }
 
     private void GanttControl_OnDependencyLinePointerPressed(object? sender, DependencyLinePointerPressedEventArgs e)
@@ -223,9 +188,9 @@ public partial class MainView : UserControl
         GanttControl.DateMode = DateModes.Yearly;
     }
 
-    private void RowSelection_SelectionChanged(object? sender, global::Avalonia.Controls.Selection.TreeSelectionModelSelectionChangedEventArgs<MyGanttTask> e)
+    private void DataGrid1_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        var selectedItem = e.SelectedItems.FirstOrDefault();
+        var selectedItem = e.AddedItems.OfType<GanttTask>().FirstOrDefault();
 
         if (selectedItem is GanttTask ganttTask)
         {

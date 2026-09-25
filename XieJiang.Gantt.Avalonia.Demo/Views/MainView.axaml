@@ -9,93 +9,114 @@
 
     <Grid RowDefinitions="*,Auto">
         <Grid ColumnDefinitions="1*,Auto,1.5*">
-            <TreeDataGrid
-                x:Name="TreeDataGrid1"
-                CanUserSortColumns="False">
+            <DataGrid
+                x:Name="DataGrid1"
+                x:DataType="demo:MyGanttTask"
+                AutoGenerateColumns="False"
+                CanUserSortColumns="False"
+                ColumnHeaderHeight="57"
+                RowHeight="{Binding #GanttControl.RowHeight}"
+                SelectionChanged="DataGrid1_OnSelectionChanged"
+                SelectionMode="Single">
 
-                <TreeDataGrid.Resources>
-                    <DataTemplate
-                        x:Key="HeaderCell"
-                        DataType="demo:MyGanttTask">
-                        <Border
-                            Width="26"
-                            Height="26"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            BorderBrush="White"
-                            BorderThickness="6"
-                            ClipToBounds="True"
-                            CornerRadius="26"
-                            UseLayoutRounding="True">
-                            <Image
-                                DataContext="{Binding Path=Content}"
-                                Width="26"
-                                Height="26"
-                                Source="{Binding Path=(demo:TaskContent).HeaderImg}"
-                                Stretch="UniformToFill" />
-                        </Border>
-                    </DataTemplate>
-
-                    <DataTemplate
-                        x:Key="TextCell"
-                        DataType="demo:MyGanttTask">
-                        <TextBlock
-                            DataContext="{Binding Path=Content}"
-                            VerticalAlignment="Center"
-                            Text="{Binding Path=(demo:TaskContent).Title}" />
-                    </DataTemplate>
-
-                    <DataTemplate
-                        x:Key="TextEditCell"
-                        DataType="demo:MyGanttTask">
-                        <TextBox
-                            DataContext="{Binding Path=Content}" Text="{Binding Path=(demo:TaskContent).Title}" />
-                    </DataTemplate>
-
-                    <DataTemplate
-                        x:Key="ProgressCell"
-                        DataType="demo:MyGanttTask">
-                        <TextBlock
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            Text="{Binding Path=ProgressString}"
-                            TextAlignment="Right" />
-                    </DataTemplate>
-
-                    <DataTemplate
-                        x:Key="ProgressCellEditing"
-                        DataType="demo:MyGanttTask">
-                        <TextBox
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            Text="{Binding Path=ProgressString}"
-                            TextAlignment="Right" />
-                    </DataTemplate>
-                </TreeDataGrid.Resources>
-
-                <TreeDataGrid.Styles>
-                    <Style Selector="TreeDataGridColumnHeader">
+                <DataGrid.Styles>
+                    <Style Selector="DataGridCell.Right TextBlock">
                         <Setter
-                            Property="MinHeight"
-                            Value="57" />
+                            Property="TextAlignment"
+                            Value="Right" />
+                    </Style>
+                    <Style Selector="DataGridCell.Center TextBlock">
+                        <Setter
+                            Property="TextAlignment"
+                            Value="Center" />
+                    </Style>
+                </DataGrid.Styles>
 
-                        <Setter Property="ContentTemplate">
-                            <DataTemplate DataType="x:String">
-                                <TextBlock
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="Auto"
+                        Binding="{Binding Id}"
+                        CellStyleClasses="Center"
+                        Header="ID" />
+
+                    <DataGridTemplateColumn Header="Header">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="demo:MyGanttTask">
+                                <Border
+                                    Width="26"
+                                    Height="26"
                                     HorizontalAlignment="Center"
-                                    Text="{Binding}"
-                                    TextTrimming="CharacterEllipsis" />
+                                    VerticalAlignment="Center"
+                                    BorderBrush="White"
+                                    BorderThickness="6"
+                                    ClipToBounds="True"
+                                    CornerRadius="26"
+                                    UseLayoutRounding="True">
+                                    <Image
+                                        Width="26"
+                                        Height="26"
+                                        DataContext="{Binding Path=Content}"
+                                        Source="{Binding Path=(demo:TaskContent).HeaderImg}"
+                                        Stretch="UniformToFill" />
+                                </Border>
                             </DataTemplate>
-                        </Setter>
-                    </Style>
-                    <Style Selector="TreeDataGridRow">
-                        <Setter
-                            Property="Height"
-                            Value="{Binding #GanttControl.RowHeight}" />
-                    </Style>
-                </TreeDataGrid.Styles>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-            </TreeDataGrid>
+                    <DataGridTemplateColumn Header="Title">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="demo:MyGanttTask">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    DataContext="{Binding Path=Content}"
+                                    Text="{Binding Path=(demo:TaskContent).Title}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate DataType="demo:MyGanttTask">
+                                <TextBox
+                                    DataContext="{Binding Path=Content}"
+                                    Text="{Binding Path=(demo:TaskContent).Title}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Progress">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="demo:MyGanttTask">
+                                <TextBlock
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    Text="{Binding Path=ProgressString}"
+                                    TextAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate DataType="demo:MyGanttTask">
+                                <TextBox
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Text="{Binding Path=ProgressString}"
+                                    TextAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MaxWidth="150"
+                        Binding="{Binding StartDate}"
+                        CellStyleClasses="Right"
+                        Header="StartDate" />
+
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MaxWidth="150"
+                        Binding="{Binding EndDate}"
+                        CellStyleClasses="Right"
+                        Header="EndDate" />
+                </DataGrid.Columns>
+            </DataGrid>
 
             <GridSplitter
                 Grid.Column="1"

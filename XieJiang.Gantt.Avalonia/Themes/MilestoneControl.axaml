@@ -459,7 +459,7 @@
                                         Grid.Row="1"
                                         Margin="0,10,0,0"
                                         Text="{Binding Path=(models:Milestone).Title}"
-                                        Watermark="Title" />
+                                        PlaceholderText="Title" />
 
                                     <Button
                                         x:Name="PART_MilestoneDeleteButton"
@@ -475,7 +475,7 @@
                                         Margin="0,10,0,0"
                                         Text="{Binding Path=(models:Milestone).Content}"
                                         TextWrapping="Wrap"
-                                        Watermark="Content" />
+                                        PlaceholderText="Content" />
 
                                     <StackPanel
                                         x:Name="PART_ColorRadioButtonsStackPanel"

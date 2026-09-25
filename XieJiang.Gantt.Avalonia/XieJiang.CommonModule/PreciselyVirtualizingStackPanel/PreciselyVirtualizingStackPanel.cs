@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -555,18 +554,8 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             element.BringIntoView();
             return element;
         }
-        else if (this.GetVisualRoot() is ILayoutRoot root)
+        else if (TopLevel.GetTopLevel(this) is not null)
         {
-            var propertyInfoLayoutManager = typeof(ILayoutRoot).GetProperty("LayoutManager", BindingFlags.NonPublic | BindingFlags.Instance) ??
-                                            throw new ApplicationException(@"Property 'LayoutManager' not found.");
-
-            var rootLayoutManager = propertyInfoLayoutManager.GetValue(root) as ILayoutManager ??
-                                    throw new ApplicationException(@"Property 'LayoutManager' value is null.");
-
-            var methodExecuteLayoutPass = typeof(ILayoutManager).GetMethod("ExecuteLayoutPass", BindingFlags.NonPublic | BindingFlags.Instance) ??
-                                          throw new ApplicationException(@"Method 'ExecuteLayoutPass' not found.");
-
-
             // Create and measure the element to be brought into view. Store it in a field so that
             // it can be re-used in the layout pass.
             var scrollToElement = GetOrCreateElement(items, index);
@@ -591,7 +580,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             {
                 _isWaitingForViewportUpdate = true;
 
-                methodExecuteLayoutPass.Invoke(rootLayoutManager, null); //root.LayoutManager.ExecuteLayoutPass();
+                UpdateLayout(); //root.LayoutManager.ExecuteLayoutPass();
 
                 _isWaitingForViewportUpdate = false;
             }
@@ -605,7 +594,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             // - The viewport is then updated by the layout system which invalidates our measure
             // - Measure is then done with the new viewport.
             _isWaitingForViewportUpdate = !_viewport.Contains(rect);
-            methodExecuteLayoutPass.Invoke(rootLayoutManager, null); //root.LayoutManager.ExecuteLayoutPass();
+            UpdateLayout(); //root.LayoutManager.ExecuteLayoutPass();
 
             // If for some reason the layout system didn't give us a new viewport during the layout, we
             // need to do another layout pass as the one that took place was a no-op.
@@ -613,7 +602,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             {
                 _isWaitingForViewportUpdate = false;
                 InvalidateMeasure();
-                methodExecuteLayoutPass.Invoke(rootLayoutManager, null); //root.LayoutManager.ExecuteLayoutPass();
+                UpdateLayout(); //root.LayoutManager.ExecuteLayoutPass();
             }
 
             // During the previous BringIntoView, the scroll width extent might have been out of date if
@@ -720,7 +709,7 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
         // We have no elements, or we're at the start of the viewport.
         if (itemCount <= 0 ||
-            MathUtilities.IsZero(viewportStartU) //滚动起始位置
+            IsZero(viewportStartU) //滚动起始位置
            )
         {
             index    = 0;
@@ -897,6 +886,23 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
 
 
     public Func<PreciselyVirtualizingStackPanel, double, int, (int index, double position)>? EstimateIndexAndPosition { get; set; }
+
+    // Same as Avalonia's MathUtilities, which is internal since Avalonia 12.
+    private const double DoubleEpsilon = 2.2204460492503131e-016;
+
+    private static bool IsZero(double value) => Math.Abs(value) < 10.0 * DoubleEpsilon;
+
+    private static bool AreClose(double value1, double value2)
+    {
+        if (value1.Equals(value2))
+        {
+            return true;
+        }
+
+        var eps   = (Math.Abs(value1) + Math.Abs(value2) + 10.0) * DoubleEpsilon;
+        var delta = value1 - value2;
+        return -eps < delta && eps > delta;
+    }
 
     private double GetOrEstimateElementU(int index)
     {
@@ -1206,8 +1212,8 @@ public class PreciselyVirtualizingStackPanel : VirtualizingPanel, IScrollSnapPoi
             ? _viewport.Bottom
             : _viewport.Right;
 
-        if (!MathUtilities.AreClose(oldViewportStart, newViewportStart) ||
-            !MathUtilities.AreClose(oldViewportEnd,   newViewportEnd))
+        if (!AreClose(oldViewportStart, newViewportStart) ||
+            !AreClose(oldViewportEnd,   newViewportEnd))
         {
             InvalidateMeasure();
         }
