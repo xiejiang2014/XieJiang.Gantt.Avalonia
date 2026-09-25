@@ -4,6 +4,10 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<!-- Enables the trimming/AOT analyzers so the library stays usable in AOT-published apps -->
+		<IsAotCompatible>true</IsAotCompatible>
+		<!-- Compiled bindings are resolved at build time and do not need reflection -->
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	</PropertyGroup>
 
 
