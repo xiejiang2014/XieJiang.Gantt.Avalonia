@@ -15,6 +15,11 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
+    <!-- SkiaSharp 4: SkiaSharp brings the Win32/macOS/Android/iOS native assets, Linux and WebAssembly
+         would otherwise stay at the 3.119 versions Avalonia.Skia depends on -->
+    <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="$(SkiaSharpVersion)" />
   </ItemGroup>
 
   <ItemGroup>
