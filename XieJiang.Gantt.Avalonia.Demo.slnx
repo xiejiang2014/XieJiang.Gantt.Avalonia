@@ -1,0 +1,19 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="XieJiang.Gantt.Avalonia.Demo.Android/XieJiang.Gantt.Avalonia.Demo.Android.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="XieJiang.Gantt.Avalonia.Demo.Browser/XieJiang.Gantt.Avalonia.Demo.Browser.csproj" />
+  <Project Path="XieJiang.Gantt.Avalonia.Demo.Desktop/XieJiang.Gantt.Avalonia.Demo.Desktop.csproj" />
+  <Project Path="XieJiang.Gantt.Avalonia.Demo.iOS/XieJiang.Gantt.Avalonia.Demo.iOS.csproj" />
+  <Project Path="XieJiang.Gantt.Avalonia.Demo/XieJiang.Gantt.Avalonia.Demo.csproj" />
+  <Project Path="XieJiang.Gantt.Avalonia.Tests/XieJiang.Gantt.Avalonia.Tests.csproj" />
+  <Project Path="XieJiang.Gantt.Avalonia/XieJiang.Gantt.Avalonia.csproj" />
+</Solution>
