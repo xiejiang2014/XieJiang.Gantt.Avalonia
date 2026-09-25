@@ -5,7 +5,6 @@
     One for Windows with net10.0-windows TFM, one for MacOS with net10.0-macos and one with net10.0 TFM for Linux.-->
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -24,4 +23,16 @@
   <ItemGroup>
     <ProjectReference Include="..\XieJiang.Gantt.Avalonia.Demo\XieJiang.Gantt.Avalonia.Demo.csproj" />
   </ItemGroup>
+
+  <!-- Release builds are published with native AOT and trimming. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <PublishAot>true</PublishAot>
+    <!-- optimize the AOT code for speed -->
+    <OptimizationPreference>Speed</OptimizationPreference>
+    <PublishTrimmed>true</PublishTrimmed>
+    <!-- trimming analysis -->
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <!-- report each trimming warning instead of one summary per package -->
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
 </Project>
